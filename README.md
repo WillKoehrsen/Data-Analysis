@@ -1,5 +1,4 @@
 # Data-Analysis
-Data Analysis Using Python
+Data Analysis Using R and Python
 
-This is for working through the tutorial series by Sentdex. 
-Here is a link to his webiste: https://pythonprogramming.net/data-analysis-python-pandas-tutorial-introduction/
+A place to share my code for various data analysis projects, both personal, and research project related. 
