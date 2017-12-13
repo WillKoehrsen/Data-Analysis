@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1512860338970.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "1D4CF193",
+    "lastKnownWriteTime" : 0,
+    "last_content_update" : 1512860338970,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "DF9D0F0C",
+        "caption" : "months_metrics",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=months_metrics&cache_key=DF9D0F0C",
+        "displayedObservations" : 24,
+        "environment" : "",
+        "object" : "months_metrics",
+        "preview" : 0,
+        "totalObservations" : 24,
+        "variables" : 4
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

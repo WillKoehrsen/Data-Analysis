@@ -1,0 +1,52 @@
+---
+title: "Cycle Two Markers"
+author: "Will Koehrsen"
+date: "September 27, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Set the correct working directory depending on computer in use
+knitr::opts_chunk$set(root_dir = 
+                        'C:/Users/Will Koehrsen/Documents/DSCI 451/17f-dsci351-451-wjk68/1-assignments/SemProj-451/building_energy_eda/scripts')
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+# Purpose
+
+This markdown document is designed to run a clean building energy dataset 
+through all ten cycle two markers. There markers have been designed by the EdIFES
+team but have not been assembled into a single document. The markers have been numbered
+in alphabetical order for reference. The ten markers and authors
+are as follows:
+
+| Function                   | Author  | File Name                         |
+|----------------------------|---------|-----------------------------------|
+| Base:Peak Ratio            | Arash   | base_peak_ratio_one.R             |
+| Baseload                   | Arash   | baseload_two.R                    |
+| Energy Use Intensity       | Shreyas | calc_eui_three.R                  |
+| Daylight Mismatch          | Arash   | daylight_mismatch_four.R          |
+| Seasonal Variability       | Arash   | h_var_season.R                    |
+| Change Behaviors           | Rojiar  | prd_change_behaviors.R            |
+| Chi Square Periodogram     | Rojiar  | prd_chisquare_periodogram_seven.R |
+| Renewable Energy           | Rojiar  | prd_renewable_energy_eight.R      |
+| Summary Statistics         | Shreyas | produce_summary_statistics_nine.R |
+| Rescheduling Opportunities | Rojiar  | reschedule_opportunities_ten.R    |
+
+
+This markdown file should be run in the same directory as all of the 
+building marker R files. The data directory should be one level up from this directory
+and should contain the cleaned buildings as csv files. This markdown file is designed to work with any cleaned buildings. 
+
+# Marker One: Base to Peak Ratio
+
+This marker calculates the ratio of the base load to the ratio of the peak electricity consumption.
+
+```{r}
+dir('./data')
+```

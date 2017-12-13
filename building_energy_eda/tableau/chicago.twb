@@ -1,0 +1,1556 @@
+<?xml version='1.0' encoding='utf-8' ?>
+
+<!-- build 10200.17.0912.2119                               -->
+<workbook source-build='10.2.5 (10200.17.0912.2119)' source-platform='win' version='10.2' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <preferences>
+    <preference name='ui.encoding.shelf.height' value='24' />
+    <preference name='ui.shelf.height' value='26' />
+  </preferences>
+  <datasources>
+    <datasource caption='Energy_Usage_2010' inline='true' name='federated.1p5h0mf0vkdt0s1ajvy8q086nipf' version='10.2'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='Energy_Usage_2010' name='textscan.1tqkrs111sw97t15wgthv1ho5cjv'>
+            <connection class='textscan' directory='C:/Users/Will Koehrsen/Documents/DSCI 451/17f-dsci351-451-wjk68/1-assignments/SemProj-451/building_energy_eda/chicago' filename='Energy_Usage_2010.csv' password='' server='' />
+          </named-connection>
+        </named-connections>
+        <relation connection='textscan.1tqkrs111sw97t15wgthv1ho5cjv' name='Energy_Usage_2010.csv' table='[Energy_Usage_2010#csv]' type='table'>
+          <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+            <column datatype='string' name='COMMUNITY AREA NAME' ordinal='0' />
+            <column datatype='integer' name='CENSUS BLOCK' ordinal='1' />
+            <column datatype='string' name='BUILDING TYPE' ordinal='2' />
+            <column datatype='string' name='BUILDING_SUBTYPE' ordinal='3' />
+            <column datatype='integer' name='KWH JANUARY 2010' ordinal='4' />
+            <column datatype='integer' name='KWH FEBRUARY 2010' ordinal='5' />
+            <column datatype='integer' name='KWH MARCH 2010' ordinal='6' />
+            <column datatype='integer' name='KWH APRIL 2010' ordinal='7' />
+            <column datatype='integer' name='KWH MAY 2010' ordinal='8' />
+            <column datatype='integer' name='KWH JUNE 2010' ordinal='9' />
+            <column datatype='integer' name='KWH JULY 2010' ordinal='10' />
+            <column datatype='integer' name='KWH AUGUST 2010' ordinal='11' />
+            <column datatype='integer' name='KWH SEPTEMBER 2010' ordinal='12' />
+            <column datatype='integer' name='KWH OCTOBER 2010' ordinal='13' />
+            <column datatype='integer' name='KWH NOVEMBER 2010' ordinal='14' />
+            <column datatype='integer' name='KWH DECEMBER 2010' ordinal='15' />
+            <column datatype='integer' name='TOTAL KWH' ordinal='16' />
+            <column datatype='string' name='ELECTRICITY ACCOUNTS' ordinal='17' />
+            <column datatype='integer' name='ZERO KWH ACCOUNTS' ordinal='18' />
+            <column datatype='integer' name='THERM JANUARY 2010' ordinal='19' />
+            <column datatype='integer' name='THERM FEBRUARY 2010' ordinal='20' />
+            <column datatype='integer' name='THERM MARCH 2010' ordinal='21' />
+            <column datatype='integer' name='TERM APRIL 2010' ordinal='22' />
+            <column datatype='integer' name='THERM MAY 2010' ordinal='23' />
+            <column datatype='integer' name='THERM JUNE 2010' ordinal='24' />
+            <column datatype='integer' name='THERM JULY 2010' ordinal='25' />
+            <column datatype='integer' name='THERM AUGUST 2010' ordinal='26' />
+            <column datatype='integer' name='THERM SEPTEMBER 2010' ordinal='27' />
+            <column datatype='integer' name='THERM OCTOBER 2010' ordinal='28' />
+            <column datatype='integer' name='THERM NOVEMBER 2010' ordinal='29' />
+            <column datatype='integer' name='THERM DECEMBER 2010' ordinal='30' />
+            <column datatype='integer' name='TOTAL THERMS' ordinal='31' />
+            <column datatype='string' name='GAS ACCOUNTS' ordinal='32' />
+            <column datatype='integer' name='KWH TOTAL SQFT' ordinal='33' />
+            <column datatype='integer' name='THERMS TOTAL SQFT' ordinal='34' />
+            <column datatype='real' name='KWH MEAN 2010' ordinal='35' />
+            <column datatype='real' name='KWH STANDARD DEVIATION 2010' ordinal='36' />
+            <column datatype='integer' name='KWH MINIMUM 2010' ordinal='37' />
+            <column datatype='real' name='KWH 1ST QUARTILE 2010' ordinal='38' />
+            <column datatype='real' name='KWH 2ND QUARTILE 2010' ordinal='39' />
+            <column datatype='real' name='KWH 3RD QUARTILE 2010' ordinal='40' />
+            <column datatype='integer' name='KWH MAXIMUM 2010' ordinal='41' />
+            <column datatype='real' name='KWH SQFT MEAN 2010' ordinal='42' />
+            <column datatype='real' name='KWH SQFT STANDARD DEVIATION 2010' ordinal='43' />
+            <column datatype='integer' name='KWH SQFT MINIMUM 2010' ordinal='44' />
+            <column datatype='real' name='KWH SQFT 1ST QUARTILE 2010' ordinal='45' />
+            <column datatype='real' name='KWH SQFT 2ND QUARTILE 2010' ordinal='46' />
+            <column datatype='real' name='KWH SQFT 3RD QUARTILE 2010' ordinal='47' />
+            <column datatype='integer' name='KWH SQFT MAXIMUM 2010' ordinal='48' />
+            <column datatype='real' name='THERM MEAN 2010' ordinal='49' />
+            <column datatype='real' name='THERM STANDARD DEVIATION 2010' ordinal='50' />
+            <column datatype='integer' name='THERM MINIMUM 2010' ordinal='51' />
+            <column datatype='real' name='THERM 1ST QUARTILE 2010' ordinal='52' />
+            <column datatype='real' name='THERM 2ND QUARTILE 2010' ordinal='53' />
+            <column datatype='real' name='THERM 3RD QUARTILE 2010' ordinal='54' />
+            <column datatype='integer' name='THERM MAXIMUM 2010' ordinal='55' />
+            <column datatype='real' name='THERMS SQFT MEAN 2010' ordinal='56' />
+            <column datatype='real' name='THERMS SQFT STANDARD DEVIATION 2010' ordinal='57' />
+            <column datatype='integer' name='THERMS SQFT MINIMUM 2010' ordinal='58' />
+            <column datatype='real' name='THERMS SQFT 1ST QUARTILE 2010' ordinal='59' />
+            <column datatype='real' name='THERMS SQFT 2ND QUARTILE 2010' ordinal='60' />
+            <column datatype='real' name='THERMS SQFT 3RD QUARTILE 2010' ordinal='61' />
+            <column datatype='integer' name='THERMS SQFT MAXIMUM 2010' ordinal='62' />
+            <column datatype='integer' name='TOTAL POPULATION' ordinal='63' />
+            <column datatype='integer' name='TOTAL UNITS' ordinal='64' />
+            <column datatype='real' name='AVERAGE STORIES' ordinal='65' />
+            <column datatype='real' name='AVERAGE BUILDING AGE' ordinal='66' />
+            <column datatype='real' name='AVERAGE HOUSESIZE' ordinal='67' />
+            <column datatype='integer' name='OCCUPIED UNITS' ordinal='68' />
+            <column datatype='real' name='OCCUPIED UNITS PERCENTAGE' ordinal='69' />
+            <column datatype='integer' name='RENTER-OCCUPIED HOUSING UNITS' ordinal='70' />
+            <column datatype='real' name='RENTER-OCCUPIED HOUSING PERCENTAGE' ordinal='71' />
+            <column datatype='integer' name='OCCUPIED HOUSING UNITS' ordinal='72' />
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class='column'>
+            <remote-name>COMMUNITY AREA NAME</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[COMMUNITY AREA NAME]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>COMMUNITY AREA NAME</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteCollation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='DebugRemoteMetadata (compression)'>&quot;heap&quot;</attribute>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>4294967292</attribute>
+              <attribute datatype='integer' name='DebugRemoteMetadata (storagewidth)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;str&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>CENSUS BLOCK</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[CENSUS BLOCK]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>CENSUS BLOCK</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>BUILDING TYPE</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[BUILDING TYPE]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>BUILDING TYPE</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteCollation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='DebugRemoteMetadata (compression)'>&quot;heap&quot;</attribute>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>4294967292</attribute>
+              <attribute datatype='integer' name='DebugRemoteMetadata (storagewidth)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;str&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>BUILDING_SUBTYPE</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[BUILDING_SUBTYPE]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>BUILDING_SUBTYPE</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteCollation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='DebugRemoteMetadata (compression)'>&quot;heap&quot;</attribute>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>4294967292</attribute>
+              <attribute datatype='integer' name='DebugRemoteMetadata (storagewidth)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;str&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH JANUARY 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH JANUARY 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH JANUARY 2010</remote-alias>
+            <ordinal>4</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH FEBRUARY 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH FEBRUARY 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH FEBRUARY 2010</remote-alias>
+            <ordinal>5</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH MARCH 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH MARCH 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH MARCH 2010</remote-alias>
+            <ordinal>6</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH APRIL 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH APRIL 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH APRIL 2010</remote-alias>
+            <ordinal>7</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH MAY 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH MAY 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH MAY 2010</remote-alias>
+            <ordinal>8</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH JUNE 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH JUNE 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH JUNE 2010</remote-alias>
+            <ordinal>9</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH JULY 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH JULY 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH JULY 2010</remote-alias>
+            <ordinal>10</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH AUGUST 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH AUGUST 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH AUGUST 2010</remote-alias>
+            <ordinal>11</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH SEPTEMBER 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH SEPTEMBER 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH SEPTEMBER 2010</remote-alias>
+            <ordinal>12</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH OCTOBER 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH OCTOBER 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH OCTOBER 2010</remote-alias>
+            <ordinal>13</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH NOVEMBER 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH NOVEMBER 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH NOVEMBER 2010</remote-alias>
+            <ordinal>14</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH DECEMBER 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH DECEMBER 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH DECEMBER 2010</remote-alias>
+            <ordinal>15</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>TOTAL KWH</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[TOTAL KWH]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>TOTAL KWH</remote-alias>
+            <ordinal>16</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>ELECTRICITY ACCOUNTS</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[ELECTRICITY ACCOUNTS]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>ELECTRICITY ACCOUNTS</remote-alias>
+            <ordinal>17</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteCollation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='DebugRemoteMetadata (compression)'>&quot;heap&quot;</attribute>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>4294967292</attribute>
+              <attribute datatype='integer' name='DebugRemoteMetadata (storagewidth)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;str&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>ZERO KWH ACCOUNTS</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[ZERO KWH ACCOUNTS]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>ZERO KWH ACCOUNTS</remote-alias>
+            <ordinal>18</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM JANUARY 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERM JANUARY 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM JANUARY 2010</remote-alias>
+            <ordinal>19</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM FEBRUARY 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERM FEBRUARY 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM FEBRUARY 2010</remote-alias>
+            <ordinal>20</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM MARCH 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERM MARCH 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM MARCH 2010</remote-alias>
+            <ordinal>21</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>TERM APRIL 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[TERM APRIL 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>TERM APRIL 2010</remote-alias>
+            <ordinal>22</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM MAY 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERM MAY 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM MAY 2010</remote-alias>
+            <ordinal>23</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM JUNE 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERM JUNE 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM JUNE 2010</remote-alias>
+            <ordinal>24</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM JULY 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERM JULY 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM JULY 2010</remote-alias>
+            <ordinal>25</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM AUGUST 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERM AUGUST 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM AUGUST 2010</remote-alias>
+            <ordinal>26</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM SEPTEMBER 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERM SEPTEMBER 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM SEPTEMBER 2010</remote-alias>
+            <ordinal>27</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM OCTOBER 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERM OCTOBER 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM OCTOBER 2010</remote-alias>
+            <ordinal>28</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM NOVEMBER 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERM NOVEMBER 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM NOVEMBER 2010</remote-alias>
+            <ordinal>29</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM DECEMBER 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERM DECEMBER 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM DECEMBER 2010</remote-alias>
+            <ordinal>30</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>TOTAL THERMS</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[TOTAL THERMS]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>TOTAL THERMS</remote-alias>
+            <ordinal>31</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>GAS ACCOUNTS</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[GAS ACCOUNTS]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>GAS ACCOUNTS</remote-alias>
+            <ordinal>32</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteCollation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='DebugRemoteMetadata (compression)'>&quot;heap&quot;</attribute>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>4294967292</attribute>
+              <attribute datatype='integer' name='DebugRemoteMetadata (storagewidth)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;str&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH TOTAL SQFT</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH TOTAL SQFT]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH TOTAL SQFT</remote-alias>
+            <ordinal>33</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERMS TOTAL SQFT</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERMS TOTAL SQFT]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERMS TOTAL SQFT</remote-alias>
+            <ordinal>34</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH MEAN 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[KWH MEAN 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH MEAN 2010</remote-alias>
+            <ordinal>35</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH STANDARD DEVIATION 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[KWH STANDARD DEVIATION 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH STANDARD DEVIATION 2010</remote-alias>
+            <ordinal>36</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH MINIMUM 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH MINIMUM 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH MINIMUM 2010</remote-alias>
+            <ordinal>37</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH 1ST QUARTILE 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[KWH 1ST QUARTILE 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH 1ST QUARTILE 2010</remote-alias>
+            <ordinal>38</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH 2ND QUARTILE 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[KWH 2ND QUARTILE 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH 2ND QUARTILE 2010</remote-alias>
+            <ordinal>39</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH 3RD QUARTILE 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[KWH 3RD QUARTILE 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH 3RD QUARTILE 2010</remote-alias>
+            <ordinal>40</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH MAXIMUM 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH MAXIMUM 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH MAXIMUM 2010</remote-alias>
+            <ordinal>41</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH SQFT MEAN 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[KWH SQFT MEAN 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH SQFT MEAN 2010</remote-alias>
+            <ordinal>42</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH SQFT STANDARD DEVIATION 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[KWH SQFT STANDARD DEVIATION 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH SQFT STANDARD DEVIATION 2010</remote-alias>
+            <ordinal>43</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH SQFT MINIMUM 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH SQFT MINIMUM 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH SQFT MINIMUM 2010</remote-alias>
+            <ordinal>44</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH SQFT 1ST QUARTILE 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[KWH SQFT 1ST QUARTILE 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH SQFT 1ST QUARTILE 2010</remote-alias>
+            <ordinal>45</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH SQFT 2ND QUARTILE 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[KWH SQFT 2ND QUARTILE 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH SQFT 2ND QUARTILE 2010</remote-alias>
+            <ordinal>46</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH SQFT 3RD QUARTILE 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[KWH SQFT 3RD QUARTILE 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH SQFT 3RD QUARTILE 2010</remote-alias>
+            <ordinal>47</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>KWH SQFT MAXIMUM 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[KWH SQFT MAXIMUM 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>KWH SQFT MAXIMUM 2010</remote-alias>
+            <ordinal>48</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM MEAN 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[THERM MEAN 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM MEAN 2010</remote-alias>
+            <ordinal>49</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM STANDARD DEVIATION 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[THERM STANDARD DEVIATION 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM STANDARD DEVIATION 2010</remote-alias>
+            <ordinal>50</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM MINIMUM 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERM MINIMUM 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM MINIMUM 2010</remote-alias>
+            <ordinal>51</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM 1ST QUARTILE 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[THERM 1ST QUARTILE 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM 1ST QUARTILE 2010</remote-alias>
+            <ordinal>52</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM 2ND QUARTILE 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[THERM 2ND QUARTILE 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM 2ND QUARTILE 2010</remote-alias>
+            <ordinal>53</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM 3RD QUARTILE 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[THERM 3RD QUARTILE 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM 3RD QUARTILE 2010</remote-alias>
+            <ordinal>54</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERM MAXIMUM 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERM MAXIMUM 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERM MAXIMUM 2010</remote-alias>
+            <ordinal>55</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERMS SQFT MEAN 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[THERMS SQFT MEAN 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERMS SQFT MEAN 2010</remote-alias>
+            <ordinal>56</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERMS SQFT STANDARD DEVIATION 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[THERMS SQFT STANDARD DEVIATION 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERMS SQFT STANDARD DEVIATION 2010</remote-alias>
+            <ordinal>57</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERMS SQFT MINIMUM 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERMS SQFT MINIMUM 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERMS SQFT MINIMUM 2010</remote-alias>
+            <ordinal>58</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERMS SQFT 1ST QUARTILE 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[THERMS SQFT 1ST QUARTILE 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERMS SQFT 1ST QUARTILE 2010</remote-alias>
+            <ordinal>59</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERMS SQFT 2ND QUARTILE 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[THERMS SQFT 2ND QUARTILE 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERMS SQFT 2ND QUARTILE 2010</remote-alias>
+            <ordinal>60</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERMS SQFT 3RD QUARTILE 2010</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[THERMS SQFT 3RD QUARTILE 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERMS SQFT 3RD QUARTILE 2010</remote-alias>
+            <ordinal>61</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>THERMS SQFT MAXIMUM 2010</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[THERMS SQFT MAXIMUM 2010]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>THERMS SQFT MAXIMUM 2010</remote-alias>
+            <ordinal>62</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>TOTAL POPULATION</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[TOTAL POPULATION]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>TOTAL POPULATION</remote-alias>
+            <ordinal>63</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>TOTAL UNITS</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[TOTAL UNITS]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>TOTAL UNITS</remote-alias>
+            <ordinal>64</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>AVERAGE STORIES</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[AVERAGE STORIES]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>AVERAGE STORIES</remote-alias>
+            <ordinal>65</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>AVERAGE BUILDING AGE</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[AVERAGE BUILDING AGE]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>AVERAGE BUILDING AGE</remote-alias>
+            <ordinal>66</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>AVERAGE HOUSESIZE</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[AVERAGE HOUSESIZE]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>AVERAGE HOUSESIZE</remote-alias>
+            <ordinal>67</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>OCCUPIED UNITS</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[OCCUPIED UNITS]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>OCCUPIED UNITS</remote-alias>
+            <ordinal>68</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>OCCUPIED UNITS PERCENTAGE</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[OCCUPIED UNITS PERCENTAGE]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>OCCUPIED UNITS PERCENTAGE</remote-alias>
+            <ordinal>69</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>RENTER-OCCUPIED HOUSING UNITS</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[RENTER-OCCUPIED HOUSING UNITS]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>RENTER-OCCUPIED HOUSING UNITS</remote-alias>
+            <ordinal>70</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>RENTER-OCCUPIED HOUSING PERCENTAGE</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[RENTER-OCCUPIED HOUSING PERCENTAGE]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>RENTER-OCCUPIED HOUSING PERCENTAGE</remote-alias>
+            <ordinal>71</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;double&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>OCCUPIED HOUSING UNITS</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[OCCUPIED HOUSING UNITS]</local-name>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias>OCCUPIED HOUSING UNITS</remote-alias>
+            <ordinal>72</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='DebugRemoteMetadata (size)'>8</attribute>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;sint64&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[Energy_Usage_2010.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='character-set'>&quot;UTF-8&quot;</attribute>
+              <attribute datatype='string' name='collation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='field-delimiter'>&quot;,&quot;</attribute>
+              <attribute datatype='string' name='header-row'>&quot;true&quot;</attribute>
+              <attribute datatype='string' name='locale'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='single-char'>&quot;&quot;</attribute>
+            </attributes>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled='yes' />
+      <column caption='Average Building Age' datatype='real' name='[AVERAGE BUILDING AGE]' role='measure' type='quantitative' />
+      <column caption='Average Housesize' datatype='real' name='[AVERAGE HOUSESIZE]' role='measure' type='quantitative' />
+      <column caption='Average Stories' datatype='real' name='[AVERAGE STORIES]' role='measure' type='quantitative' />
+      <column caption='Building Type' datatype='string' name='[BUILDING TYPE]' role='dimension' type='nominal' />
+      <column caption='Building Subtype' datatype='string' name='[BUILDING_SUBTYPE]' role='dimension' type='nominal' />
+      <column caption='Census Block' datatype='integer' name='[CENSUS BLOCK]' role='measure' type='quantitative' />
+      <column caption='Community Area Name' datatype='string' name='[COMMUNITY AREA NAME]' role='dimension' type='nominal' />
+      <column caption='Electricity Accounts' datatype='string' name='[ELECTRICITY ACCOUNTS]' role='dimension' type='nominal' />
+      <column caption='Gas Accounts' datatype='string' name='[GAS ACCOUNTS]' role='dimension' type='nominal' />
+      <column caption='Kwh 1St Quartile 2010' datatype='real' name='[KWH 1ST QUARTILE 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh 2Nd Quartile 2010' datatype='real' name='[KWH 2ND QUARTILE 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh 3Rd Quartile 2010' datatype='real' name='[KWH 3RD QUARTILE 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh April 2010' datatype='integer' name='[KWH APRIL 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh August 2010' datatype='integer' name='[KWH AUGUST 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh December 2010' datatype='integer' name='[KWH DECEMBER 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh February 2010' datatype='integer' name='[KWH FEBRUARY 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh January 2010' datatype='integer' name='[KWH JANUARY 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh July 2010' datatype='integer' name='[KWH JULY 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh June 2010' datatype='integer' name='[KWH JUNE 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh March 2010' datatype='integer' name='[KWH MARCH 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh Maximum 2010' datatype='integer' name='[KWH MAXIMUM 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh May 2010' datatype='integer' name='[KWH MAY 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh Mean 2010' datatype='real' name='[KWH MEAN 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh Minimum 2010' datatype='integer' name='[KWH MINIMUM 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh November 2010' datatype='integer' name='[KWH NOVEMBER 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh October 2010' datatype='integer' name='[KWH OCTOBER 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh September 2010' datatype='integer' name='[KWH SEPTEMBER 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh Sqft 1St Quartile 2010' datatype='real' name='[KWH SQFT 1ST QUARTILE 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh Sqft 2Nd Quartile 2010' datatype='real' name='[KWH SQFT 2ND QUARTILE 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh Sqft 3Rd Quartile 2010' datatype='real' name='[KWH SQFT 3RD QUARTILE 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh Sqft Maximum 2010' datatype='integer' name='[KWH SQFT MAXIMUM 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh Sqft Mean 2010' datatype='real' name='[KWH SQFT MEAN 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh Sqft Minimum 2010' datatype='integer' name='[KWH SQFT MINIMUM 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh Sqft Standard Deviation 2010' datatype='real' name='[KWH SQFT STANDARD DEVIATION 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh Standard Deviation 2010' datatype='real' name='[KWH STANDARD DEVIATION 2010]' role='measure' type='quantitative' />
+      <column caption='Kwh Total Sqft' datatype='integer' name='[KWH TOTAL SQFT]' role='measure' type='quantitative' />
+      <column datatype='integer' name='[Number of Records]' role='measure' type='quantitative' user:auto-column='numrec'>
+        <calculation class='tableau' formula='1' />
+      </column>
+      <column caption='Occupied Housing Units' datatype='integer' name='[OCCUPIED HOUSING UNITS]' role='measure' type='quantitative' />
+      <column caption='Occupied Units Percentage' datatype='real' name='[OCCUPIED UNITS PERCENTAGE]' role='measure' type='quantitative' />
+      <column caption='Occupied Units' datatype='integer' name='[OCCUPIED UNITS]' role='measure' type='quantitative' />
+      <column caption='Renter-Occupied Housing Percentage' datatype='real' name='[RENTER-OCCUPIED HOUSING PERCENTAGE]' role='measure' type='quantitative' />
+      <column caption='Renter-Occupied Housing Units' datatype='integer' name='[RENTER-OCCUPIED HOUSING UNITS]' role='measure' type='quantitative' />
+      <column caption='Term April 2010' datatype='integer' name='[TERM APRIL 2010]' role='measure' type='quantitative' />
+      <column caption='Therm 1St Quartile 2010' datatype='real' name='[THERM 1ST QUARTILE 2010]' role='measure' type='quantitative' />
+      <column caption='Therm 2Nd Quartile 2010' datatype='real' name='[THERM 2ND QUARTILE 2010]' role='measure' type='quantitative' />
+      <column caption='Therm 3Rd Quartile 2010' datatype='real' name='[THERM 3RD QUARTILE 2010]' role='measure' type='quantitative' />
+      <column caption='Therm August 2010' datatype='integer' name='[THERM AUGUST 2010]' role='measure' type='quantitative' />
+      <column caption='Therm December 2010' datatype='integer' name='[THERM DECEMBER 2010]' role='measure' type='quantitative' />
+      <column caption='Therm February 2010' datatype='integer' name='[THERM FEBRUARY 2010]' role='measure' type='quantitative' />
+      <column caption='Therm January 2010' datatype='integer' name='[THERM JANUARY 2010]' role='measure' type='quantitative' />
+      <column caption='Therm July 2010' datatype='integer' name='[THERM JULY 2010]' role='measure' type='quantitative' />
+      <column caption='Therm June 2010' datatype='integer' name='[THERM JUNE 2010]' role='measure' type='quantitative' />
+      <column caption='Therm March 2010' datatype='integer' name='[THERM MARCH 2010]' role='measure' type='quantitative' />
+      <column caption='Therm Maximum 2010' datatype='integer' name='[THERM MAXIMUM 2010]' role='measure' type='quantitative' />
+      <column caption='Therm May 2010' datatype='integer' name='[THERM MAY 2010]' role='measure' type='quantitative' />
+      <column caption='Therm Mean 2010' datatype='real' name='[THERM MEAN 2010]' role='measure' type='quantitative' />
+      <column caption='Therm Minimum 2010' datatype='integer' name='[THERM MINIMUM 2010]' role='measure' type='quantitative' />
+      <column caption='Therm November 2010' datatype='integer' name='[THERM NOVEMBER 2010]' role='measure' type='quantitative' />
+      <column caption='Therm October 2010' datatype='integer' name='[THERM OCTOBER 2010]' role='measure' type='quantitative' />
+      <column caption='Therm September 2010' datatype='integer' name='[THERM SEPTEMBER 2010]' role='measure' type='quantitative' />
+      <column caption='Therm Standard Deviation 2010' datatype='real' name='[THERM STANDARD DEVIATION 2010]' role='measure' type='quantitative' />
+      <column caption='Therms Sqft 1St Quartile 2010' datatype='real' name='[THERMS SQFT 1ST QUARTILE 2010]' role='measure' type='quantitative' />
+      <column caption='Therms Sqft 2Nd Quartile 2010' datatype='real' name='[THERMS SQFT 2ND QUARTILE 2010]' role='measure' type='quantitative' />
+      <column caption='Therms Sqft 3Rd Quartile 2010' datatype='real' name='[THERMS SQFT 3RD QUARTILE 2010]' role='measure' type='quantitative' />
+      <column caption='Therms Sqft Maximum 2010' datatype='integer' name='[THERMS SQFT MAXIMUM 2010]' role='measure' type='quantitative' />
+      <column caption='Therms Sqft Mean 2010' datatype='real' name='[THERMS SQFT MEAN 2010]' role='measure' type='quantitative' />
+      <column caption='Therms Sqft Minimum 2010' datatype='integer' name='[THERMS SQFT MINIMUM 2010]' role='measure' type='quantitative' />
+      <column caption='Therms Sqft Standard Deviation 2010' datatype='real' name='[THERMS SQFT STANDARD DEVIATION 2010]' role='measure' type='quantitative' />
+      <column caption='Therms Total Sqft' datatype='integer' name='[THERMS TOTAL SQFT]' role='measure' type='quantitative' />
+      <column caption='Total Kwh' datatype='integer' name='[TOTAL KWH]' role='measure' type='quantitative' />
+      <column caption='Total Population' datatype='integer' name='[TOTAL POPULATION]' role='measure' type='quantitative' />
+      <column caption='Total Therms' datatype='integer' name='[TOTAL THERMS]' role='measure' type='quantitative' />
+      <column caption='Total Units' datatype='integer' name='[TOTAL UNITS]' role='measure' type='quantitative' />
+      <column caption='Zero Kwh Accounts' datatype='integer' name='[ZERO KWH ACCOUNTS]' role='measure' type='quantitative' />
+      <layout dim-ordering='alphabetic' dim-percentage='0.200514' measure-ordering='alphabetic' measure-percentage='0.799486' show-structure='true' />
+      <semantic-values>
+        <semantic-value key='[Country].[Name]' value='&quot;United States&quot;' />
+      </semantic-values>
+    </datasource>
+  </datasources>
+  <worksheets>
+    <worksheet name='Sheet 1'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='Energy_Usage_2010' name='federated.1p5h0mf0vkdt0s1ajvy8q086nipf' />
+          </datasources>
+          <datasource-dependencies datasource='federated.1p5h0mf0vkdt0s1ajvy8q086nipf'>
+            <column caption='LOG([Total Kwh])' datatype='real' name='[Calculation_922675033273839616]' role='measure' type='quantitative' user:unnamed='Sheet 1'>
+              <calculation class='tableau' formula='LOG([TOTAL KWH])' />
+            </column>
+            <column caption='log([Kwh Total Sqft])' datatype='real' name='[Calculation_922675033273913345]' role='measure' type='quantitative' user:unnamed='Sheet 1'>
+              <calculation class='tableau' formula='log([KWH TOTAL SQFT])' />
+            </column>
+            <column caption='Kwh Total Sqft' datatype='integer' name='[KWH TOTAL SQFT]' role='measure' type='quantitative' />
+            <column caption='Total Kwh' datatype='integer' name='[TOTAL KWH]' role='measure' type='quantitative' />
+            <column-instance column='[Calculation_922675033273839616]' derivation='None' name='[none:Calculation_922675033273839616:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[Calculation_922675033273913345]' derivation='None' name='[none:Calculation_922675033273913345:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style>
+          <style-rule element='axis'>
+            <encoding attr='space' class='0' field='[federated.1p5h0mf0vkdt0s1ajvy8q086nipf].[none:Calculation_922675033273839616:qk]' field-type='quantitative' min='0.93263289534765748' range-type='fixedmin' scope='cols' type='space' />
+            <encoding attr='space' class='0' field='[federated.1p5h0mf0vkdt0s1ajvy8q086nipf].[none:Calculation_922675033273913345:qk]' field-type='quantitative' max='25.833542910573684' range-type='fixedmax' scope='rows' type='space' />
+            <format attr='subtitle' class='0' field='[federated.1p5h0mf0vkdt0s1ajvy8q086nipf].[none:Calculation_922675033273839616:qk]' scope='cols' value='' />
+            <format attr='auto-subtitle' class='0' field='[federated.1p5h0mf0vkdt0s1ajvy8q086nipf].[none:Calculation_922675033273839616:qk]' scope='cols' value='true' />
+            <format attr='subtitle' class='0' field='[federated.1p5h0mf0vkdt0s1ajvy8q086nipf].[none:Calculation_922675033273913345:qk]' scope='rows' value='' />
+            <format attr='auto-subtitle' class='0' field='[federated.1p5h0mf0vkdt0s1ajvy8q086nipf].[none:Calculation_922675033273913345:qk]' scope='rows' value='true' />
+          </style-rule>
+        </style>
+        <panes>
+          <pane>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Automatic' />
+            <trendline enable-confidence-bands='true' enable-instant-analytics='true' enabled='true' exclude-color='false' exclude-intercept='false' exclude-panes='false' fit='linear' />
+          </pane>
+        </panes>
+        <rows>[federated.1p5h0mf0vkdt0s1ajvy8q086nipf].[none:Calculation_922675033273913345:qk]</rows>
+        <cols>[federated.1p5h0mf0vkdt0s1ajvy8q086nipf].[none:Calculation_922675033273839616:qk]</cols>
+      </table>
+    </worksheet>
+  </worksheets>
+  <windows saved-dpi-scale-factor='1.25' source-height='37'>
+    <window class='worksheet' maximized='true' name='Sheet 1'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'>
+            <card type='columns' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='rows' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='title' />
+          </strip>
+        </edge>
+      </cards>
+      <viewpoint>
+        <selection-collection>
+          <node-selection select-tuples='false'>
+            <oriented-node-reference orientation='vertical'>
+              <node-reference>
+                <axis>[federated.1p5h0mf0vkdt0s1ajvy8q086nipf].[none:Calculation_922675033273913345:qk]</axis>
+              </node-reference>
+              <page-reference />
+            </oriented-node-reference>
+          </node-selection>
+        </selection-collection>
+      </viewpoint>
+    </window>
+  </windows>
+  <thumbnails>
+    <thumbnail height='192' name='Sheet 1' width='192'>
+      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
+    </thumbnail>
+  </thumbnails>
+</workbook>

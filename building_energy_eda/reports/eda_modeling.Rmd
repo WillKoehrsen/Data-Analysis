@@ -1,0 +1,234 @@
+---
+title: "EDA Modeling"
+author: "Will Koehrsen"
+date: "October 22, 2017"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(root.dir = 'C:/Users/Will Koehrsen/Documents/DSCI 451/17f-dsci351-451-wjk68/1-assignments/SemProj-451/building_energy_eda/reports')
+```
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(ggthemes)
+```
+# Choose Building File
+
+```{r}
+building_name<- 'SRP'
+
+# Season true vs season predicted
+season_df <- feather::read_feather(
+  sprintf('../feather/%s_season_predictions.feather', building_name))
+
+# Season breakdown performance metrics
+season_performance_metrics <- feather::read_feather(
+  sprintf('../feather/%s_season_performance_metrics.feather',building_name))
+
+# All true vs mid section predictions
+mid_df <- feather::read_feather(
+  sprintf('../feather/%s_mid.feather', building_name))
+
+# Mid section performance metrics
+mid_performance_metrics <- feather::read_feather(
+  sprintf('../feather/%s_mid_performance_metrics.feather', building_name))
+
+# Feature importances
+feature_df <- feather::read_feather(
+  sprintf('../feather/%s_feature_importances.feather', building_name))
+
+# Training curve data
+training_data <- feather::read_feather(
+  sprintf('../feather/%s_training_curves.feather', building_name))
+
+```
+
+# True vs. Predicted by Season
+```{r}
+theme_set(theme_solarized_2())
+
+# Iterate through the seasons and plot true vs predicted values
+for (i in seq(1, 7, 2)) {
+  # Filter out the season and plot true vs predicted values
+  season <- strsplit(names(season_df)[i], "_")[[1]][1]
+  r_squared <- season_performance_metrics[
+    which(season_performance_metrics$season == season), 
+    "rsquared"]
+  label <- c(sprintf("r_squared: %.4f", r_squared))
+  # Create the plot and annotate with r squared value
+  suppressMessages(print(ggplot(season_df, aes(x = season_df[i], y = season_df[i + 1])) + 
+    geom_point(alpha = 0.4, shape = 21, size = 2, fill = "blue") + 
+    xlab('Predicted Value (kWh)') + ylab('True Value (kWh)') + 
+    geom_smooth(method = "lm", color = "red", size = 1.2) + 
+      annotate("text", x = quantile(season_df[[i]], probs = 0.2, na.rm = TRUE),
+               y = quantile(season_df[[i + 1]], na.rm = TRUE, probs = 0.9), 
+               size = 6, color = "red", 
+               label = sprintf('r-squared: %0.4f', r_squared)) + 
+    ggtitle(sprintf('Random Forest %s %s true vs predicted value',
+                    building_name, season))))
+}
+```
+# Feature Importances
+One of the great aspects of the Random Forest is it maintains a level of
+interpretability. In scikit-learn, the Random Forest can return the decision 
+importances of each feature. Details of the feature importances are beyond the
+scope of this report, but they can be interpreted as relative importances, in 
+other words, a feature with importance 0.4 is twice as importance as a feature 
+with importance of 0.2 
+
+```{r}
+theme_set(theme_minimal(14))
+# Plot feature importances in horizontal bar chart
+ggplot(feature_df, aes(feature, importance)) + geom_bar(stat = 'identity', color = 'black', fill = 'green', lwd = 1.0)  + coord_flip() + xlab('Feature') + 
+  ylab('Random Forest Relative Importance') + 
+  ggtitle('Feature Importances in Random Forest')
+```
+# Midseason predictions
+Another way to train the random forest is to take the middle 25% of the data
+for a testing set. This way, I can see the results of the predictions in context.
+I can plot individual seasons as well as the entire range or predictions 
+and true values. 
+
+```{r}
+mid_df$timestamp <- as.POSIXct(mid_df$timestamp)
+seasons = list(spring = c(3, 4, 5), summer = c(6, 7, 8),
+               fall = c(9, 10, 11), winter = c(1, 2, 12))
+
+
+
+for (i in 1:length(seasons)) {
+  season_name <- names(seasons)[i]
+  df <- mid_df[which(month(mid_df$timestamp) %in% seasons[[i]]), ]
+  bottom_lim <- quantile(df$forecast, probs = 0.1) - 10
+  top_lim <- quantile(df$forecast, probs = 0.9) + 30
+  performance_metrics <- dplyr::filter(
+    mid_performance_metrics, season == season_name)
+  suppressMessages(print(ggplot(df, aes(as.Date(timestamp), forecast)) + 
+  geom_point(color = 'black', alpha = 0.6) +
+    geom_point(aes(y = df[i + 2]), color = 'red', alpha = 1) + 
+    scale_y_continuous(limits = c(bottom_lim, top_lim)) + 
+    xlab('') + ylab('kWh') + 
+    ggtitle(sprintf('%s %-6s results rmse: %0.2f kWh rsquared: %0.2f mape: %0.2f%%', 
+                    building_name, season_name, performance_metrics$rmse, 
+                    performance_metrics$rsquared, 
+                    performance_metrics$mape)) + 
+    scale_x_date(date_labels = "%b-%y", date_minor_breaks = "1 month",
+                 date_breaks = "3 months")))
+}
+```
+
+Get all the predictions in a single column
+```{r}
+# Create a column with all the predictions
+# This uses an intermediate df which is not efficient
+# mid_predictions_df <- mid_df[which(mid_df$spring != 0 | mid_df$summer != 0
+#                                    | mid_df$fall != 0 | mid_df$winter != 0),]
+# Spring
+spring_df <- mid_df[which(month(mid_df$timestamp) %in% seasons$spring), ]
+spring_df$predictions <- spring_df$spring
+spring_df <- spring_df[c('timestamp', 'predictions')]
+# Summer
+summer_df <- mid_df[which(month(mid_df$timestamp) %in% seasons$summer), ]
+summer_df$predictions <- summer_df$summer
+summer_df <- summer_df[c('timestamp', 'predictions')]
+# Fall
+fall_df <- mid_df[which(month(mid_df$timestamp) %in% seasons$fall), ]
+fall_df$predictions <- fall_df$fall
+fall_df <- fall_df[c('timestamp', 'predictions')]
+# Winter
+winter_df <- mid_df[which(month(mid_df$timestamp) %in% seasons$winter), ]
+winter_df$predictions <- winter_df$winter
+winter_df <- winter_df[c('timestamp', 'predictions')]
+
+mid_pred <- rbind(spring_df, summer_df, fall_df, winter_df)
+
+# Merge the predictions into the dataframe
+mid_df <- merge(mid_df, mid_pred, by = 'timestamp', all.x = TRUE)
+mid_df$predictions[mid_df$predictions == 0] <- NA 
+```
+# Plotting Entire Dataset with Predictions
+In order to visualize the predictions in context, I can plot the entire
+dataset, with the predictions overlaid on top of the forecast values. 
+
+```{r}
+bottom_lim <- quantile(mid_df$forecast, probs = 0.2) - 10
+upper_lim <- quantile(mid_df$forecast, probs = 0.9) + 20
+
+ggplot(mid_df, aes(as.Date(timestamp), forecast)) + geom_jitter(alpha = 0.1) +
+         geom_jitter(aes(y = predictions), shape = 21, size = 2,
+                     alpha = 0.6, fill = 'red') + 
+         xlab('') + ylab('kWh') + ggtitle(sprintf(
+           '%s True and Predicted Values', building_name)) +
+  scale_x_date(date_labels = "%b-%Y", date_breaks = "4 months", 
+               date_minor_breaks = "1 month")
+
+```
+# Plot averages to make data clearer
+```{r}
+daily_mid_df <- mid_df %>% 
+  mutate(day = format(as.Date(timestamp), "%Y-%m-%d")) %>% 
+  group_by(day) %>% summarize_all(mean, na.rm = TRUE)
+
+
+ggplot(daily_mid_df, aes(as.Date(timestamp))) + 
+  geom_point(aes(y = 96 * forecast), color = "black") +
+  geom_point(aes(y = 96 * predictions), color = "red") + 
+  geom_line(aes(y = 96 * forecast), color = 'black') + 
+  geom_line(aes(y = 96 * predictions), color = 'red') +
+  xlab('') + ylab('kWh') + 
+  ggtitle(sprintf('%s Daily Average True and Predicted', building_name))
+```
+# Training Curves
+
+A vital part of machine learning is ensuring your model does not overfit the 
+training data. This is when the model learns the training data extremely well,
+essentially memorizing it, but then cannot generalize to new data, such as
+on the testing set or in a real-world application. The best indication of 
+overfitting is extremely high scores on the training set relative to the 
+testing set. To visually check for overfitting, a graph should be made of the 
+training and testing score versus the number of training examples. Generally,
+the training score will start much higher than the testing score, but as the 
+number of training examples increases, the test score should increase as well.
+The test score will never be as high as the training score, but it should 
+be close if there is no overfitting.
+
+```{r}
+# Rsquared values for all seasons
+for (season_name in names(seasons)){
+  print(ggplot(dplyr::filter(training_data, season == season_name), 
+                       aes(train_points, rsquared, color = set)) + 
+  geom_point(shape = 19, size = 3) + 
+    geom_line(size = 1.1, lty = 5) + 
+    xlab('Number of training examples') + ylab('R^2') + 
+  ggtitle(sprintf(
+    '%s %s Training and Testing R^2 vs Training Examples', 
+                  building_name, season_name)) + 
+    scale_color_manual(values = c("red", "blue")) + 
+    scale_y_continuous(limits = c(0.7, 1.00), breaks = seq(0.7, 1.0, 0.025)))
+}
+```
+
+```{r}
+# MAPE values for all seasons
+for (season_name in names(seasons)){
+  print(ggplot(dplyr::filter(training_data, season == season_name), 
+                       aes(train_points, mape_result, color = set)) + 
+  geom_point(shape = 19, size = 3) + 
+    geom_line(size = 0.8) + 
+    xlab('Number of training examples') + ylab('MAPE (%)') + 
+  ggtitle(sprintf(
+    '%s %s Training and Testing MAPE vs Training Examples', 
+                  building_name, season_name)) + 
+    scale_color_manual(values = c("red", "blue")) + 
+    scale_y_continuous(breaks = seq(0, 10, 1)) + 
+    geom_hline(yintercept = seq(0, 10, 1), lty = 2, color = 'black', 
+               size = 0.25))
+}
+```
