@@ -1,0 +1,419 @@
+---
+title: "2017 Weight Challenge"
+author: "Will Koehrsen"
+date: "January 7, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(googlesheets)
+library(tidyverse)
+library(slackr)
+library(ggthemes)
+library(gganimate)
+library(prophet)
+```
+
+
+# Formatting and Cleaning Weights
+
+```{r}
+weights <- read_csv('weight_data.csv')
+# Convert to date only
+craig_weights <- weights %>% dplyr::filter(name == 'Craig') %>% arrange(date) %>%
+  dplyr::filter(date < as.Date('2018-01-07'))
+will_weights <- weights %>% dplyr::filter(name == 'Will') %>% arrange(date) %>%
+  dplyr::filter(date < as.Date('2018-01-07'))
+
+weights <- rbind(craig_weights, will_weights)
+```
+
+# Data Manipulation
+We want to have a column representing the weight changes. Therefore we first need
+to find the starting weighting for both participants. 
+
+```{r}
+# Baseline weights
+craig_start <- craig_weights$weight[1]
+will_start <- will_weights$weight[1]
+
+# Create a column of weight changes
+weight_change <- function(row) {
+  if(row[2] == 'Craig') {
+    return(craig_start - as.numeric(row[3]))
+  } else {
+    return(as.numeric(row[3]) - will_start)
+  }
+}
+weights$change <- apply(weights, MARGIN = 1, FUN = weight_change)
+
+# Create a column of percentage weight changes
+pct_weight_change <- function(row) {
+   if (row[2] == 'Craig') {
+    return(100 * (craig_start - as.numeric(row[3])) / craig_start)
+  } else {
+    return(100 * (as.numeric(row[3]) - will_start) / will_start)
+  }
+}
+
+weights$change_pct <- apply(weights, MARGIN = 1, FUN = pct_weight_change)
+
+```
+
+
+# Plots 
+
+Start off with a simple graph of the raw weights. We need two separate
+axes to represent the varying scales.
+
+```{r}
+ggplot(weights, aes(date)) + 
+    geom_jitter(data = dplyr::filter(weights, name == 'Craig'), 
+                aes(y = weight, col = "Craig"),shape = 2, size = 1.2) +
+    geom_line(data = dplyr::filter(weights, name == 'Craig'), 
+              aes(y = weight, col = "Craig"), lwd = 1.2) +
+    geom_jitter(data = dplyr::filter(weights, name == 'Will'), 
+                aes(y = 1.9 * weight, col = "Will"),shape = 2, size = 1.2) +
+    geom_line(data = dplyr::filter(weights, name == 'Will'), 
+              aes(y = 1.9 * weight, col = "Will"), lwd = 1.2) +
+    scale_y_continuous(sec.axis = sec_axis(~.*(1/1.9), name = 'Will Weight (lbs)', 
+                                           breaks = seq(115, 145, 10)), 
+                       breaks = seq(215, 280, 10), limits = c(215, 275)) + 
+    scale_color_manual(values = c("midnightblue", "red3"), labels = c('Craig', 'Will')) + 
+    xlab("") + ylab('Craig Weight (lbs)') + 
+    labs(color = "Name") + ggtitle("Weight Challenge") + 
+    theme(axis.text.y = element_text(color = "midnightblue"), 
+          axis.text.y.right = element_text(color = 'red3')) + 
+  theme_hc(14)
+
+
+ggplot(weights, aes(date)) + 
+    geom_point(data = dplyr::filter(weights, name == 'Craig'), 
+                aes(y = weight, col = "Craig"), size = 2.5) +
+    geom_point(data = dplyr::filter(weights, name == 'Will'), 
+                aes(y = 1.82 * weight, col = "Will"),size = 2.5) +
+    scale_y_continuous(sec.axis = sec_axis(~.*(1/1.82), name = 'Will Weight (lbs)', 
+                                           breaks = seq(110, 140, 5)), 
+                       breaks = seq(215, 255, 5), limits = c(215, 255)) + 
+    scale_color_manual(values = c('midnightblue', 'red3'), labels = c('Craig', 'Will')) + 
+    xlab("") + ylab('Craig Weight (lbs)') + 
+    labs(color = "") + ggtitle("Full Weight Challenge Results")  + 
+  theme_classic(14) + 
+    theme(axis.text.y = element_text(color = "midnightblue"), 
+          axis.text.y.right = element_text(color = 'red3'), 
+          axis.title.y = element_text(color = 'midnightblue'),
+          axis.title.y.right = element_text(color = 'red3'),
+          legend.position = 'bottom', 
+          plot.title = element_text(hjust = 0.5, size = 16),
+          axis.text.x = element_text(color = 'black')) + 
+  geom_smooth(data = dplyr::filter(weights, name == 'Craig'), 
+                aes(y = weight, col = "Craig"), lwd = 1.6) + 
+  geom_smooth(data = dplyr::filter(weights, name == 'Will'), 
+                aes(y = 1.82 * weight, col = "Will"), lwd = 1.6) 
+```
+
+We can make plots of the changes in absolute terms to see who
+was winning at each stage.
+
+```{r}
+# Absolute change
+ggplot(weights, aes(date, change, group = name, col = name)) + 
+    geom_point(size = 2) + 
+  scale_color_manual(values = c('midnightblue', 'red3'), labels = c('Craig', 'Will')) +
+    xlab('') + ylab('Change (lbs)') + ggtitle('Absolute Weight Change') + 
+    labs(color = '') + coord_cartesian(ylim = c(0, 20)) + 
+  theme_classic(14) + theme(legend.position = 'bottom', 
+                            plot.title = element_text(hjust = 0.5,
+                                                      size = 16),
+                            axis.text = element_text(color = 'black'),
+                            panel.grid.major.y = element_line()) + 
+  geom_smooth()
+
+# Percentage change
+ggplot(weights, aes(date, round(change_pct, 1), group = name, col = name)) + 
+    geom_jitter(size = 2) + geom_smooth() + 
+  scale_color_manual(values = c('midnightblue', 'red3'), labels = c('Craig', 'Will')) +
+    xlab('') + ylab('Change %') + ggtitle('Absolute Weight Change Percentage') + 
+    labs(color = '') + coord_cartesian(ylim = c(0, 10)) + 
+  theme_classic(14) + 
+  theme(legend.position = 'bottom', 
+                            plot.title = element_text(hjust = 0.5,
+                                                      size = 16),
+                            axis.text = element_text(color = 'black'),
+                            panel.grid.major.y = element_line())
+
+```
+
+Quantitative results.
+
+```{r}
+craig_final <- dplyr::filter(weights, name == 'Craig' & date == '2018-01-06')
+will_final <- dplyr::filter(weights, name == 'Will' & date == '2018-01-06')
+
+final_results <- rbind(craig_final, will_final) %>% select(name, weight, change,
+                                                           change_pct)
+
+knitr::kable(final_results)
+```
+
+# Modeling
+
+## Linear Models
+
+```{r}
+# Days since start of competition
+craig_weights$days <- as.numeric(lubridate::yday(craig_weights$date) - 
+                                   lubridate::yday(craig_weights$date)[1])
+# Create a simple linear model
+craig_lm <- lm(weight ~ days, craig_weights)
+
+
+will_weights$days <- as.numeric(lubridate::yday(will_weights$date) - 
+                                  lubridate::yday(will_weights$date)[1])
+will_lm <- lm(weight ~ days, will_weights)
+
+summary(craig_lm)
+
+summary(will_lm)
+```
+Plots of Linear Models
+
+```{r}
+ggplot(weights, aes(date)) + 
+    geom_point(data = dplyr::filter(weights, name == 'Craig'), 
+                aes(y = weight, col = "Craig"), size = 2.5) +
+    geom_point(data = dplyr::filter(weights, name == 'Will'), 
+                aes(y = 1.82 * weight, col = "Will"),size = 2.5) +
+    scale_y_continuous(sec.axis = sec_axis(~.*(1/1.82), name = 'Will Weight (lbs)', 
+                                           breaks = seq(110, 140, 5)), 
+                       breaks = seq(215, 255, 5), limits = c(215, 255)) + 
+    scale_color_manual(values = c('midnightblue', 'red3'), labels = c('Craig', 'Will')) + 
+    xlab("") + ylab('Craig Weight (lbs)') + 
+    labs(color = "") + ggtitle("Weight Challenge Results with Linear Model")  + 
+  theme_classic(14) + 
+    theme(axis.text.y = element_text(color = "midnightblue"), 
+          axis.text.y.right = element_text(color = 'red3'), 
+          axis.title.y = element_text(color = 'midnightblue'),
+          axis.title.y.right = element_text(color = 'red3'),
+          legend.position = 'bottom', 
+          plot.title = element_text(hjust = 0.5, size = 16),
+          axis.text.x = element_text(color = 'black')) + 
+  geom_smooth(data = dplyr::filter(weights, name == 'Craig'), method = 'lm',
+                aes(y = weight, col = "Craig"), lwd = 1.6) + 
+  geom_smooth(data = dplyr::filter(weights, name == 'Will'), method = 'lm', 
+                aes(y = 1.82 * weight, col = "Will"), lwd = 1.6) 
+
+```
+
+Predictions for January 1, 2019
+
+```{r}
+# Find number of days between start of competition January 1, 2019
+days <- as.numeric(as.Date('2019-01-01') - craig_weights$date[1])
+
+craig_prediction <- predict(craig_lm, 
+                           data.frame(days = days, name = 'Craig', plot = TRUE),
+                           interval = 'predict')
+
+will_prediction <- predict(will_lm, 
+                           data.frame(days = days, name = 'Will', plot = TRUE),
+                           interval = 'predict')
+
+```
+
+## Generalized Additive Model
+
+```{r}
+craig_weights$ds <- craig_weights$date
+craig_weights$y <- craig_weights$weight
+craig_gam <- prophet::prophet(craig_weights)
+
+will_weights$ds <- will_weights$date
+will_weights$y <- will_weights$weight
+will_gam <- prophet::prophet(will_weights)
+
+craig_forecast <- prophet::make_future_dataframe(craig_gam, periods = 365)
+craig_forecast <- predict(craig_gam, craig_forecast)
+prophet::prophet_plot_components(craig_gam, craig_forecast) 
+
+will_forecast <- prophet::make_future_dataframe(will_gam, periods = 365)
+will_forecast <- predict(will_gam, will_forecast)
+prophet::prophet_plot_components(will_gam, will_forecast)
+
+will_forecast$name <- 'Will'
+craig_forecast$name <- 'Craig'
+forecast <- rbind(will_forecast, craig_forecast)
+```
+
+Predictions for January 1, 2018
+
+```{r}
+short_days <- as.numeric(as.Date('2018-01-01') - as.Date('2017-11-01'))
+craig_short_gam <- prophet::prophet(df = dplyr::filter(craig_weights, date < '2017-11-01'))
+craig_short_forecast <- prophet::make_future_dataframe(craig_short_gam, periods = short_days)
+craig_short_forecast <- predict(craig_short_gam, craig_short_forecast)
+
+will_short_gam <- prophet::prophet(df = dplyr::filter(will_weights, date < '2017-11-01'))
+will_short_forecast <- prophet::make_future_dataframe(will_short_gam, periods = short_days)
+will_short_forecast <- predict(will_short_gam, will_short_forecast)
+
+prophet::prophet_plot_components(craig_short_gam, craig_short_forecast)
+
+
+ggplot(craig_short_forecast, aes(x = ds, y = trend)) + 
+  geom_ribbon(data = dplyr::filter(craig_short_forecast, ds >= '2017-11-01'),
+                                  aes(ymin = trend_lower, ymax = trend_upper), 
+              color = 'black', lwd = 1, fill = 'gainsboro') + 
+  geom_line(color = 'red3', lwd = 1.8) + theme_classic(14) + 
+   xlab('Date') + ylab('Weight (lbs)') + 
+  ggtitle('Craig GAM Prediction for Jan 1, 2018') + 
+  theme(axis.text = element_text(color = 'black'), 
+        plot.title = element_text(hjust = 0.5, size = 18))
+
+ggplot(will_short_forecast, aes(x = ds, y = trend)) + 
+  geom_ribbon(data = dplyr::filter(will_short_forecast, ds >= '2017-11-01'),
+                                  aes(ymin = trend_lower, ymax = trend_upper), 
+              color = 'black', lwd = 1, fill = 'gainsboro') + 
+  geom_line(color = 'red3', lwd = 1.8) + theme_classic(14) + 
+   xlab('Date') + ylab('Weight (lbs)') + 
+  ggtitle('Will GAM Prediction for Jan 1, 2018') + 
+  theme(axis.text = element_text(color = 'black'), 
+        plot.title = element_text(hjust = 0.5, size = 18))
+```
+
+Predictions for Jan 1, 2019
+
+```{r}
+ggplot(craig_forecast, aes(x = ds, y = trend)) + 
+  geom_ribbon(data = dplyr::filter(craig_forecast, ds >= '2018-01-06'),
+                                  aes(ymin = trend_lower, ymax = trend_upper), 
+              color = 'black', lwd = 1, fill = 'gainsboro') + 
+  geom_line(color = 'red3', lwd = 1.8) + theme_classic(14) + 
+   xlab('Date') + ylab('Weight (lbs)') + 
+  ggtitle('Craig GAM Prediction for Jan 1, 2019') + 
+  theme(axis.text = element_text(color = 'black'), 
+        plot.title = element_text(hjust = 0.5, size = 18))
+
+ggplot(will_forecast, aes(x = ds, y = trend)) + 
+  geom_ribbon(data = dplyr::filter(will_forecast, ds >= '2018-01-06'),
+                                  aes(ymin = trend_lower, ymax = trend_upper), 
+              color = 'black', lwd = 1, fill = 'gainsboro') + 
+  geom_line(color = 'red3', lwd = 1.8) + theme_classic(14) + 
+   xlab('Date') + ylab('Weight (lbs)') + 
+  ggtitle('Will GAM Prediction for Jan 1, 2019') + 
+  theme(axis.text = element_text(color = 'black'), 
+        plot.title = element_text(hjust = 0.5, size = 18))
+
+
+```
+
+
+Generalized Additive Model Graphs
+
+```{r}
+
+ggplot(forecast, aes(x = as.Date(ds))) + 
+  geom_line(data = dplyr::filter(forecast, ds < '2018-01-07' & name == 'Craig'), 
+                aes(y = trend, col = "Craig"), size = 1.4) + 
+  geom_line(data = dplyr::filter(forecast, ds < '2018-01-07' & name == 'Will'),
+              aes(y = 1.82 * trend, col = "Will"),size = 1.4) + 
+    scale_y_continuous(sec.axis = sec_axis(~.*(1/1.82), name = 'Will Weight (lbs)',
+                                           breaks = seq(110, 140, 5)),
+                       breaks = seq(215, 255, 5), limits = c(215, 255)) +
+    scale_color_manual(values = c('midnightblue', 'red3'), labels = c('Craig', 'Will')) +
+    xlab("") + ylab('Craig Weight (lbs)') +
+    labs(color = "") + ggtitle("Overall Trends")  +
+  theme_classic(14) +
+    theme(axis.text.y = element_text(color = "midnightblue"),
+          axis.text.y.right = element_text(color = 'red3'),
+          axis.title.y = element_text(color = 'midnightblue'),
+          axis.title.y.right = element_text(color = 'red3'),
+          legend.position = 'bottom',
+          plot.title = element_text(hjust = 0.5, size = 16),
+          axis.text.x = element_text(color = 'black'))
+
+craig_weekly_forecast <- dplyr::filter(forecast, name == 'Craig')[1:7, c('name', 'weekly')]
+will_weekly_forecast <- dplyr::filter(forecast, name == 'Will')[1:7, c('name', 'weekly')]
+weekly_forecast <- rbind(craig_weekly_forecast, will_weekly_forecast)
+weekly_forecast$day <- factor(rep(c('Sun', 'Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat'), 2), 
+                              levels = c('Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'))
+
+ggplot(weekly_forecast, aes(x = day, y = weekly, color = name)) + 
+  geom_line(aes(group = name), size = 1.4) + geom_point(size = 2) +
+    scale_color_manual(values = c('midnightblue', 'red3'), labels = c('Craig', 'Will')) +
+    xlab("") + ylab('Change (lbs)') +
+    labs(color = "") + ggtitle("Weekly Weight Trends")  +
+  theme_classic(14) +
+    theme(axis.text = element_text(color = "black"),
+          axis.title = element_text(color = 'black'),
+          legend.position = 'bottom',
+          plot.title = element_text(hjust = 0.5, size = 16)) + 
+  scale_y_continuous(lim = c(-1.0, 1.0), breaks = seq(-1.0, 1.0, 0.25))
+
+```
+Contrast models with reality
+```{r}
+ggplot(craig_short_forecast, aes(x = ds, y = trend)) + 
+  geom_ribbon(data = dplyr::filter(craig_short_forecast, ds >= '2017-11-01'),
+                                  aes(ymin = trend_lower, ymax = trend_upper), 
+              color = 'black', lwd = 1, fill = 'gainsboro') + 
+  geom_line(aes(color = 'predicted'), lwd = 1.8) + theme_classic(14) + 
+   xlab('Date') + ylab('Weight (lbs)') + 
+  ggtitle('Craig Predicted vs Actual') + 
+  theme(axis.text = element_text(color = 'black'), 
+        plot.title = element_text(hjust = 0.5, size = 18)) + 
+  geom_point(data = dplyr::filter(weights, name == 'Craig' & date <= '2018-01-01'), 
+                aes(x = as.POSIXct(date), y = weight, 
+                    col = 'actual'), size = 2) + labs(color = '') + 
+  scale_color_manual(values = c('red3', 'darkgreen'))
+
+ggplot(will_short_forecast, aes(x = ds, y = trend)) + 
+  geom_ribbon(data = dplyr::filter(will_short_forecast, ds >= '2017-11-01'),
+                                  aes(ymin = trend_lower, ymax = trend_upper), 
+              color = 'black', lwd = 1, fill = 'gainsboro') + 
+  geom_line(aes(color = 'predicted'), lwd = 1.8) + theme_classic(14) + 
+   xlab('Date') + ylab('Weight (lbs)') + 
+  ggtitle('Will Predicted vs Actual') + 
+  theme(axis.text = element_text(color = 'black'), 
+        plot.title = element_text(hjust = 0.5, size = 18)) + 
+  geom_point(data = dplyr::filter(weights, name == 'Will' & date <= '2018-01-01'), 
+                aes(x = as.POSIXct(date), y = weight, 
+                    col = 'actual'), size = 2) + labs(color = '') + 
+  scale_color_manual(values = c('red3', 'darkgreen'))
+```
+# Animations
+
+One of the most rewarding parts of a data analysis is animations! 
+
+```{r}
+library(gganimate)
+weights$week <- lubridate::week(weights$date)
+weights[which(lubridate::year(weights$date) == '2018'), ]$week <- 53
+craig_trend <- dplyr::filter(craig_forecast, ds <= '2018-01-06')$trend
+will_trend <- dplyr::filter(will_forecast, ds <= '2018-01-06')$trend
+
+craig_trend_pct <- sapply(craig_trend, function(x) {return( abs(100 * (x - craig_start) / craig_start))})
+will_trend_pct <- sapply(will_trend, function(x) {return ( 100 * (x - will_start) / will_start)})
+weights$trend <- c(craig_trend, will_trend)
+weights$trend_pct_change <- c((craig_trend_pct), will_trend_pct)
+
+p <- ggplot(weights, aes(date, round(change_pct, 1), group = name, col = name, 
+       frame = week, cumulative = TRUE)) + 
+    geom_jitter(size = 2)  + 
+  geom_line(aes(date, y = trend_pct_change), lwd = 2) + 
+  scale_color_manual(values = c('midnightblue', 'red3'), labels = c('Craig', 'Will')) +
+    xlab('') + ylab('Change %') + ggtitle('Absolute Weight Change Percentage') + 
+    labs(color = '') + coord_cartesian(ylim = c(0, 10)) + 
+  theme_classic(14) + 
+  theme(legend.position = 'bottom', 
+                            plot.title = element_text(hjust = 0.5,
+                                                      size = 20),
+                            axis.text = element_text(color = 'black',
+                                                     size = 16),
+        axis.title = element_text(color = 'black', size = 18), 
+        legend.text = element_text(size = 16))
+
+gganimate(p, filename = 'animated_weight_change.gif', saver = 'gif', 
+          interval = 0.4, title_frame = FALSE, fig.height = 4)
+```
