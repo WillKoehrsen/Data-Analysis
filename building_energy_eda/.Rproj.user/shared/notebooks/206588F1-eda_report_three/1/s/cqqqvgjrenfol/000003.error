@@ -1,1 +1,0 @@
-{"frames":[{"character_number":0,"end_character_number":0,"end_line_number":0,"file":"","func":"summary(srp_weather_model)","line_number":0}],"message":"Error in summary(srp_weather_model) : \n  object 'srp_weather_model' not found\n"}
