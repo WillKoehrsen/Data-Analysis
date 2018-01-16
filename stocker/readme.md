@@ -28,8 +28,11 @@ administrator).
 If pip does not work and you have the Anaconda 
 distribution, try installing with conda:
 
-`conda install quandl numpy pandas fbprophet matplotlib pytrends pystan`
-`conda update quandl numpy pandas fbprophet matplotlib pytrends pystan`
+`conda install quandl numpy pandas fbprophet matplotlib pystan`
+
+`conda update quandl numpy pandas fbprophet matplotlib pystan`
+
+pytrends can only be installed with pip.
 
 ## Getting Started
 
