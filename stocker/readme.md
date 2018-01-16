@@ -1,4 +1,4 @@
-# Stocker: A Stock Analysis and Predictive using Additive Models Toolkit
+# Stocker: A Stock Analysis and Prediction Toolkit using Additive Models 
 
 Stocker can be run from an interative Python 3.6 session. I recommend 
 installing the [Anaconda Python 3.6 distribution](https://www.anaconda.com/download/)
