@@ -88,6 +88,10 @@ class Stocker():
         start_date = pd.to_datetime(start_date)
         end_date = pd.to_datetime(end_date)
         
+        if end_date.date() < start_date.date():
+            print('End Date must be later than start date.')
+            return
+        
         # Check to make sure dates are in the data
         if (start_date not in list(self.stock['Date'])):
             print('Start Date not in data (either out of range or not a trading day.)')
@@ -168,6 +172,10 @@ class Stocker():
         # Convert to pandas datetime for indexing dataframe
         start_date = pd.to_datetime(start_date)
         end_date = pd.to_datetime(end_date)
+        
+        if end_date.date() < start_date.date():
+            print('End Date must be later than start date.')
+            return
         
         # Check to make sure dates are in the data
         if (start_date not in list(self.stock['Date'])):
@@ -330,14 +338,37 @@ class Stocker():
         return model, future
       
     # Evaluate prediction model for one year
-    def evaluate_prediction(self, nshares = 1000):
+    def evaluate_prediction(self, start_date=None, end_date=None, nshares = 1000):
         
-        # Select three years of training data starting 4 years ago and going until 3 years ago
-        train = self.stock[(self.stock['Date'] < (max(self.stock['Date']) - pd.DateOffset(years=1)).date()) & 
-                           (self.stock['Date'] > (max(self.stock['Date']) - pd.DateOffset(years=4)).date())]
+        # Default start date is one year before end of data
+        # Default end date is end date of data
+        if start_date is None:
+            start_date = self.max_date - pd.DateOffset(years=1)
+        if end_date is None:
+            end_date = self.max_date
+            
+        # Convert to pandas datetime for indexing dataframe
+        start_date = pd.to_datetime(start_date)
+        end_date = pd.to_datetime(end_date)
         
-        # Testing data used for answers
-        test = self.stock[(self.stock['Date'] >= (max(self.stock['Date']) - pd.DateOffset(years=1)).date())]
+        if end_date.date() < start_date.date():
+            print('End Date must be later than start date.')
+            return
+        
+        # Check to make sure dates are in the data
+        if (start_date not in list(self.stock['Date'])):
+            print('Start Date not in data (either out of range or not a trading day.)')
+            return
+        elif (end_date not in list(self.stock['Date'])):
+            print('End Date not in data (either out of range or not a trading day.)')
+            return 
+        
+        # Training data starts 3 years before start date and goes up to start date
+        train = self.stock[(self.stock['Date'] < start_date.date()) & 
+                           (self.stock['Date'] > (start_date - pd.DateOffset(years=3)).date())]
+        
+        # Testing data is specified in the range
+        test = self.stock[(self.stock['Date'] >= start_date.date()) & (self.stock['Date'] <= end_date.date())]
         
         # Create and train the model
         model = self.create_model()
@@ -389,7 +420,7 @@ class Stocker():
         
         # Display information
         print('You played the stock market in {} from {} to {} with {} shares.\n'.format(
-            self.symbol, min(test['Date']).date(), max(test['Date']).date(), nshares))
+            self.symbol, start_date.date(), end_date.date(), nshares))
         
         print('Predicted price on {} = ${:.2f}.'.format(max(future['ds']).date(), future.ix[len(future) - 1, 'yhat']))
         print('Actual price on    {} = ${:.2f}.\n'.format(max(test['ds']).date(), test.ix[len(test) - 1, 'y']))
@@ -398,7 +429,7 @@ class Stocker():
         print('When the model predicted an increase, the price increased {:.2f}% of the time.'.format(increase_accuracy))
         print('When the model predicted a decrease, the price decreased  {:.2f}% of the time.\n'.format(decrease_accuracy))
         print('The total profit using the Prophet model = ${:.2f}.'.format(np.sum(prediction_profit)))
-        print('The Buy and Hold (smart) strategy profit = ${:.2f}.'.format(float(test.ix[len(test) - 1, 'hold_profit'])))
+        print('The Buy and Hold strategy profit =         ${:.2f}.'.format(float(test.ix[len(test) - 1, 'hold_profit'])))
         print('\nThanks for playing the stock market!\n')
         
         # Reset the plot
@@ -444,12 +475,12 @@ class Stocker():
 
         # Plot smart profits
         plt.plot(test['ds'], test['hold_profit'], 'b',
-                 linewidth = 1.8, label = 'Smart Profits') 
+                 linewidth = 1.8, label = 'Buy and Hold') 
 
         # Plot prediction profits
         plt.plot(test['ds'], test['pred_profit'], 
                  color = 'g' if final_profit > 0 else 'r',
-                 linewidth = 1.8, label = 'Prediction Profits')
+                 linewidth = 1.8, label = 'Prediction')
 
         # Display final values on graph
         plt.text(x = text_location, 
@@ -466,7 +497,7 @@ class Stocker():
 
         # Plot formatting
         plt.ylabel('Profit  (US $)'); plt.xlabel('Date'); 
-        plt.title('Predicted versus Smart (Buy and Hold) Profits');
+        plt.title('Predicted versus Buy and Hold Profits');
         plt.legend(loc = 2, prop={'size': 10});
         plt.grid(alpha=0.2); 
         plt.show()
