@@ -20,7 +20,7 @@ Python 3.6 and the following packages are required:
 	pytrends 4.3.0
 
 These can all be installed with pip from the command line
-(some of these might require running the command line as 
+(some of these might require running the command prompt as 
 administrator)
 
 `pip install -U quandl numpy pandas fbprophet matplotlib pytrends pystan`
