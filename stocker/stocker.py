@@ -357,8 +357,9 @@ class Stocker():
         # Correct is when we predicted the correct direction
         test['correct'] = (np.sign(test['pred_diff']) == np.sign(test['real_diff'])) * 1
         
-        # Accuracy is percentage of the time we predicted the correct direction
-        accuracy = 100 * np.mean(test['correct'])
+        # Accuracy when we predict increase and decrease
+        increase_accuracy = 100 * np.mean(test[test['pred_diff'] > 0]['correct'])
+        decrease_accuracy = 100 * np.mean(test[test['pred_diff'] < 0]['correct'])
         
         # Only playing the stocks when we predict the stock will increase
         test_pred_increase = test[test['pred_diff'] > 0]
@@ -386,17 +387,19 @@ class Stocker():
         test['pred_profit'] = test['pred_profit'].cumsum().ffill()
         test['hold_profit'] = nshares * (test['y'] - float(test.ix[0, 'y']))
         
-        print('\nPredicted price on {} = ${:.2f}.'.format(max(future['ds']).date(), future.ix[len(future) - 1, 'yhat']))
-        print('Actual price on {} = ${:.2f}.\n'.format(max(test['ds']).date(), test.ix[len(test) - 1, 'y']))
+        # Display information
+        print('You played the stock market in {} from {} to {} with {} shares.\n'.format(
+            self.symbol, min(test['Date']).date(), max(test['Date']).date(), nshares))
+        
+        print('Predicted price on {} = ${:.2f}.'.format(max(future['ds']).date(), future.ix[len(future) - 1, 'yhat']))
+        print('Actual price on    {} = ${:.2f}.\n'.format(max(test['ds']).date(), test.ix[len(test) - 1, 'y']))
         
         # Display some friendly information about the perils of playing the stock market
-        print('You played the stock market in {} from {} to {} with {} shares.'.format(
-            self.symbol, min(test['Date']).date(), max(test['Date']).date(), nshares))
-        print('Using the Prophet model, your accuracy was {:.2f}% for a total profit of ${:.2f}.'.format(
-            accuracy, np.sum(prediction_profit)))
-        print('The Buy and Hold (smart) strategy yielded a profit of ${:.2f}.'.format(
-            float(test.ix[len(test) - 1, 'hold_profit'])))
-        print('Thanks for playing the stock market!\n')
+        print('When the model predicted an increase, the price increased {:.2f}% of the time.'.format(increase_accuracy))
+        print('When the model predicted a decrease, the price decreased  {:.2f}% of the time.\n'.format(decrease_accuracy))
+        print('The total profit using the Prophet model = ${:.2f}.'.format(np.sum(prediction_profit)))
+        print('The Buy and Hold (smart) strategy profit = ${:.2f}.'.format(float(test.ix[len(test) - 1, 'hold_profit'])))
+        print('\nThanks for playing the stock market!\n')
         
         # Reset the plot
         self.reset_plot()
