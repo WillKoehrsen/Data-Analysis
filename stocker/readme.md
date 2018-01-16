@@ -11,13 +11,13 @@ free to make your own contributions!
 
 Python 3.6 and the following packages are required:
 
-	*quandl 3.3.0
-	*matplotlib 2.1.1
-	*numpy 1.14.0
-	*fbprophet 0.2.1
-	*pystan 2.17.0.0
-	*pandas 0.22.0
-	*pytrends 4.3.0
+	quandl 3.3.0
+	matplotlib 2.1.1
+	numpy 1.14.0
+	fbprophet 0.2.1
+	pystan 2.17.0.0
+	pandas 0.22.0
+	pytrends 4.3.0
 
 These can all be installed with pip from the command line
 (some of these might require running the command line as 
