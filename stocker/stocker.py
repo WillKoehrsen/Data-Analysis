@@ -386,7 +386,7 @@ class Stocker():
         test['pred_profit'] = test['pred_profit'].cumsum().ffill()
         test['hold_profit'] = nshares * (test['y'] - float(test.ix[0, 'y']))
         
-        print('Predicted price on {} = ${:.2f}.'.format(max(future['ds']).date(), future.ix[len(future) - 1, 'yhat']))
+        print('\nPredicted price on {} = ${:.2f}.'.format(max(future['ds']).date(), future.ix[len(future) - 1, 'yhat']))
         print('Actual price on {} = ${:.2f}.\n'.format(max(test['ds']).date(), test.ix[len(test) - 1, 'y']))
         
         # Display some friendly information about the perils of playing the stock market
@@ -473,12 +473,19 @@ class Stocker():
         # Set up the trend fetching object
         pytrends = TrendReq(hl='en-US', tz=360)
         kw_list = [term]
+
+        try:
         
-        # Create the search object
-        pytrends.build_payload(kw_list, cat=0, timeframe=date_range[0], geo='', gprop='')
-        
-        # Retrieve the interest over time
-        trends = pytrends.interest_over_time()
+            # Create the search object
+            pytrends.build_payload(kw_list, cat=0, timeframe=date_range[0], geo='', gprop='')
+            
+            # Retrieve the interest over time
+            trends = pytrends.interest_over_time()
+
+        except Exception as e:
+            print('\nGoogle Search Trend retrieval failed.')
+            print(e)
+            return
         
         return trends
         
@@ -517,7 +524,7 @@ class Stocker():
         # Sort the values by maximum change
         c_data = c_data.sort_values(by='abs_delta', ascending=False)
         
-        print('Changepoints sorted by slope rate of change (2nd derivative):\n')
+        print('\nChangepoints sorted by slope rate of change (2nd derivative):\n')
         print(c_data.ix[:, ['Date', 'Adj. Close', 'delta']][:5])
     
     
@@ -610,10 +617,10 @@ class Stocker():
         future_decrease = future[future['direction'] == 0]
         
         # Print out the dates
-        print('Predicted Increase: \n')
+        print('\nPredicted Increase: \n')
         print(future_increase[['Date', 'estimate', 'change', 'upper', 'lower']])
-        print('\n\n')
-        print('Predicted Decrease: \n')
+        
+        print('\nPredicted Decrease: \n')
         print(future_decrease[['Date', 'estimate', 'change', 'upper', 'lower']])
         
         self.reset_plot()
@@ -704,7 +711,7 @@ class Stocker():
         
         # Plot of training and testing average uncertainty
         self.reset_plot()
-        a
+
         plt.plot(results['cps'], results['train_range'], 'bo', ms = 8, label = 'Train Range')
         plt.plot(results['cps'], results['test_range'], 'r*', ms = 8, label = 'Test Range')
         plt.xlabel('Changepoint Prior Scale'); plt.ylabel('Avg. Uncertainty ($)');
