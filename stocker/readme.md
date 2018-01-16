@@ -21,9 +21,15 @@ Python 3.6 and the following packages are required:
 
 These can all be installed with pip from the command line
 (some of these might require running the command prompt as 
-administrator)
+administrator). 
 
 `pip install -U quandl numpy pandas fbprophet matplotlib pytrends pystan`
+
+If pip does not work and you have the Anaconda 
+distribution, try installing with conda:
+
+`conda install quandl numpy pandas fbprophet matplotlib pytrends pystan`
+`conda update quandl numpy pandas fbprophet matplotlib pytrends pystan`
 
 ## Getting Started
 
