@@ -58,10 +58,14 @@ The Stocker object includes 8 main methods for analyzing and predicting
 stock prices. Call any of the following on your stocker object, replacing
 `Stocker` with your object (for example `microsoft`):
 
+### Plot stock history
+
 `Stocker.plot_stock(start_date=None, end_date=None)`
 	
 Prints basic information and plots the history of the stock. The 
 default start and end dates are the extent of the data
+
+### Calculate profit from buy and hold strategy
 
 `Stocker.buy_and_hold(start_date=None, end_date=None, nshares=1)`
 
@@ -71,6 +75,8 @@ specified, these default to the start and end date of the data. The buy and
 hold strategy, besides being the smartest choice, is also the simplest. 
 We buy at the start date and hold to the end date. Prints the expected
 profit and plots the expected profit over time. 
+
+### Make prophet model with predictions for 1 year in future
 
 `model, future = Stocker.create_prophet_model(resample=False)`
 
@@ -85,6 +91,8 @@ To see the trends and patterns of the prophet model, call
 `import matplotlib.pyplot as plt
 model.plot_components(future)
 plt.show()`
+
+### Find significant changepoints and try to correlate with Google search trends
 
 `Stocker.changepoint_date_analysis(term=None)`
 
@@ -105,6 +113,8 @@ term is specified, the term default to "ticker stock". You can use
 this to determine if the stock price is related to certain search terms or if the 
 changepoints coincide with particular searches. 
 
+### Find the best chnagepoint prior scale graphically
+
 `Stocker.changepoint_prior_analysis(changepoint_priors=[0.001, 0.05, 0.1, 0.2], 
 olors=['b', 'r', 'grey', 'gold'])`
 
@@ -123,6 +133,8 @@ and can be changed using `Stocker.changepoint_prior_scale = 0.05`
 Altering the changepoint prior scale can have a significant effect on predictions,
 so try a few different values to see how they alter models.
 
+### Quantitaively compare different changepoint prior scales
+
 `Stocker.changepoint_prior_validation(changepoint_priors = [0.001, 0.05, 0.1, 0.2])`
 
 Similar to the changepoint prior analysis except quantifies the differences between 
@@ -134,6 +146,8 @@ mean of the absolute difference between the prediction and the correct value in 
 and the uncertainty is the upper estimate minus the lower estimate in dollars as well.
 A graph of these results is also produced. This method is useful for choosing
 a proper cps in combination with the analysis graphical results. 
+
+### Evalaute the Prophet model predictions for 2017 against real prices and compare profits
 
 `Stocker.evaluate_prediction(nshares=1000)`
 
@@ -153,6 +167,8 @@ Printed output is the final predicted price, the final actual price, the
 profit from the model strategy, and the profit from a buy and hold strategy over the 
 same period. Graphs of the predictions versus the actual values and the expected 
 profit from both strategies over time are also displayed. 
+
+### Predict future prices
 
 `Stocker.predict_future(days=30)`
 
