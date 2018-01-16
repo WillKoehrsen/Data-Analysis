@@ -1,23 +1,31 @@
 # Stocker: A Stock Analysis and Predictive using Additive Models Toolkit
 
-Stocker is designed to be run from an interative Python 3.6 session. 
-I recommended using a Jupyter Notebook. 
+Stocker can be run from an interative Python 3.6 session. I recommend 
+installing the [Anaconda Python 3.6 distribution](https://www.anaconda.com/download/)
+and using a Jupyter Notebook. 
+ 
+Stocker is a work in progress. Let me know of any issues and feel 
+free to make your own contributions! 
 
-Python 3.6 is required. The following packages are required:
+## Requirements 
 
-quandl 3.3.0
-matplotlib 2.1.1
-numpy 1.14.0
-fbprophet 0.2.1
-pystan 2.17.0.0
-pandas 0.22.0
-pytrends 4.3.0
+Python 3.6 and the following packages are required:
+
+	*quandl 3.3.0
+	*matplotlib 2.1.1
+	*numpy 1.14.0
+	*fbprophet 0.2.1
+	*pystan 2.17.0.0
+	*pandas 0.22.0
+	*pytrends 4.3.0
 
 These can all be installed with pip from the command line
 (some of these might require running the command line as 
 administrator)
 
 `pip install -U quandl numpy pandas fbprophet matplotlib pytrends pystan`
+
+## Getting Started
 
 Once the packages have been installed, get started exploring a stock 
 by running an interactive python session or Jupyter Notebook in the same
@@ -33,10 +41,13 @@ Instantiate a stocker object by calling Stocker with a valid stock ticker:
 
 If succesful, you will recieve a message with date range of data:
 
-MSFT Stocker Initialized. Data covers 1986-03-13 to 2018-01-12.
+`MSFT Stocker Initialized. Data covers 1986-03-13 to 2018-01-12.`
+
+# Methods
 
 The Stocker object includes 8 main methods for analyzing and predicting 
-stock prices. Call any of the following on your stocker object:
+stock prices. Call any of the following on your stocker object, replacing
+`Stocker` with your object (for example `microsoft`):
 
 `Stocker.plot_stock(start_date=None, end_date=None)`
 	
@@ -85,14 +96,6 @@ term is specified, the term default to "ticker stock". You can use
 this to determine if the stock price is related to certain search terms or if the 
 changepoints coincide with particular searches. 
 
-`Stocker.predict_future(days=30)`
-
-Makes a prediction for the specified number of days in the future. 
-Uses a prophet model trained on the past 3 years of data. Printed output 
-is the final predicted value of the stock, the days on which the stock is 
-expected to increase, and the days when it is expected to decrease.
-A graph also shows these results with uncertainty intervals.
-	
 `Stocker.changepoint_prior_analysis(changepoint_priors=[0.001, 0.05, 0.1, 0.2], 
 olors=['b', 'r', 'grey', 'gold'])`
 
@@ -142,8 +145,11 @@ profit from the model strategy, and the profit from a buy and hold strategy over
 same period. Graphs of the predictions versus the actual values and the expected 
 profit from both strategies over time are also displayed. 
 
+`Stocker.predict_future(days=30)`
 
-
-
-		
-	* 
+Makes a prediction for the specified number of days in the future. 
+Uses a prophet model trained on the past 3 years of data. Printed output 
+is the final predicted value of the stock, the days on which the stock is 
+expected to increase, and the days when it is expected to decrease.
+A graph also shows these results with uncertainty intervals.
+	
