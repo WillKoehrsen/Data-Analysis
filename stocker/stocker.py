@@ -206,7 +206,7 @@ class Stocker():
         plt.text(x = text_location, 
              y =  total_hold_profit + (total_hold_profit / 40),
              s = '$%d' % total_hold_profit,
-            color = 'w' if total_hold_profit > 0 else 'r',
+            color = 'g' if total_hold_profit > 0 else 'r',
             size = 14)
         
         plt.grid(alpha=0.2)
@@ -229,7 +229,7 @@ class Stocker():
     def changepoint_prior_analysis(self, changepoint_priors=[0.001, 0.05, 0.1, 0.2], colors=['b', 'r', 'grey', 'gold']):
     
         # Training and plotting with 4 years of data
-        train = self.stock[(self.stock['Date'] > (max(self.stock['Date']) - pd.DateOffset(years=4)).date())]
+        train = self.stock[(self.stock['Date'] > (max(self.stock['Date']) - pd.DateOffset(years=3)).date())]
         
         # Iterate through all the changepoints and make models
         for i, prior in enumerate(changepoint_priors):
@@ -452,13 +452,13 @@ class Stocker():
         plt.text(x = text_location, 
                  y =  final_profit + (final_profit / 40),
                  s = '$%d' % final_profit,
-                color = 'w' if final_profit > 0 else 'r',
+                color = 'g' if final_profit > 0 else 'r',
                 size = 18)
         
         plt.text(x = text_location, 
                  y =  final_smart + (final_smart / 40),
                  s = '$%d' % final_smart,
-                color = 'w' if final_smart > 0 else 'r',
+                color = 'g' if final_smart > 0 else 'r',
                 size = 18);
 
         # Plot formatting
