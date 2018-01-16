@@ -63,7 +63,8 @@ stock prices. Call any of the following on your stocker object, replacing
 `Stocker.plot_stock(start_date=None, end_date=None)`
 	
 Prints basic information and plots the history of the stock. The 
-default start and end dates are the extent of the data
+default start and end dates are the beginning and ending dates
+of the data.
 
 ### Calculate profit from buy and hold strategy
 
@@ -72,9 +73,8 @@ default start and end dates are the extent of the data
 Evaluates a buy and hold strategy from the start date to the end date
 with the specified number of shares. If no start date and end date are 
 specified, these default to the start and end date of the data. The buy and
-hold strategy, besides being the smartest choice, is also the simplest. 
-We buy at the start date and hold to the end date. Prints the expected
-profit and plots the expected profit over time. 
+hold strategy means buying the stock on the start date and hold to the end date
+when we sell the stock. Prints the expected profit and plots the profit over time. 
 
 ### Make prophet model with predictions for 1 year in future
 
@@ -113,7 +113,7 @@ term is specified, the term default to "ticker stock". You can use
 this to determine if the stock price is related to certain search terms or if the 
 changepoints coincide with particular searches. 
 
-### Find the best chnagepoint prior scale graphically
+### Find the best changepoint prior scale graphically
 
 `Stocker.changepoint_prior_analysis(changepoint_priors=[0.001, 0.05, 0.1, 0.2], 
 olors=['b', 'r', 'grey', 'gold'])`
@@ -147,21 +147,23 @@ and the uncertainty is the upper estimate minus the lower estimate in dollars as
 A graph of these results is also produced. This method is useful for choosing
 a proper cps in combination with the analysis graphical results. 
 
-### Evalaute the Prophet model predictions for 2017 against real prices and compare profits
+### Evalaute the Prophet model predictions against real prices and compare profits
 
-`Stocker.evaluate_prediction(nshares=1000)`
+`Stocker.evaluate_prediction(start_date=None, end_date=None, nshares=1000)`
 
 Evalutes a trading strategy informed by the prophet model for 
-all of 2017. The model is trained on 3 years of data (2014-2016) 
-and then makes predictions for 2017. These predictions are then compared
+between the specified start and end date. The model is trained on 3 years of data 
+prior to the test period and makes predictions for the given date range. The 
+default evaluation range is the last year of the data. The predictions for the 
+evaluation period are then compared
 to the known stock price values to determine the profits (or losses) 
 from using the prophet strategy. The strategy states that for a given 
 day, we buy a stock if the model predicts it will increase. If the model predicts
 it will decrease, we do not play the market on that day. Our profit, if we bought the 
-stockfor the day is the change in the price of the stock over that day. Therefore,
-if we predict the stock will go up, we buy the stock, and the price does go up, 
-we will make that change in price times the number of shares. If however the price
-goes down, we lose that change times the number of shares. 
+stock, is the change in the price of the stock over that day. Therefore,
+if we predict the stock will go up and the price does go up, we will make the change
+in price times the number of shares. If the price goes down, we lose the change times
+the number of shares. 
 
 Printed output is the final predicted price, the final actual price, the 
 profit from the model strategy, and the profit from a buy and hold strategy over the 
@@ -172,8 +174,8 @@ profit from both strategies over time are also displayed.
 
 `Stocker.predict_future(days=30)`
 
-Makes a prediction for the specified number of days in the future. 
-Uses a prophet model trained on the past 3 years of data. Printed output 
+Makes a prediction for the specified number of days in the future 
+using a prophet model trained on the past 3 years of data. Printed output 
 is the final predicted value of the stock, the days on which the stock is 
 expected to increase, and the days when it is expected to decrease.
 A graph also shows these results with uncertainty intervals.
