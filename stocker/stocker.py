@@ -43,6 +43,7 @@ class Stocker():
         # Columns required for prophet
         stock['ds'] = stock['Date']
         stock['y'] = stock['Adj. Close']
+        stock['change'] = stock['Adj. Close'] - stock['Adj. Open']
         
         # Data assigned as class attribute
         self.stock = stock.copy()
@@ -79,7 +80,7 @@ class Stocker():
                                                                      self.max_date.date()))
         
     # Basic Historical Plot and Basic Statistics
-    def plot_stock(self, start_date=None, end_date=None):
+    def plot_stock(self, start_date=None, end_date=None, stats=['Adj. Close'], plot_type='basic'):
         
         self.reset_plot()
         
@@ -106,18 +107,47 @@ class Stocker():
             return 
             
         # Useful statistics
-        print('Maximum price = ${:.2f} on {}.'.format(self.max_price, self.max_price_date.date()))
-        print('Minimum price = ${:.2f} on {}.'.format(self.min_price, self.min_price_date.date()))
-        print('Current price = ${:.2f}.'.format(self.most_recent_price))
+        
         
         stock_plot = self.stock[(self.stock['Date'] >= start_date.date()) & (self.stock['Date'] <= end_date.date())]
+        colors = ['r', 'b', 'g', 'y', 'c', 'm']
         
-        # Simple Plot 
-        plt.style.use('fivethirtyeight');
-        plt.plot(stock_plot['Date'], stock_plot['Adj. Close'], 'r-', linewidth = 3)
-        plt.xlabel('Date'); plt.ylabel('Closing Price ($)'); plt.title('%s Stock Price History' % self.symbol); 
-        plt.grid(color = 'k', alpha = 0.4); plt.show()
+        for i, stat in enumerate(stats):
+            
+            stat_min = min(stock_plot[stat])
+            stat_max = max(stock_plot[stat])
+            
+            date_stat_min = stock_plot[stock_plot[stat] == stat_min]['Date']
+            date_stat_min = date_stat_min[date_stat_min.index[0]].date()
+            date_stat_max = stock_plot[stock_plot[stat] == stat_max]['Date']
+            date_stat_max = date_stat_max[date_stat_max.index[0]].date()
+            
+            current_stat = float(stock_plot.ix[len(stock_plot) - 1, stat])
+            
+            print('Maximum {} = {:.2f} on {}.'.format(stat, stat_max, date_stat_max))
+            print('Minimum {} = {:.2f} on {}.'.format(stat, stat_min, date_stat_min))
+            print('Current {} = {:.2f}.'.format(stat, current_stat))
+            
+            # Percentage y-axis
+            if plot_type == 'pct':
+                # Simple Plot 
+                plt.style.use('fivethirtyeight');
+                plt.plot(stock_plot['Date'], 100 * stock_plot[stat] / min(stock_plot[stat]),
+                         color = colors[i], linewidth = 3, label = stat)
+                plt.xlabel('Date'); plt.ylabel('Pct Relative to Minimum'); plt.title('%s Stock History' % self.symbol); 
+                plt.legend(prop={'size':10})
+                plt.grid(color = 'k', alpha = 0.4); 
+
+            # Stat y-axis
+            elif plot_type == 'basic':
+                plt.style.use('fivethirtyeight');
+                plt.plot(stock_plot['Date'], stock_plot[stat], color = colors[i], linewidth = 3, label = stat)
+                plt.xlabel('Date'); plt.ylabel('US $'); plt.title('%s Stock History' % self.symbol); 
+                plt.legend(prop={'size':10})
+                plt.grid(color = 'k', alpha = 0.4); 
       
+        plt.show();
+        
     # Reset the plotting parameters to clear style formatting
     # Not sure if this should be a static method
     @staticmethod
