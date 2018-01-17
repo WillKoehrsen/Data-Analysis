@@ -43,7 +43,7 @@ class Stocker():
         # Columns required for prophet
         stock['ds'] = stock['Date']
         stock['y'] = stock['Adj. Close']
-        stock['change'] = stock['Adj. Close'] - stock['Adj. Open']
+        stock['Daily Change'] = stock['Adj. Close'] - stock['Adj. Open']
         
         # Data assigned as class attribute
         self.stock = stock.copy()
@@ -79,7 +79,7 @@ class Stocker():
                                                                      self.min_date.date(),
                                                                      self.max_date.date()))
         
-    # Basic Historical Plot and Basic Statistics
+    # Basic Historical Plots and Basic Statistics
     def plot_stock(self, start_date=None, end_date=None, stats=['Adj. Close'], plot_type='basic'):
         
         self.reset_plot()
@@ -116,32 +116,41 @@ class Stocker():
             
             stat_min = min(stock_plot[stat])
             stat_max = max(stock_plot[stat])
+
+            stat_avg = np.mean(stock_plot[stat])
             
             date_stat_min = stock_plot[stock_plot[stat] == stat_min]['Date']
             date_stat_min = date_stat_min[date_stat_min.index[0]].date()
             date_stat_max = stock_plot[stock_plot[stat] == stat_max]['Date']
             date_stat_max = date_stat_max[date_stat_max.index[0]].date()
             
-            current_stat = float(stock_plot.ix[len(stock_plot) - 1, stat])
+            current_stat = float(stock_plot[stock_plot['Date'] == end_date][stat])
             
             print('Maximum {} = {:.2f} on {}.'.format(stat, stat_max, date_stat_max))
             print('Minimum {} = {:.2f} on {}.'.format(stat, stat_min, date_stat_min))
-            print('Current {} = {:.2f}.'.format(stat, current_stat))
+            print('Current {} = {:.2f}.\n'.format(stat, current_stat))
             
             # Percentage y-axis
             if plot_type == 'pct':
                 # Simple Plot 
                 plt.style.use('fivethirtyeight');
-                plt.plot(stock_plot['Date'], 100 * stock_plot[stat] / min(stock_plot[stat]),
-                         color = colors[i], linewidth = 3, label = stat)
-                plt.xlabel('Date'); plt.ylabel('Pct Relative to Minimum'); plt.title('%s Stock History' % self.symbol); 
+                if stat == 'Daily Change':
+                    plt.plot(stock_plot['Date'], 100 * stock_plot[stat],
+                         color = colors[i], linewidth = 2.4, alpha = 0.9,
+                         label = stat)
+                else:
+                    plt.plot(stock_plot['Date'], 100 * (stock_plot[stat] -  stat_avg) / stat_avg,
+                         color = colors[i], linewidth = 2.4, alpha = 0.9,
+                         label = stat)
+
+                plt.xlabel('Date'); plt.ylabel('Change Relative to Average (%)'); plt.title('%s Stock History' % self.symbol); 
                 plt.legend(prop={'size':10})
                 plt.grid(color = 'k', alpha = 0.4); 
 
             # Stat y-axis
             elif plot_type == 'basic':
                 plt.style.use('fivethirtyeight');
-                plt.plot(stock_plot['Date'], stock_plot[stat], color = colors[i], linewidth = 3, label = stat)
+                plt.plot(stock_plot['Date'], stock_plot[stat], color = colors[i], linewidth = 3, label = stat, alpha = 0.8)
                 plt.xlabel('Date'); plt.ylabel('US $'); plt.title('%s Stock History' % self.symbol); 
                 plt.legend(prop={'size':10})
                 plt.grid(color = 'k', alpha = 0.4); 
@@ -326,8 +335,8 @@ class Stocker():
         plt.xlabel('Date'); plt.ylabel('Stock Price ($)'); plt.title('Effect of Changepoint Prior Scale');
         plt.show()
             
-    # Basic prophet model for the next 365 days   
-    def create_prophet_model(self, resample=False):
+    # Basic prophet model for specified number of days  
+    def create_prophet_model(self, days=0, resample=False):
         
         self.reset_plot()
         
@@ -342,12 +351,13 @@ class Stocker():
         model.fit(stock_history)
         
         # Make and predict for next year with future dataframe
-        future = model.make_future_dataframe(periods = 365, freq='D')
+        future = model.make_future_dataframe(periods = days, freq='D')
         future = model.predict(future)
         
-        # Print the predicted price
-        print('Predicted Price on {} = ${:.2f}'.format(
-            future.ix[len(future) - 1, 'ds'].date(), future.ix[len(future) - 1, 'yhat']))
+        if days > 0:
+            # Print the predicted price
+            print('Predicted Price on {} = ${:.2f}'.format(
+                future.ix[len(future) - 1, 'ds'].date(), future.ix[len(future) - 1, 'yhat']))
         
         # Set up the plot
         fig, ax = plt.subplots(1, 1)
@@ -356,16 +366,11 @@ class Stocker():
         ax.plot(stock_history['ds'], stock_history['y'], 'ko-', linewidth = 1.4, alpha = 0.8, ms = 1.8, label = 'Observations')
         
         # Plot the predicted values
-        ax.plot(future['ds'], future['yhat'], 'forestgreen',linewidth = 2.4, label = 'Predicted');
+        ax.plot(future['ds'], future['yhat'], 'forestgreen',linewidth = 2.4, label = 'Modeled');
 
         # Plot the uncertainty interval as ribbon
         ax.fill_between(future['ds'].dt.to_pydatetime(), future['yhat_upper'], future['yhat_lower'], alpha = 0.3, 
                        facecolor = 'g', edgecolor = 'k', linewidth = 1.4, label = 'Uncertainty')
-
-        # Put a vertical line at the start of predictions
-        plt.vlines(x=max(self.stock['Date']).date(), ymin=min(future['yhat_lower']), 
-                   ymax=max(future['yhat_upper']), colors = 'r',
-                   linestyles='dashed')
 
         # Plot formatting
         plt.legend(loc = 2, prop={'size': 10}); plt.xlabel('Date'); plt.ylabel('Price $');
@@ -540,32 +545,31 @@ class Stocker():
         plt.grid(alpha=0.2); 
         plt.show()
         
-    def retrieve_google_trends(self, term, date_range):
+    def retrieve_google_trends(self, search, date_range):
         
         # Set up the trend fetching object
         pytrends = TrendReq(hl='en-US', tz=360)
-        kw_list = [term]
+        kw_list = [search]
 
         try:
         
             # Create the search object
-            pytrends.build_payload(kw_list, cat=0, timeframe=date_range[0], geo='', gprop='')
+            pytrends.build_payload(kw_list, cat=0, timeframe=date_range[0], geo='', gprop='news')
             
             # Retrieve the interest over time
             trends = pytrends.interest_over_time()
+
+            related_queries = pytrends.related_queries()
 
         except Exception as e:
             print('\nGoogle Search Trend retrieval failed.')
             print(e)
             return
         
-        return trends
+        return trends, related_queries
         
-    def changepoint_date_analysis(self, term=None):
+    def changepoint_date_analysis(self, search=None):
         self.reset_plot()
-        
-        if term is None:
-            term = '%s stock' % self.symbol
 
         model = self.create_model()
         
@@ -595,63 +599,94 @@ class Stocker():
         
         # Sort the values by maximum change
         c_data = c_data.sort_values(by='abs_delta', ascending=False)
-        
-        print('\nChangepoints sorted by slope rate of change (2nd derivative):\n')
-        print(c_data.ix[:, ['Date', 'Adj. Close', 'delta']][:5])
-    
-    
+
         # Limit to 10 largest changepoints
         c_data = c_data[:10]
+
+        # Separate into negative and positive changepoints
+        cpos_data = c_data[c_data['delta'] > 0]
+        cneg_data = c_data[c_data['delta'] < 0]
+
+        # Changepoints and data
+        if not search:
         
-        # Line plot showing actual values, estimated values, and changepoints
-        self.reset_plot()
+            print('\nChangepoints sorted by slope rate of change (2nd derivative):\n')
+            print(c_data.ix[:, ['Date', 'Adj. Close', 'delta']][:5])
+
+            # Line plot showing actual values, estimated values, and changepoints
+            self.reset_plot()
+            
+            # Set up line plot 
+            plt.plot(train['ds'], train['y'], 'ko', ms = 4, label = 'Stock Price')
+            plt.plot(future['ds'], future['yhat'], color = 'navy', linewidth = 2.0, label = 'Modeled')
+            
+            # Changepoints as vertical lines
+            plt.vlines(cpos_data['ds'].dt.to_pydatetime(), ymin = min(train['y']), ymax = max(train['y']), 
+                       linestyles='dashed', color = 'r', 
+                       linewidth= 1.2, label='Negative Changepoints')
+
+            plt.vlines(cneg_data['ds'].dt.to_pydatetime(), ymin = min(train['y']), ymax = max(train['y']), 
+                       linestyles='dashed', color = 'darkgreen', 
+                       linewidth= 1.2, label='Positive Changepoints')
+
+            plt.legend(prop={'size':10});
+            plt.xlabel('Date'); plt.ylabel('Price ($)'); plt.title('Stock Price with Changepoints')
+            plt.show()
         
-        # Set up line plot 
-        plt.plot(train['ds'], train['y'], 'ko', ms = 4, label = 'Stock Price')
-        plt.plot(future['ds'], future['yhat'], color = 'navy', linewidth = 2.0, label = 'Estimated')
-        
-        # Changepoints as vertical lines
-        plt.vlines(c_data['ds'].dt.to_pydatetime(), ymin = min(train['y']), ymax = max(train['y']), 
-                   linestyles='dashed', color = 'r', 
-                   linewidth= 1.2, label='Changepoints')
-        plt.legend(prop={'size':10});
-        plt.xlabel('Date'); plt.ylabel('Price ($)'); plt.title('Stock Price with Changepoints')
-        plt.show()
-        
-        date_range = ['%s %s' % (str(min(train['Date']).date()), str(max(train['Date']).date()))]
-        
-        # Get the Google Trends for specified terms and join to training dataframe
-        trends = self.retrieve_google_trends(term, date_range)
-        
-        # Upsample the data for joining with training data
-        trends = trends.resample('D')
-        
-        trends = trends.reset_index(level=0)
-        trends = trends.rename(columns={'date': 'ds', term: 'freq'})
-        
-        # Interpolate the frequency
-        trends['freq'] = trends['freq'].interpolate()
-        
-        # Merge with the training data
-        train = pd.merge(train, trends, on = 'ds', how = 'inner')
-        
-        # Normalize values
-        train['y_norm'] = train['y'] / max(train['y'])
-        train['freq_norm'] = train['freq'] / max(train['freq'])
-        self.reset_plot()
-        
-        # Plot the normalized stock price and normalize search frequency
-        plt.plot(train['ds'], train['y_norm'], 'k-', label = 'Stock Price')
-        plt.plot(train['ds'], train['freq_norm'], color='forestgreen', label = 'Search Frequency')
-        
-        # Plot the changepoints as dashed vertical lines
-        plt.vlines(c_data['ds'].dt.to_pydatetime(), ymin=0, ymax=1,
-                   linewidth = 1.2, label='Changepoints', linestyles='dashed', color = 'r')
-        
-        # Plot formatting
-        plt.legend(prop={'size': 10})
-        plt.xlabel('Date'); plt.ylabel('Normalized Values'); plt.title('Stock Price and Search Frequency for %s' % term)
-        plt.show()
+        # Search for search term in google news
+        # Show related queries, rising related queries
+        # Graph changepoints, search frequency, stock price
+        if search:
+            date_range = ['%s %s' % (str(min(train['Date']).date()), str(max(train['Date']).date()))]
+
+            # Get the Google Trends for specified terms and join to training dataframe
+            trends, related_queries = self.retrieve_google_trends(search, date_range)
+
+            if (trends is None)  or (related_queries is None):
+                print('No search trends found for %s' % search)
+                return
+
+            print('\n Top Related Queries: \n')
+            print(related_queries[search]['top'].head())
+
+            print('\n Rising Related Queries: \n')
+            print(related_queries[search]['rising'].head())
+
+            # Upsample the data for joining with training data
+            trends = trends.resample('D')
+
+            trends = trends.reset_index(level=0)
+            trends = trends.rename(columns={'date': 'ds', search: 'freq'})
+
+            # Interpolate the frequency
+            trends['freq'] = trends['freq'].interpolate()
+
+            # Merge with the training data
+            train = pd.merge(train, trends, on = 'ds', how = 'inner')
+
+            # Normalize values
+            train['y_norm'] = train['y'] / max(train['y'])
+            train['freq_norm'] = train['freq'] / max(train['freq'])
+            
+            self.reset_plot()
+
+            # Plot the normalized stock price and normalize search frequency
+            plt.plot(train['ds'], train['y_norm'], 'k-', label = 'Stock Price')
+            plt.plot(train['ds'], train['freq_norm'], color='goldenrod', label = 'Search Frequency')
+
+            # Changepoints as vertical lines
+            plt.vlines(cpos_data['ds'].dt.to_pydatetime(), ymin = 0, ymax = 1, 
+                       linestyles='dashed', color = 'r', 
+                       linewidth= 1.2, label='Negative Changepoints')
+
+            plt.vlines(cneg_data['ds'].dt.to_pydatetime(), ymin = 0, ymax = 1, 
+                       linestyles='dashed', color = 'darkgreen', 
+                       linewidth= 1.2, label='Positive Changepoints')
+
+            # Plot formatting
+            plt.legend(prop={'size': 10})
+            plt.xlabel('Date'); plt.ylabel('Normalized Values'); plt.title('Stock Price and Search Frequency for %s' % search)
+            plt.show()
         
     # Predict the future price for a given range of days
     def predict_future(self, days=30):
