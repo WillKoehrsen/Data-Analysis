@@ -358,6 +358,10 @@ class Stocker():
             # Print the predicted price
             print('Predicted Price on {} = ${:.2f}'.format(
                 future.ix[len(future) - 1, 'ds'].date(), future.ix[len(future) - 1, 'yhat']))
+
+            title = '%s Historical and Predicted Stock Price'  % self.symbol
+        else:
+            title = '%s Historical and Modeled Stock Price' % self.symbol
         
         # Set up the plot
         fig, ax = plt.subplots(1, 1)
@@ -375,7 +379,7 @@ class Stocker():
         # Plot formatting
         plt.legend(loc = 2, prop={'size': 10}); plt.xlabel('Date'); plt.ylabel('Price $');
         plt.grid(linewidth=0.6, alpha = 0.6)
-        plt.title('%s Historical and Predicted Stock Price'  % self.symbol);
+        plt.title(title);
         plt.show()
         
         return model, future
@@ -685,7 +689,7 @@ class Stocker():
 
             # Plot formatting
             plt.legend(prop={'size': 10})
-            plt.xlabel('Date'); plt.ylabel('Normalized Values'); plt.title('Stock Price and Search Frequency for %s' % search)
+            plt.xlabel('Date'); plt.ylabel('Normalized Values'); plt.title('%s Stock Price and Search Frequency for %s' % (self.symbol, search))
             plt.show()
         
     # Predict the future price for a given range of days
