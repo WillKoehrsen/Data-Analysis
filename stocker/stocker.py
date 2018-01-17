@@ -66,8 +66,13 @@ class Stocker():
         # The most recent price
         self.most_recent_price = float(self.stock.ix[len(self.stock) - 1, 'y'])
         
-        # This can be changed by user
+        # Prophet parameters
         self.changepoint_prior_scale = 0.2
+        self.weekly_seasonality = False
+        self.daily_seasonality = False
+        self.monthly_seasonality = True
+        self.yearly_seasonality = True
+        self.changepoints = None
         
         print('{} Stocker Initialized. Data covers {} to {}.'.format(self.symbol,
                                                                      self.min_date.date(),
@@ -150,7 +155,7 @@ class Stocker():
         
         # Find all of the weekends
         for i, date in enumerate(dataframe['ds']):
-            if (date.weekday) == 5 | (date.weekday == 6):
+            if (date.weekday()) == 5 | (date.weekday() == 6):
                 weekends.append(i)
             
         # Drop the weekends
@@ -221,15 +226,18 @@ class Stocker():
         plt.show();
         
     # Create a prophet model without training
-    def create_model(self, **kwargs):
+    def create_model(self):
 
         # Make the model
-        model = fbprophet.Prophet(daily_seasonality=False,  weekly_seasonality=False,
+        model = fbprophet.Prophet(daily_seasonality=self.daily_seasonality,  
+                                  weekly_seasonality=self.weekly_seasonality, 
+                                  yearly_seasonality=self.yearly_seasonality,
                                   changepoint_prior_scale=self.changepoint_prior_scale,
-                                 **kwargs)
+                                  changepoints=self.changepoints)
         
-        # Add monthly seasonality
-        model.add_seasonality(name = 'monthly', period = 30.5, fourier_order = 5)
+        if self.monthly_seasonality:
+            # Add monthly seasonality
+            model.add_seasonality(name = 'monthly', period = 30.5, fourier_order = 5)
         
         return model
     
@@ -639,7 +647,7 @@ class Stocker():
         future['diff'] = future['yhat'].diff()
     
         future = future.dropna()
-        
+
         # Find the prediction direction and create separate dataframes
         future['direction'] = (future['diff'] > 0) * 1
         
@@ -734,8 +742,8 @@ class Stocker():
         # Plot of training and testing average errors
         self.reset_plot()
         
-        plt.plot(results['cps'], results['train_err'], 'bo', ms = 8, label = 'Train Error')
-        plt.plot(results['cps'], results['test_err'], 'r*', ms = 8, label = 'Test Error')
+        plt.plot(results['cps'], results['train_err'], 'bo-', ms = 8, label = 'Train Error')
+        plt.plot(results['cps'], results['test_err'], 'r*-', ms = 8, label = 'Test Error')
         plt.xlabel('Changepoint Prior Scale'); plt.ylabel('Avg. Absolute Error ($)');
         plt.title('Training and Testing Curves as Function of CPS')
         plt.grid(color='k', alpha=0.3)
@@ -746,8 +754,8 @@ class Stocker():
         # Plot of training and testing average uncertainty
         self.reset_plot()
 
-        plt.plot(results['cps'], results['train_range'], 'bo', ms = 8, label = 'Train Range')
-        plt.plot(results['cps'], results['test_range'], 'r*', ms = 8, label = 'Test Range')
+        plt.plot(results['cps'], results['train_range'], 'bo-', ms = 8, label = 'Train Range')
+        plt.plot(results['cps'], results['test_range'], 'r*-', ms = 8, label = 'Test Range')
         plt.xlabel('Changepoint Prior Scale'); plt.ylabel('Avg. Uncertainty ($)');
         plt.title('Uncertainty in Estimate as Function of CPS')
         plt.grid(color='k', alpha=0.3)
