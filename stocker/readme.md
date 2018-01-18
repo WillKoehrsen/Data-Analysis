@@ -44,7 +44,8 @@ Import the stocker class by running
 
 `from stocker import Stocker`
 
-Instantiate a stocker object by calling Stocker with a valid stock ticker:
+Instantiate a stocker object by calling Stocker with a valid stock ticker (a list of all 3100
+tickers can be found at data/stock_list.csv:
 
 `microsoft = Stocker('MSFT')`
 
