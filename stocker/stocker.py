@@ -25,8 +25,8 @@ class Stocker():
         # Symbol is used for labeling plots
         self.symbol = ticker
         
-        # api personal key
-        quandl.ApiConfig.api_key = 'rFsSehe51RLzREtYhLfo'
+        # Use Personal Api Key
+        # quandl.ApiConfig.api_key = 'YourKeyHere'
 
         # Retrieval the financial data
         try:
