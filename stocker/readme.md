@@ -19,7 +19,7 @@ Python 3.6 and the following packages are required:
 	pandas 0.22.0
 	pytrends 4.3.0
 
-These can all be installed with pip from the command line
+These can be installed with pip from the command line
 (some of these might require running the command prompt as 
 administrator). 
 
@@ -32,11 +32,12 @@ distribution, try installing with conda:
 
 `conda update quandl numpy pandas matplotlib pystan`
 
-pytrends and fbprophet can only be installed with pip. 
+pytrends and fbprophet can only be installed with pip. If you run into 
+any other errors installing packages, check out [Stack Overflow](https://stackoverflow.com/)
 
 ## Getting Started
 
-Once the packages have been installed, get started exploring a stock 
+Once the required packages have been installed, get started exploring a stock 
 by running an interactive python session or Jupyter Notebook in the same
 folder as stocker.py. 
 
@@ -45,11 +46,11 @@ Import the stocker class by running
 `from stocker import Stocker`
 
 Instantiate a stocker object by calling Stocker with a valid stock ticker (a list of all 3100
-tickers can be found at data/stock_list.csv:
+tickers can be found at data/stock_list.csv):
 
 `microsoft = Stocker('MSFT')`
 
-If succesful, you will recieve a message with date range of data:
+If succesful, you will recieve a message with the date range of data:
 
 `MSFT Stocker Initialized. Data covers 1986-03-13 to 2018-01-12.`
 
@@ -63,32 +64,25 @@ stock prices. Call any of the following on your stocker object, replacing
 
 `Stocker.plot_stock(start_date=None, end_date=None, stats=['Adj. Close'], plot_type='basic')`
 	
-Prints basic information and plots the history for the specified stat 
-over the specified date range. The default stat is Adjusted Closing price
+Prints basic info for the specified stats and plots the history for the stats
+over the specified date range. The default stat is Adjusted Closing price and 
 default start and end dates are the beginning and ending dates
 of the data. `plot_type` can be either basic, to plot the actual values on the 
-y-axis, or `pct` to plot the percentage change from average. 
-
-### Calculate profit from buy and hold strategy
-
-`Stocker.buy_and_hold(start_date=None, end_date=None, nshares=1)`
-
-Evaluates a buy and hold strategy from the start date to the end date
-with the specified number of shares. If no start date and end date are 
-specified, these default to the start and end date of the data. The buy and
-hold strategy means buying the stock on the start date and hold to the end date
-when we sell the stock. Prints the expected profit and plots the profit over time. 
+y-axis, or `pct` to plot percentage change from the average. 
 
 ### Make basic prophet model
 
 `model, future = Stocker.create_prophet_model(days=0, resample=False)`
 
-Make a Prophet Additive Model using 3 years of training data
-and make predictions number of days into the future. If days > 0, prints the 
-predicted price. Plots the historical data with the predictions and uncertainty overlaid.
+The number of training years for any Prophet model can be set with the 
+`Stocker.training_years` attribute. The default number of training years is 3.
 
-Returns model, the prophet model, and future, the future dataframe which can be used 
+Make a Prophet Additive Model using the specified number of training years
+and make predictions number of days into the future. If days > 0, prints the 
+predicted price. Also plots the historical data with the predictions and uncertainty overlaid.
+Returns the prophet model, and the future dataframe which can be used 
 for plotting components of the time series. 
+
 To see the trends and patterns of the prophet model, call 
 
 `import matplotlib.pyplot as plt
@@ -99,13 +93,14 @@ plt.show()`
 
 `Stocker.changepoint_date_analysis(search=None)`
 
-Finds the most significant changepoints in the dataset from a prophet model 
-using the past 3 years of data. The changepoints represent where the change in the
+Finds the most significant changepoints in the dataset from a prophet model trained 
+using the assigned years of training data. The changepoints represent where the change in the
 rate of change of the data is the greatest in either the negative or positive
-direction. In other words, a changepoint is where the second derivative of the data 
-is at a maximum. This method prints the 5 most significant changepoints by the 
-change in the rate of change and plots the 10 most significant overlaid on top of the 
-stock price data. The changepoints only come from the first 80% of the training data.
+direction. The changepoints occur where the change in the rate of the time series is greatest.
+This method prints the 5 most significant changepoints ranked by the 
+change in the rate and plots the 10 most significant overlaid on top of the 
+stock price data. The changepoints only come from the first 80% of the training data in 
+a Prophet model.
 
 A special bonus feature of this method is a Google Search Trends analysis. If a search term is 
 passed to the method, the method retrieves the Google Search Frequency for the specified term and plots
@@ -113,7 +108,18 @@ on the same graph as the changepoints and the stock price data. It also displays
 search queries and related rising search queires. If no 
 term is specified then this capability is not used. You can use
 this to determine if the stock price is correlated to certain search terms or if the 
-changepoints coincide with particular searches. 
+changepoints coincide with an increase in particular searches. 
+
+### Calculate profit from buy and hold strategy
+
+`Stocker.buy_and_hold(start_date=None, end_date=None, nshares=1)`
+
+Evaluates a buy and hold strategy from the start date to the end date
+with the specified number of shares. If no start date and end date are 
+specified, these default to the start and end date of the data. The buy and
+hold strategy means buying the stock on the start date and holding to the end date
+when we sell the stock. Prints the expected profit and plots the profit over time. 
+Recommended for those planning a trip back in time to maximize profits. 
 
 ### Find the best changepoint prior scale graphically
 
@@ -124,61 +130,70 @@ Makes a prophet model with each of the specified changepoint prior scales (cps).
 The cps controls the amount of overfitting in the model: a higher cps means a more
 flexible model which can lead to overfitting the training data (more variance), 
 and a lower cps leads to less flexibility and the possiblity of underfitting (high bias).
-Each model is fit with 3 years of data and makes predictions for 6 months. Output is 
-a graph showing the original observations, with the predictions from each model 
+Each model is fit with the assigned number of years of data and makes predictions for 6 months.
+Output is a graph showing the original observations, with the predictions from each model 
 and the associated uncertainty.
 
-This may take a little while to run. The results can be used to select the best 
-changepoint prior scale for the model. The cps is an attribute of a stocker object 
-and can be changed using `Stocker.changepoint_prior_scale = 0.05` 
+The cps is an attribute of a stocker object and can be changed using `Stocker.changepoint_prior_scale` 
+The default value for the cps is 0.05 which tends to be low for fitting stock data. 
 
 Altering the changepoint prior scale can have a significant effect on predictions,
 so try a few different values to see how they affect the model.
 
 ### Quantitaively compare different changepoint prior scales
 
-`Stocker.changepoint_prior_validation(changepoint_priors = [0.001, 0.05, 0.1, 0.2])`
+`Stocker.changepoint_prior_validation(self, start_date=None, end_date=None,
+				changepoint_priors = [0.001, 0.05, 0.1, 0.2])`
 
-Similar to the changepoint prior analysis except quantifies the differences between 
-cps values. A model is created with each changepoint prior, trained on 3 years of 
-data (2014-2016) and tested on 2017. The average error on the training and testing
+Quantifies the differences in performance on a validation set of the specified 
+cps values. A model is created with each changepoint prior, trained on the assigned
+number of training years prior to the test period and evaluated on the range
+passed to the method. The default validation period is from two years before the end of the 
+data to one year before the end of the data. The average error on the training and testing
 data for each prior is calculated and displayed as well as the average uncertainty
 (range) of the data for both the training and testing sets. The average error is the 
 mean of the absolute difference between the prediction and the correct value in dollars.
 The uncertainty is the upper estimate minus the lower estimate in dollars.
-A graph of these results is also produced. This method is useful for choosing
-a proper cps in combination with the analysis graphical results. 
+A graph of these results is also produced. This method is useful for choosing a 
+proper cps in combination with the graphical results. 
 
-### Evalaute the Prophet model predictions against real prices and compare profits
+### Evalaute the Prophet model predictions against real prices and play stock marker
 
 `Stocker.evaluate_prediction(start_date=None, end_date=None, nshares=1000)`
 
 Evalutes a trading strategy informed by the prophet model 
-between the specified start and end date. The model is trained on 3 years of data 
-prior to the test period and makes predictions for the specified date range. The 
-default evaluation range is the last year of the data. The predictions for the 
-evaluation period are compared to the known stock price values to determine the profits (or losses) 
-from using the prophet strategy. 
+between the specified start and end date. The start and end date for the evaluation 
+should be different than the start and end date used for validation the prior 
+otherwise you could end up overfitting the test set. The model is trained on the assigned 
+number of years of data prior to the test period and makes predictions for the specified date range. The 
+default evaluation range is the last year of the data. Numerical performance metrics are computed
+using the predictions and known test set values. These are: average absolute error on the testing
+and training data, percentage of time the model predicted the correct direction for the stock, and the
+percentage of the time the actual value was within the 80% confidence interval for the prediction. A 
+graph shows the predictions with uncertainty and the actual values. The final actual and predicted
+prices are also displayed. 
 
-The strategy states that for a given  day, we buy a stock if the model predicts it will increase.
-If the model predictsit will decrease, we do not play the market on that day. 
-Our profit, if we bought the stock, is the change in the price of the stock over that day. 
-Therefore, if we predict the stock will go up and the price does go up, we will make the change
-in price times the number of shares. If the price goes down, we lose the change times
-the number of shares. 
+If number of shares is passed to the method, we get to play the stock market over the 
+testing period with the specified number of shares. We compare the strategy informed 
+by the Prophet model with a simple buy and hold approach. 
+
+The strategy from the model states that for a given  day, we buy a stock if the model 
+predicts it will increase. If the model predicts a decrease, we do not play the market on that day. 
+Our earnings, if we bought the stock, will be the change in the price of the stock over that day
+multiplied by the number of shares.  Therefore, if we predict the stock will go up and the price 
+does go up, we will make the change in price times the number of shares. If the price goes down, 
+we lose the change in price times the number of shares. 
 
 Printed output is the final predicted price, the final actual price, the 
 profit from the model strategy, and the profit from a buy and hold strategy over the 
-same period. Graphs of the predictions versus the actual values and the expected 
-profit from both strategies over time are also displayed. 
+same period. A graph of the expected profit from both strategies over time is displayed. 
 
 ### Predict future prices
 
 `Stocker.predict_future(days=30)`
 
 Makes a prediction for the specified number of days in the future 
-using a prophet model trained on the past 3 years of data. Printed output 
-is the final predicted value of the stock, the days on which the stock is 
-expected to increase, and the days when it is expected to decrease.
-A graph also shows these results with uncertainty intervals.
+using a prophet model trained on the assigned number of years of data. Printed output 
+is the days on which the stock is expected to increase and the days when it is expected to decrease.
+A graph also shows these results with confidence intervals for the prediction. 
 	
