@@ -810,18 +810,47 @@ class Stocker():
         plt.xlabel('Date'); plt.title('Predictions for %s' % self.symbol);
         plt.show()
         
-    def changepoint_prior_validation(self, changepoint_priors = [0.001, 0.05, 0.1, 0.2]):
+    def changepoint_prior_validation(self, start_date=None, end_date=None,changepoint_priors = [0.001, 0.05, 0.1, 0.2]):
+
+
+        # Default start date is two years before end of data
+        # Default end date is one year before end of data
+        if start_date is None:
+            start_date = self.max_date - pd.DateOffset(years=2)
+        if end_date is None:
+            end_date = self.max_date - pd.DateOffset(years=1)
+            
+        # Convert to pandas datetime for indexing dataframe
+        start_date = pd.to_datetime(start_date)
+        end_date = pd.to_datetime(end_date)
+        
+        if end_date.date() < start_date.date():
+            print('End Date must be later than start date.')
+            return
+        
+        # Check to make sure dates are in the data
+        if (start_date not in list(self.stock['Date'])):
+            print('Start Date not in data (either out of range or not a trading day.)')
+            return
+        elif (end_date not in list(self.stock['Date'])):
+            print('End Date not in data (either out of range or not a trading day.)')
+            return
                                
         # Select self.training_years number of years
-        train = self.stock[(self.stock['Date'] < (max(self.stock['Date']) - pd.DateOffset(years=1)).date()) & 
-                           (self.stock['Date'] > (max(self.stock['Date']) - pd.DateOffset(years=self.training_years + 1)).date())]
+        train = self.stock[(self.stock['Date'] > (start_date - pd.DateOffset(years=self.training_years)).date()) & 
+        (self.stock['Date'] < start_date.date())]
         
-        # Testing data from past year used for answers
-        test = self.stock[(self.stock['Date'] >= (max(self.stock['Date']) - pd.DateOffset(years=1)).date())]
+        # Testing data is specified by range
+        test = self.stock[(self.stock['Date'] >= start_date.date()) & (self.stock['Date'] <= end_date.date())]
+
         eval_days = (max(test['Date']).date() - min(test['Date']).date()).days
         
         results = pd.DataFrame(0, index = list(range(len(changepoint_priors))), 
-                               columns = ['cps', 'train_err', 'train_range', 'test_err', 'test_range'])
+            columns = ['cps', 'train_err', 'train_range', 'test_err', 'test_range'])
+
+        print('\nValidation Range {} to {}.\n'.format(min(test['Date']).date(),
+            max(test['Date']).date()))
+            
         
         # Iterate through all the changepoints and make models
         for i, prior in enumerate(changepoint_priors):
@@ -852,8 +881,10 @@ class Stocker():
             
             results.ix[i, 'test_err'] = avg_test_error
             results.ix[i, 'test_range'] = avg_test_uncertainty
-            
+
         print(results)
+
+
         
         # Plot of training and testing average errors
         self.reset_plot()
