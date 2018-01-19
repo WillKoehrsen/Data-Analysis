@@ -67,6 +67,9 @@ class Stocker():
         # The most recent price
         self.most_recent_price = float(self.stock.ix[len(self.stock) - 1, 'y'])
         
+        # Number of years of data to train on
+        self.training_years = 3
+
         # Prophet parameters
         # Default prior from library
         self.changepoint_prior_scale = 0.05 
@@ -284,8 +287,8 @@ class Stocker():
     # Graph the effects of altering the changepoint prior scale (cps)
     def changepoint_prior_analysis(self, changepoint_priors=[0.001, 0.05, 0.1, 0.2], colors=['b', 'r', 'grey', 'gold']):
     
-        # Training and plotting with 4 years of data
-        train = self.stock[(self.stock['Date'] > (max(self.stock['Date']) - pd.DateOffset(years=3)).date())]
+        # Training and plotting with specified years of data
+        train = self.stock[(self.stock['Date'] > (max(self.stock['Date']) - pd.DateOffset(years=self.training_years)).date())]
         
         # Iterate through all the changepoints and make models
         for i, prior in enumerate(changepoint_priors):
@@ -343,8 +346,8 @@ class Stocker():
         
         model = self.create_model()
         
-        # Fit on the stock history for past 3 years
-        stock_history = self.stock[self.stock['Date'] > (self.max_date - pd.DateOffset(years = 3)).date()]
+        # Fit on the stock history for self.training_years number of years
+        stock_history = self.stock[self.stock['Date'] > (self.max_date - pd.DateOffset(years = self.training_years)).date()]
         
         if resample:
             stock_history = self.resample(stock_history)
@@ -411,9 +414,9 @@ class Stocker():
             print('End Date not in data (either out of range or not a trading day.)')
             return 
         
-        # Training data starts 3 years before start date and goes up to start date
+        # Training data starts self.training_years years before start date and goes up to start date
         train = self.stock[(self.stock['Date'] < start_date.date()) & 
-                           (self.stock['Date'] > (start_date - pd.DateOffset(years=3)).date())]
+                           (self.stock['Date'] > (start_date - pd.DateOffset(years=self.training_years)).date())]
         
         # Testing data is specified in the range
         test = self.stock[(self.stock['Date'] >= start_date.date()) & (self.stock['Date'] <= end_date.date())]
@@ -543,7 +546,7 @@ class Stocker():
             
             print('When the model predicted an increase, the price increased {:.2f}% of the time.'.format(increase_accuracy))
             print('When the model predicted a  decrease, the price decreased  {:.2f}% of the time.\n'.format(decrease_accuracy))
-            
+
             # Display some friendly information about the perils of playing the stock market
             print('The total profit using the Prophet model = ${:.2f}.'.format(np.sum(prediction_profit)))
             print('The Buy and Hold strategy profit =         ${:.2f}.'.format(float(test.ix[len(test) - 1, 'hold_profit'])))
@@ -566,12 +569,12 @@ class Stocker():
 
             # Plot smart profits
             plt.plot(test['ds'], test['hold_profit'], 'b',
-                     linewidth = 1.8, label = 'Buy and Hold') 
+                     linewidth = 1.8, label = 'Buy and Hold Strategy') 
 
             # Plot prediction profits
             plt.plot(test['ds'], test['pred_profit'], 
                      color = 'g' if final_profit > 0 else 'r',
-                     linewidth = 1.8, label = 'Prediction')
+                     linewidth = 1.8, label = 'Prediction Strategy')
 
             # Display final values on graph
             plt.text(x = text_location, 
@@ -621,8 +624,8 @@ class Stocker():
 
         model = self.create_model()
         
-        # Use past three years of data
-        train = self.stock[self.stock['Date'] > (self.max_date - pd.DateOffset(years = 3)).date()]
+        # Use past self.training_years years of data
+        train = self.stock[self.stock['Date'] > (self.max_date - pd.DateOffset(years = self.training_years)).date()]
         model.fit(train)
         
         # Predictions of the training data (no future periods)
@@ -739,8 +742,8 @@ class Stocker():
     # Predict the future price for a given range of days
     def predict_future(self, days=30):
         
-        # Use past three years for training
-        train = self.stock[self.stock['Date'] > (max(self.stock['Date']) - pd.DateOffset(years=3)).date()]
+        # Use past self.training_years years for training
+        train = self.stock[self.stock['Date'] > (max(self.stock['Date']) - pd.DateOffset(years=self.training_years)).date()]
         
         model = self.create_model()
         
@@ -809,11 +812,11 @@ class Stocker():
         
     def changepoint_prior_validation(self, changepoint_priors = [0.001, 0.05, 0.1, 0.2]):
                                
-        # Select three years of training data starting 4 years ago and going until 3 years ago
+        # Select self.training_years number of years
         train = self.stock[(self.stock['Date'] < (max(self.stock['Date']) - pd.DateOffset(years=1)).date()) & 
-                           (self.stock['Date'] > (max(self.stock['Date']) - pd.DateOffset(years=4)).date())]
+                           (self.stock['Date'] > (max(self.stock['Date']) - pd.DateOffset(years=self.training_years + 1)).date())]
         
-        # Testing data used for answers
+        # Testing data from past year used for answers
         test = self.stock[(self.stock['Date'] >= (max(self.stock['Date']) - pd.DateOffset(years=1)).date())]
         eval_days = (max(test['Date']).date() - min(test['Date']).date()).days
         
