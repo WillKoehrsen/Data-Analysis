@@ -375,7 +375,7 @@ class Stocker():
 
         # Plot the uncertainty interval as ribbon
         ax.fill_between(future['ds'].dt.to_pydatetime(), future['yhat_upper'], future['yhat_lower'], alpha = 0.3, 
-                       facecolor = 'g', edgecolor = 'k', linewidth = 1.4, label = 'Uncertainty')
+                       facecolor = 'g', edgecolor = 'k', linewidth = 1.4, label = 'Confidence Interval')
 
         # Plot formatting
         plt.legend(loc = 2, prop={'size': 10}); plt.xlabel('Date'); plt.ylabel('Price $');
@@ -386,7 +386,7 @@ class Stocker():
         return model, future
       
     # Evaluate prediction model for one year
-    def evaluate_prediction(self, start_date=None, end_date=None, nshares = 1000):
+    def evaluate_prediction(self, start_date=None, end_date=None, nshares = None):
         
         # Default start date is one year before end of data
         # Default end date is end date of data
@@ -428,6 +428,8 @@ class Stocker():
         
         # Merge predictions with the known values
         test = pd.merge(test, future, on = 'ds', how = 'inner')
+
+        train = pd.merge(train, future, on = 'ds', how = 'inner')
         
         # Calculate the differences between consecutive measurements
         test['pred_diff'] = test['yhat'].diff()
@@ -439,116 +441,157 @@ class Stocker():
         # Accuracy when we predict increase and decrease
         increase_accuracy = 100 * np.mean(test[test['pred_diff'] > 0]['correct'])
         decrease_accuracy = 100 * np.mean(test[test['pred_diff'] < 0]['correct'])
-        
-        # Only playing the stocks when we predict the stock will increase
-        test_pred_increase = test[test['pred_diff'] > 0]
-        
-        test_pred_increase.reset_index(inplace=True)
-        prediction_profit = []
-        
-        # Iterate through all the predictions and calculate profit from playing
-        for i, correct in enumerate(test_pred_increase['correct']):
+
+        # Calculate mean absolute error
+        test_errors = abs(test['y'] - test['yhat'])
+        test_mean_error = np.mean(test_errors)
+
+        train_errors = abs(train['y'] - train['yhat'])
+        train_mean_error = np.mean(train_errors)
+
+        # Calculate percentage of time actual value within prediction range
+        test['in_range'] = False
+
+        for i in test.index:
+            if (test.ix[i, 'y'] < test.ix[i, 'yhat_upper']) & (test.ix[i, 'y'] > test.ix[i, 'yhat_lower']):
+                test.ix[i, 'in_range'] = True
+
+        in_range_accuracy = 100 * np.mean(test['in_range'])
+
+        if not nshares:
+
+            # Date range of predictions
+            print('\nPrediction Range: {} to {}.'.format(start_date.date(),
+                end_date.date()))
+
+            # Final prediction vs actual value
+            print('\nPredicted price on {} = ${:.2f}.'.format(max(future['ds']).date(), future.ix[len(future) - 1, 'yhat']))
+            print('Actual price on    {} = ${:.2f}.\n'.format(max(test['ds']).date(), test.ix[len(test) - 1, 'y']))
+
+            print('Average Absolute Error on Training Data = ${:.2f}.'.format(train_mean_error))
+            print('Average Absolute Error on Testing  Data = ${:.2f}.\n'.format(test_mean_error))
+
+            # Direction accuracy
+            print('When the model predicted an increase, the price increased {:.2f}% of the time.'.format(increase_accuracy))
+            print('When the model predicted a  decrease, the price decreased  {:.2f}% of the time.\n'.format(decrease_accuracy))
+
+            print('The actual value was within the {:d}% confidence interval {:.2f}% of the time.'.format(int(100 * model.interval_width), in_range_accuracy))
+
+
+             # Reset the plot
+            self.reset_plot()
             
-            # If we predicted up and the price goes up, we gain the difference
-            if correct == 1:
-                prediction_profit.append(nshares * test_pred_increase.ix[i, 'real_diff'])
-            # If we predicted up and the price goes down, we lose the difference
-            else:
-                prediction_profit.append(nshares * test_pred_increase.ix[i, 'real_diff'])
-        
-        test_pred_increase['pred_profit'] = prediction_profit
-        
-        # Put the profit into the test dataframe
-        test = pd.merge(test, test_pred_increase[['ds', 'pred_profit']], on = 'ds', how = 'left')
-        test.ix[0, 'pred_profit'] = 0
-    
-        # Profit for either method at all dates
-        test['pred_profit'] = test['pred_profit'].cumsum().ffill()
-        test['hold_profit'] = nshares * (test['y'] - float(test.ix[0, 'y']))
-        
-        # Display information
-        print('You played the stock market in {} from {} to {} with {} shares.\n'.format(
-            self.symbol, start_date.date(), end_date.date(), nshares))
-        
-        print('Predicted price on {} = ${:.2f}.'.format(max(future['ds']).date(), future.ix[len(future) - 1, 'yhat']))
-        print('Actual price on    {} = ${:.2f}.\n'.format(max(test['ds']).date(), test.ix[len(test) - 1, 'y']))
-        
-        # Display some friendly information about the perils of playing the stock market
-        print('When the model predicted an increase, the price increased {:.2f}% of the time.'.format(increase_accuracy))
-        print('When the model predicted a decrease, the price decreased  {:.2f}% of the time.\n'.format(decrease_accuracy))
-        print('The total profit using the Prophet model = ${:.2f}.'.format(np.sum(prediction_profit)))
-        print('The Buy and Hold strategy profit =         ${:.2f}.'.format(float(test.ix[len(test) - 1, 'hold_profit'])))
-        print('\nThanks for playing the stock market!\n')
-        
-        # Reset the plot
-        self.reset_plot()
-        
-        # Set up the plot
-        fig, ax = plt.subplots(1, 1)
+            # Set up the plot
+            fig, ax = plt.subplots(1, 1)
 
-        # Plot the actual values
-        ax.plot(train['ds'], train['y'], 'ko-', linewidth = 1.4, alpha = 0.8, ms = 1.8, label = 'Observations')
-        ax.plot(test['ds'], test['y'], 'ko-', linewidth = 1.4, alpha = 0.8, ms = 1.8, label = 'Observations')
+            # Plot the actual values
+            ax.plot(train['ds'], train['y'], 'ko-', linewidth = 1.4, alpha = 0.8, ms = 1.8, label = 'Observations')
+            ax.plot(test['ds'], test['y'], 'ko-', linewidth = 1.4, alpha = 0.8, ms = 1.8, label = 'Observations')
+            
+            # Plot the predicted values
+            ax.plot(future['ds'], future['yhat'], 'navy', linewidth = 2.4, label = 'Predicted');
+
+            # Plot the uncertainty interval as ribbon
+            ax.fill_between(future['ds'].dt.to_pydatetime(), future['yhat_upper'], future['yhat_lower'], alpha = 0.6, 
+                           facecolor = 'gold', edgecolor = 'k', linewidth = 1.4, label = 'Confidence Interval')
+
+            # Put a vertical line at the start of predictions
+            plt.vlines(x=min(test['ds']).date(), ymin=min(future['yhat_lower']), ymax=max(future['yhat_upper']), colors = 'r',
+                       linestyles='dashed', label = 'Prediction Start')
+
+            # Plot formatting
+            plt.legend(loc = 2, prop={'size': 8}); plt.xlabel('Date'); plt.ylabel('Price $');
+            plt.grid(linewidth=0.6, alpha = 0.6)
+                       
+            plt.title('{} Model Evaluation from {} to {}.'.format(self.symbol,
+                start_date.date(), end_date.date()));
+            plt.show();
+
         
-        # Plot the predicted values
-        ax.plot(future['ds'], future['yhat'], 'navy', linewidth = 2.4, label = 'Predicted');
-
-        # Plot the uncertainty interval as ribbon
-        ax.fill_between(future['ds'].dt.to_pydatetime(), future['yhat_upper'], future['yhat_lower'], alpha = 0.6, 
-                       facecolor = 'gold', edgecolor = 'k', linewidth = 1.4, label = 'Uncertainty')
-
-        # Put a vertical line at the start of predictions
-        plt.vlines(x=min(test['ds']).date(), ymin=min(future['yhat_lower']), ymax=max(future['yhat_upper']), colors = 'r',
-                   linestyles='dashed', label = 'Prediction Start')
-
-        # Plot formatting
-        plt.legend(loc = 2, prop={'size': 8}); plt.xlabel('Date'); plt.ylabel('Price $');
-        plt.grid(linewidth=0.6, alpha = 0.6)
-                   
-        plt.title('%s Prophet Evaluation for Past Year' % self.symbol);
-        plt.show();
+        # If a number of shares is specified, play the game
+        elif nshares:
+            
+            # Only playing the stocks when we predict the stock will increase
+            test_pred_increase = test[test['pred_diff'] > 0]
+            
+            test_pred_increase.reset_index(inplace=True)
+            prediction_profit = []
+            
+            # Iterate through all the predictions and calculate profit from playing
+            for i, correct in enumerate(test_pred_increase['correct']):
+                
+                # If we predicted up and the price goes up, we gain the difference
+                if correct == 1:
+                    prediction_profit.append(nshares * test_pred_increase.ix[i, 'real_diff'])
+                # If we predicted up and the price goes down, we lose the difference
+                else:
+                    prediction_profit.append(nshares * test_pred_increase.ix[i, 'real_diff'])
+            
+            test_pred_increase['pred_profit'] = prediction_profit
+            
+            # Put the profit into the test dataframe
+            test = pd.merge(test, test_pred_increase[['ds', 'pred_profit']], on = 'ds', how = 'left')
+            test.ix[0, 'pred_profit'] = 0
         
-        # Plot the predicted and actual profits over time
-        self.reset_plot()
-        
-        # Final profit and final smart used for locating text
-        final_profit = test.ix[len(test) - 1, 'pred_profit']
-        final_smart = test.ix[len(test) - 1, 'hold_profit']
+            # Profit for either method at all dates
+            test['pred_profit'] = test['pred_profit'].cumsum().ffill()
+            test['hold_profit'] = nshares * (test['y'] - float(test.ix[0, 'y']))
+            
+            # Display information
+            print('You played the stock market in {} from {} to {} with {} shares.\n'.format(
+                self.symbol, start_date.date(), end_date.date(), nshares))
+            
+            print('When the model predicted an increase, the price increased {:.2f}% of the time.'.format(increase_accuracy))
+            print('When the model predicted a  decrease, the price decreased  {:.2f}% of the time.\n'.format(decrease_accuracy))
+            
+            # Display some friendly information about the perils of playing the stock market
+            print('The total profit using the Prophet model = ${:.2f}.'.format(np.sum(prediction_profit)))
+            print('The Buy and Hold strategy profit =         ${:.2f}.'.format(float(test.ix[len(test) - 1, 'hold_profit'])))
+            print('\nThanks for playing the stock market!\n')
+            
+           
+            
+            # Plot the predicted and actual profits over time
+            self.reset_plot()
+            
+            # Final profit and final smart used for locating text
+            final_profit = test.ix[len(test) - 1, 'pred_profit']
+            final_smart = test.ix[len(test) - 1, 'hold_profit']
 
-        # text location
-        last_date = test.ix[len(test) - 1, 'ds']
-        text_location = (last_date - pd.DateOffset(months = 1)).date()
+            # text location
+            last_date = test.ix[len(test) - 1, 'ds']
+            text_location = (last_date - pd.DateOffset(months = 1)).date()
 
-        plt.style.use('dark_background')
+            plt.style.use('dark_background')
 
-        # Plot smart profits
-        plt.plot(test['ds'], test['hold_profit'], 'b',
-                 linewidth = 1.8, label = 'Buy and Hold') 
+            # Plot smart profits
+            plt.plot(test['ds'], test['hold_profit'], 'b',
+                     linewidth = 1.8, label = 'Buy and Hold') 
 
-        # Plot prediction profits
-        plt.plot(test['ds'], test['pred_profit'], 
-                 color = 'g' if final_profit > 0 else 'r',
-                 linewidth = 1.8, label = 'Prediction')
+            # Plot prediction profits
+            plt.plot(test['ds'], test['pred_profit'], 
+                     color = 'g' if final_profit > 0 else 'r',
+                     linewidth = 1.8, label = 'Prediction')
 
-        # Display final values on graph
-        plt.text(x = text_location, 
-                 y =  final_profit + (final_profit / 40),
-                 s = '$%d' % final_profit,
-                color = 'g' if final_profit > 0 else 'r',
-                size = 18)
-        
-        plt.text(x = text_location, 
-                 y =  final_smart + (final_smart / 40),
-                 s = '$%d' % final_smart,
-                color = 'g' if final_smart > 0 else 'r',
-                size = 18);
+            # Display final values on graph
+            plt.text(x = text_location, 
+                     y =  final_profit + (final_profit / 40),
+                     s = '$%d' % final_profit,
+                    color = 'g' if final_profit > 0 else 'r',
+                    size = 18)
+            
+            plt.text(x = text_location, 
+                     y =  final_smart + (final_smart / 40),
+                     s = '$%d' % final_smart,
+                    color = 'g' if final_smart > 0 else 'r',
+                    size = 18);
 
-        # Plot formatting
-        plt.ylabel('Profit  (US $)'); plt.xlabel('Date'); 
-        plt.title('Predicted versus Buy and Hold Profits');
-        plt.legend(loc = 2, prop={'size': 10});
-        plt.grid(alpha=0.2); 
-        plt.show()
+            # Plot formatting
+            plt.ylabel('Profit  (US $)'); plt.xlabel('Date'); 
+            plt.title('Predicted versus Buy and Hold Profits');
+            plt.legend(loc = 2, prop={'size': 10});
+            plt.grid(alpha=0.2); 
+            plt.show()
         
     def retrieve_google_trends(self, search, date_range):
         
