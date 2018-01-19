@@ -335,7 +335,7 @@ class Stocker():
                             alpha = 0.3, edgecolor = 'k', linewidth = 0.6)
                             
         # Plot labels
-        plt.legend(prop={'size': 10})
+        plt.legend(loc = 2, prop={'size': 10})
         plt.xlabel('Date'); plt.ylabel('Stock Price ($)'); plt.title('Effect of Changepoint Prior Scale');
         plt.show()
             
