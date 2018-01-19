@@ -68,7 +68,8 @@ class Stocker():
         self.most_recent_price = float(self.stock.ix[len(self.stock) - 1, 'y'])
         
         # Prophet parameters
-        self.changepoint_prior_scale = 0.2
+        # Default prior from library
+        self.changepoint_prior_scale = 0.05 
         self.weekly_seasonality = False
         self.daily_seasonality = False
         self.monthly_seasonality = True
