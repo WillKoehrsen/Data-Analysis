@@ -506,8 +506,9 @@ class Weighter():
                            user, change_per_day, goal_weight, days_to_goal, date_for_goal.date(), final_future_date))
         
         
-        self.slack.chat.post_message(channel="test_python", text=message, username="Weight Tracker Analysis")
         
+        self.slack.chat.post_message(channel="#weight_tracker", text=message, username="Weight Tracker Analysis")
+
         # Identify Weekly Trends
         future['weekday'] = [date.weekday() for date in future['ds']]
         future_weekly = future.groupby('weekday').mean()
@@ -515,14 +516,16 @@ class Weighter():
         
         # Color labels based on the users objective
         colors = ['red' if ( ((weight > 0) & (info['objective'] == 'lose')) | ((weight < 0) & (info['objective'] == 'gain'))) else 'green' for weight in future_weekly['weekly']]
+
+        self.reset_plot()
         
         # Create a bar plot with labels for positive and negative changes
         plt.figure(figsize=(10, 8))
         xvalues = list(range(len(future_weekly)))
         plt.bar(xvalues, future_weekly['weekly'], color = colors, edgecolor = 'k', linewidth = 2)
         plt.xticks(xvalues, list(future_weekly.index))
-        red_patch = mpatches.Patch(color='red', edgecolor='k', linewidth = 2, label='Needs Work')
-        green_patch = mpatches.Patch(color='green', edgecolor = 'k', linewidth = 2, label='Solid')
+        red_patch = mpatches.Patch(color='red',  linewidth = 2, label='Needs Work')
+        green_patch = mpatches.Patch(color='green', linewidth = 2, label='Solid')
         plt.legend(handles=[red_patch, green_patch])
         plt.xlabel('Day of Week')
         plt.ylabel('Trend (lbs)')
@@ -531,4 +534,7 @@ class Weighter():
         
         # Upload the image to slack and delete local file
         self.slack.files.upload('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\weekly_plot.png', channels = '#weight_tracker')
+
         os.remove('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\weekly_plot.png')
+
+        
