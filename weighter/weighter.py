@@ -216,7 +216,7 @@ class Weighter():
                     # Require at lesat 8 days of data
                     if len(self.weights[self.weights['Name'] == user]) < 8:
                         message = "\nAt least 8 days of data required for detailed analysis."
-                        self.slack.chat.post_message(channel='#weight_tracker', text = message, username = "Weight Tracker Data Management")
+                        self.slack.chat.post_message(channel='#weight_tracker', text = message, username = "Data Analyst", icon_emoji=":calendar:")
                 
                     elif entry.lower() == 'summary':
                         self.summary(user)
@@ -235,16 +235,17 @@ class Weighter():
     
                     # Display a help message if the string is not valid
                     else:
-                        message = ("\nPlease enter a valid message:\n"
+                        message = ("\nPlease enter a valid message:\n\n"
                                    "Your weight\n"
                                    "'Summary' to see a personal summary\n"
                                    "'Percent' to see a plot of all users percentage changes\n"
                                    "'History' to see a plot of your personal history\n"
-                                   "'Future\n' to see your predictions for the next thirty days"
-                                   "'Analysis\n' to view personalized advice\n"
+                                   "'Future' to see your predictions for the next thirty days\n"
+                                   "'Analysis' to view personalized advice\n"
                                    "For more help, contact @koehrsen_will on Twitter.\n")
 
-                        self.slack.chat.post_message(channel='#weight_tracker', text = message, username = "Weight Tracker Help")
+                        self.slack.chat.post_message(channel='#weight_tracker', text = message, username = "Help", 
+                        	icon_emoji=":interrobang:")
                     
             
     """ 
@@ -287,7 +288,7 @@ class Weighter():
                     "Percentage Weight Change = {:.2f}%\n").format(user, user_info['abs_change'],
                                                      user_info['pct_change'])
 
-        self.slack.chat.post_message('#weight_tracker', text=message, username='Weight Challenge Update')
+        self.slack.chat.post_message('#weight_tracker', text=message, username='Update', icon_emoji=':scales:')
                         
     """ 
     Displays comprehensive stats about the user
@@ -306,7 +307,7 @@ class Weighter():
                      user_info['goal_weight'], user_info['pct_towards_goal'],                                                       
                      user_info['start_weight'], str(user_info['start_date'].date()))
         
-        self.slack.chat.post_message('#weight_tracker', text=message, username='%s Summary' % user)
+        self.slack.chat.post_message('#weight_tracker', text=message, username='Summary', icon_emoji=":earth_africa:")
    
     """
     Reset the plot and institute basic parameters
@@ -349,8 +350,8 @@ class Weighter():
             fit_data = p(xvalues)
 
             # Plot the actual points and the fit
-            plt.plot(df.index, df['pct_change'], 'o', color = user_color, label = '%s' % user)
-            plt.plot(df.index, fit_data, '-', color = user_color, linewidth = 5, label = '%s' % user)
+            plt.plot(df.index, df['pct_change'], 'o', color = user_color, label = '%s Observations' % user)
+            plt.plot(df.index, fit_data, '-', color = user_color, linewidth = 5, label = '%s Smooth Fit' % user)
 
 
         # Plot formatting
@@ -360,7 +361,7 @@ class Weighter():
         plt.legend(prop={'size':14})
         plt.savefig('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\percentage_plot.png')
         
-        self.slack.files.upload('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\percentage_plot.png', channels='#weight_tracker')
+        self.slack.files.upload('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\percentage_plot.png', channels='#weight_tracker', title="Percent Plot")
         
         os.remove('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\percentage_plot.png')
         
@@ -397,7 +398,7 @@ class Weighter():
         plt.legend(prop={'size': 14});
         
         plt.savefig(fname='C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\history_plot.png')
-        self.slack.files.upload('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\history_plot.png', channels='#weight_tracker')
+        self.slack.files.upload('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\history_plot.png', channels='#weight_tracker', title="%s History" % user)
         
         # Remove the plot from local storage
         os.remove('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\history_plot.png')
@@ -439,7 +440,7 @@ class Weighter():
         message = ('{} Your predicted weight on {} = {:.2f} lbs.'.format(
             user, max(future['ds']).date(), future.ix[len(future) - 1, 'yhat']))
         
-        self.slack.chat.post_message(channel="#weight_tracker", text=message, username = 'Future Prediction')
+        self.slack.chat.post_message(channel="#weight_tracker", text=message, username = 'The Future', icon_emoji=":city_sunrise:")
         
         # Create the plot and upload to slack
         fig, ax = plt.subplots(1, 1, figsize=(10, 8))
@@ -451,7 +452,7 @@ class Weighter():
         plt.legend()
         plt.savefig('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\future_plot.png')
         
-        self.slack.files.upload('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\future_plot.png', channels="#weight_tracker")
+        self.slack.files.upload('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\future_plot.png', channels="#weight_tracker", title="%s Future Predictions" % user)
         
         os.remove('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\future_plot.png')
         
@@ -507,7 +508,7 @@ class Weighter():
         
         
         
-        self.slack.chat.post_message(channel="#weight_tracker", text=message, username="Weight Tracker Analysis")
+        self.slack.chat.post_message(channel="#weight_tracker", text=message, username="Analysis", icon_emoji=":bar_chart:")
 
         # Identify Weekly Trends
         future['weekday'] = [date.weekday() for date in future['ds']]
@@ -533,7 +534,7 @@ class Weighter():
         plt.savefig('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\weekly_plot.png')
         
         # Upload the image to slack and delete local file
-        self.slack.files.upload('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\weekly_plot.png', channels = '#weight_tracker')
+        self.slack.files.upload('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\weekly_plot.png', channels = '#weight_tracker', title="%s Weekly Trends" % user)
 
         os.remove('C:\\Users\\Will Koehrsen\\Documents\\Data-Analysis\\weighter\\images\\weekly_plot.png')
 
