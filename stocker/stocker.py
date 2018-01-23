@@ -85,69 +85,131 @@ class Stocker():
         print('{} Stocker Initialized. Data covers {} to {}.'.format(self.symbol,
                                                                      self.min_date.date(),
                                                                      self.max_date.date()))
-
-    def make_df(self, df=self.stock, start_date=None, end_date=None,
-    	round_date=True):
-    	# Default start and end date are the beginning and end of data
+    
+    """
+    Make sure start and end dates are in the range and can be
+    converted to pandas datetimes. Returns dates in the correct format
+    """
+    def handle_dates(self, start_date, end_date):
+        
+        
+        # Default start and end date are the beginning and end of data
         if start_date is None:
             start_date = self.min_date
         if end_date is None:
             end_date = self.max_date
-
-        # Convert to pandas datetime for indexing dataframe
-        start_date = pd.to_datetime(start_date)
-        end_date = pd.to_datetime(end_date)
         
-
-        if end_date.date() < start_date.date():
-            print('End Date must be later than start date.')
+        try:
+            # Convert to pandas datetime for indexing dataframe
+            start_date = pd.to_datetime(start_date)
+            end_date = pd.to_datetime(end_date)
+        
+        except Exception as e:
+            print('Enter valid pandas date format.')
+            print(e)
             return
         
+        valid_start = False
+        valid_end = False
+        
+        # User will continue to enter dates until valid dates are met
+        while (not valid_start) & (not valid_end):
+            valid_end = True
+            valid_start = True
+            
+            if end_date.date() < start_date.date():
+                print('End Date must be later than start date.')
+                start_date = pd.to_datetime(input('Enter a new start date: '))
+                end_date= pd.to_datetime(input('Enter a new end date: '))
+                valid_end = False
+                valid_start = False
+            
+            else: 
+                if end_date.date() > self.max_date.date():
+                    print('End Date exceeds data range')
+                    end_date= pd.to_datetime(input('Enter a new end date: '))
+                    valid_end = False
+
+                if start_date.date() < self.min_date.date():
+                    print('Start Date is before date range')
+                    start_date = pd.to_datetime(input('Enter a new start date: '))
+                    valid_start = False
+                
+        
+        return start_date, end_date
+        
+    """
+    Return the dataframe trimmed to the specified range.
+    """
+    def make_df(self, start_date, end_date, df=None):
+        
+        # Default is to use the object stock data
+        if not df:
+            df = self.stock.copy()
+        
+        
+        start_date, end_date = self.handle_dates(start_date, end_date)
+        
+        # keep track of whether the start and end dates are in the data
         start_in = True
         end_in = True
 
         # If user wants to round dates (default behavior)
         if self.round_dates:
-        	# Record if start and end date are in df
-        	if (start_date not in list(df['Date'])):
-        		start_in = False
-        	if (end_date not in list(df['Date'])):
-        		end_in = False
+            # Record if start and end date are in df
+            if (start_date not in list(df['Date'])):
+                start_in = False
+            if (end_date not in list(df['Date'])):
+                end_in = False
 
-        	# If both are not in dataframe, round both
-        	if (not end_in) & (not start_in):
-        		trim_df = df[(df['Date'] >= start_date.date()) & 
-        		             (df['Date'] <= end_date.date())]
+            # If both are not in dataframe, round both
+            if (not end_in) & (not start_in):
+                trim_df = df[(df['Date'] >= start_date.date()) & 
+                             (df['Date'] <= end_date.date())]
             
             else:
-            	# If both are in dataframe, round neither
-            	if (end_in) & (start_in):
-            		trim_df = df[(df['Date'] >= start_date.date()) & 
-        		                 (df['Date'] <= end_date.date())]
-            	else:
-            		# If only start is missing, round start
-            		if (not start_in):
-            			trim_df = df[(df['Date'] > start_date.date()) & 
-        		             		 (df['Date'] <= end_date.date())]
-        			# If only end is imssing round end
-        			elif (not end_in):
-        				trim_df = df[(df['Date'] >= start_date.date()) & 
-        		             	     (df['Date'] < end_date.date())]
+                # If both are in dataframe, round neither
+                if (end_in) & (start_in):
+                    trim_df = df[(df['Date'] >= start_date.date()) & 
+                                 (df['Date'] <= end_date.date())]
+                else:
+                    # If only start is missing, round start
+                    if (not start_in):
+                        trim_df = df[(df['Date'] > start_date.date()) & 
+                                     (df['Date'] <= end_date.date())]
+                    # If only end is imssing round end
+                    elif (not end_in):
+                        trim_df = df[(df['Date'] >= start_date.date()) & 
+                                     (df['Date'] < end_date.date())]
 
-        # No round dates, if either data not in, print
-       	else:
-       		# Check to make sure dates are in the data
-	        if (start_date not in list(df['Date'])):
-	            print('Start Date not in data (either out of range or not a trading day.)')
-	            return
-	        elif (end_date not in list(df['Date'])):
-	            print('End Date not in data (either out of range or not a trading day.)')
-	            return 
+        
+        else:
+            valid_start = False
+            valid_end = False
+            while (not valid_start) & (not valid_end):
+                start_date, end_date = self.handle_dates(start_date, end_date)
+                
+                # No round dates, if either data not in, print message and return
+                if (start_date in list(df['Date'])):
+                    valid_start = True
+                if (end_date in list(df['Date'])):
+                    valid_end = True
+                    
+                # Check to make sure dates are in the data
+                if (start_date not in list(df['Date'])):
+                    print('Start Date not in data (either out of range or not a trading day.)')
+                    start_date = pd.to_datetime(input(prompt='Enter a new start date: '))
+                    
+                elif (end_date not in list(df['Date'])):
+                    print('End Date not in data (either out of range or not a trading day.)')
+                    end_date = pd.to_datetime(input(prompt='Enter a new end date: ') )
 
-	        # Dates are not rounded
-        	trim_df = df[(df['Date'] >= start_date.date()) & 
-        	             (df['Date'] <= end_date.date())]
+            # Dates are not rounded
+            trim_df = df[(df['Date'] >= start_date.date()) & 
+                         (df['Date'] <= end_date.date())]
 
+        
+            
         return trim_df
 
 
@@ -155,6 +217,11 @@ class Stocker():
     def plot_stock(self, start_date=None, end_date=None, stats=['Adj. Close'], plot_type='basic'):
         
         self.reset_plot()
+        
+        if start_date is None:
+            start_date = self.min_date
+        if end_date is None:
+            end_date = self.max_date
         
         stock_plot = self.make_df(start_date, end_date)
 
@@ -172,11 +239,9 @@ class Stocker():
             date_stat_max = stock_plot[stock_plot[stat] == stat_max]['Date']
             date_stat_max = date_stat_max[date_stat_max.index[0]].date()
             
-            current_stat = float(stock_plot[stock_plot['Date'] == end_date][stat])
-            
             print('Maximum {} = {:.2f} on {}.'.format(stat, stat_max, date_stat_max))
             print('Minimum {} = {:.2f} on {}.'.format(stat, stat_min, date_stat_min))
-            print('Current {} = {:.2f}.\n'.format(stat, current_stat))
+            print('Current {} = {:.2f} on {}.\n'.format(stat, self.stock.ix[len(self.stock) - 1, stat], self.max_date.date()))
             
             # Percentage y-axis
             if plot_type == 'pct':
@@ -255,34 +320,14 @@ class Stocker():
     def buy_and_hold(self, start_date=None, end_date=None, nshares=1):
         self.reset_plot()
         
-        # Default start and end date are the beginning and end of data
-        if start_date is None:
-            start_date = self.min_date
-        if end_date is None:
-            end_date = self.max_date
+        start_date, end_date = self.handle_dates(start_date, end_date)
             
-        # Convert to pandas datetime for indexing dataframe
-        start_date = pd.to_datetime(start_date)
-        end_date = pd.to_datetime(end_date)
-        
-        if end_date.date() < start_date.date():
-            print('End Date must be later than start date.')
-            return
-        
-        # Check to make sure dates are in the data
-        if (start_date not in list(self.stock['Date'])):
-            print('Start Date not in data (either out of range or not a trading day.)')
-            return
-        elif (end_date not in list(self.stock['Date'])):
-            print('End Date not in data (either out of range or not a trading day.)')
-            return 
-        
         # Find starting and ending price of stock
         start_price = float(self.stock[self.stock['Date'] == start_date]['Adj. Open'])
         end_price = float(self.stock[self.stock['Date'] == end_date]['Adj. Close'])
         
         # Make a profit dataframe and calculate profit column
-        profits = self.stock[(self.stock['Date'] >= start_date) & (self.stock['Date'] <= end_date)]
+        profits = self.make_df(start_date, end_date)
         profits['hold_profit'] = nshares * (profits['Adj. Close'] - start_price)
         
         # Total profit
@@ -442,21 +487,7 @@ class Stocker():
         if end_date is None:
             end_date = self.max_date
             
-        # Convert to pandas datetime for indexing dataframe
-        start_date = pd.to_datetime(start_date)
-        end_date = pd.to_datetime(end_date)
-        
-        if end_date.date() < start_date.date():
-            print('End Date must be later than start date.')
-            return
-        
-        # Check to make sure dates are in the data
-        if (start_date not in list(self.stock['Date'])):
-            print('Start Date not in data (either out of range or not a trading day.)')
-            return
-        elif (end_date not in list(self.stock['Date'])):
-            print('End Date not in data (either out of range or not a trading day.)')
-            return 
+        start_date, end_date = self.handle_dates(start_date, end_date)
         
         # Training data starts self.training_years years before start date and goes up to start date
         train = self.stock[(self.stock['Date'] < start_date.date()) & 
@@ -868,17 +899,7 @@ class Stocker():
         start_date = pd.to_datetime(start_date)
         end_date = pd.to_datetime(end_date)
         
-        if end_date.date() < start_date.date():
-            print('End Date must be later than start date.')
-            return
-        
-        # Check to make sure dates are in the data
-        if (start_date not in list(self.stock['Date'])):
-            print('Start Date not in data (either out of range or not a trading day.)')
-            return
-        elif (end_date not in list(self.stock['Date'])):
-            print('End Date not in data (either out of range or not a trading day.)')
-            return
+        start_date, end_date = self.handle_dates(start_date, end_date)
                                
         # Select self.training_years number of years
         train = self.stock[(self.stock['Date'] > (start_date - pd.DateOffset(years=self.training_years)).date()) & 
