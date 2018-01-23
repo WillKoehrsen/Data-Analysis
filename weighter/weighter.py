@@ -216,7 +216,7 @@ class Weighter():
                     # Require at lesat 8 days of data
                     if len(self.weights[self.weights['Name'] == user]) < 8:
                         message = "\nAt least 8 days of data required for detailed analysis."
-                        self.slack.chat.post_message(channel='#weight_tracker', message = message, username = "Weight Tracker Data Management")
+                        self.slack.chat.post_message(channel='#weight_tracker', text = message, username = "Weight Tracker Data Management")
                 
                     elif entry.lower() == 'summary':
                         self.summary(user)
@@ -236,15 +236,15 @@ class Weighter():
                     # Display a help message if the string is not valid
                     else:
                         message = ("\nPlease enter a valid message:\n"
-                                   "Your weight"
-                                   "'Summary' to see a personal summary"
-                                   "'Percent' to see a plot of all users percentage changes"
-                                   "'History' to see a plot of your personal history"
-                                   "'Future' to see your predictions for the next thirty days"
-                                   "'Analysis' to view personalized advice\n"
+                                   "Your weight\n"
+                                   "'Summary' to see a personal summary\n"
+                                   "'Percent' to see a plot of all users percentage changes\n"
+                                   "'History' to see a plot of your personal history\n"
+                                   "'Future\n' to see your predictions for the next thirty days"
+                                   "'Analysis\n' to view personalized advice\n"
                                    "For more help, contact @koehrsen_will on Twitter.\n")
 
-                        self.slack.chat.post_message(channel='#weight_tracker', message = message, username = "Weight Tracker Help")
+                        self.slack.chat.post_message(channel='#weight_tracker', text = message, username = "Weight Tracker Help")
                     
             
     """ 

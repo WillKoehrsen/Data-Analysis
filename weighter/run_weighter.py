@@ -75,4 +75,8 @@ if __name__ == "__main__":
 		# Initialize with dataframe of weights, google sheet, and slack object
     	 weighter = Weighter(weights, gsheet, slack)
     	 weighter.process_entries()
+    	 print('Success')
+
+
+	
 
