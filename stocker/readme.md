@@ -45,10 +45,17 @@ Import the stocker class by running
 
 `from stocker import Stocker`
 
-Instantiate a stocker object by calling Stocker with a valid stock ticker (a list of all 3100
-tickers can be found at data/stock_list.csv):
+Instantiate a stocker object by calling Stocker with a valid stock ticker. Stocker uses
+the WIKI database on Quandl by default and a list of all 3100
+tickers in this database can be found at data/stock_list.csv. 
+If using one of the tickers in the list, only the ticker symbol needs to be passed. 
+If using a stock not on the list, try using a different exchange:
 
-`microsoft = Stocker('MSFT')`
+	# MSFT is in the WIKI database, which is default
+	microsoft = Stocker(ticker='MSFT')
+	
+	# TECHM is in the NSE database
+	techm = Stocker(ticker='TECHM', exchange='NSE')
 
 If succesful, you will recieve a message with the date range of data:
 
