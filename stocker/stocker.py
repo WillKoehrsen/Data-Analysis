@@ -17,7 +17,7 @@ import matplotlib
 class Stocker():
     
     # Initialization requires a ticker symbol
-    def __init__(self, ticker):
+    def __init__(self, ticker, exchange='WIKI'):
         
         # Enforce capitalization
         ticker = ticker.upper()
@@ -30,7 +30,7 @@ class Stocker():
 
         # Retrieval the financial data
         try:
-            stock = quandl.get('WIKI/%s' % ticker)
+            stock = quandl.get('%s/%s' % (exchange, ticker))
         
         except Exception as e:
             print('Error Retrieving Data.')
@@ -42,6 +42,11 @@ class Stocker():
         
         # Columns required for prophet
         stock['ds'] = stock['Date']
+
+        if ('Adj. Close' not in stock.columns):
+            stock['Adj. Close'] = stock['Close']
+            stock['Adj. Open'] = stock['Open']
+        
         stock['y'] = stock['Adj. Close']
         stock['Daily Change'] = stock['Adj. Close'] - stock['Adj. Open']
         
