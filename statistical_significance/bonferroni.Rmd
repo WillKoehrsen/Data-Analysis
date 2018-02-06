@@ -1,0 +1,57 @@
+---
+title: "Multiple Comparisons and the Bonferroni Correction"
+author: "Will Koehrsen"
+date: "January 25, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Multiple Comparison
+
+We have a feature vector of 100 random data points. We want to test this against 
+100 other vectors. We will use an $\alpha = 0.05$ for all of our comparisons. 
+
+```{r}
+# Create a random vector of 100 x values
+x <- 5 * abs(rnorm(100))
+
+# 100 random vectors of 100 random values
+y <- runif(1e4, 0, 5)
+y <- matrix(y, nrow=100, ncol=100)
+df <- as.data.frame(y)
+df$x <- x
+p_values <- as.data.frame(matrix(ncol=2, nrow=100))
+names(p_values) <- c('variable', 'p_value')
+
+i = 1
+for (term in names(df)) {
+  if (term != 'x') {
+  m <- lm(df$x ~ df[[term]])
+  r <- summary(m)
+  p <- r$coefficients[2, 4]
+  p_values[i, 'variable'] = term
+  p_values[i, 'p_value'] = p
+  i = i + 1
+  }
+}
+
+
+```
+
+```{r}
+library(tidyverse)
+library(ggthemes)
+p_values <- arrange(p_values, p_value)
+
+sig_vars <- dplyr::filter(p_values, p_value < 0.05)$variable
+sig_df <- df[, c(sig_vars)]
+sig_df <- gather(sig_df)
+x <- rep(df$x, 4)
+
+ggplot(data = sig_df) + geom_point(aes(x = x, y = sig_df$value, color = sig_df$key)) + 
+  geom_smooth(method= 'lm', se = FALSE, aes(x = x, y = sig_df$value, color = sig_df$key)) + 
+  theme_fivethirtyeight(14) + xlab('x') + ylab('Y') + ggtitle('Y vs X for Random Variables')
+
+```
