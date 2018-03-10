@@ -1,0 +1,82 @@
+# selenium for web driving
+import selenium
+from selenium import webdriver
+
+# os for file management
+import os
+
+# Build tuple of files to turn in
+submission_dir = 'C:/Users/Will Koehrsen/Desktop/class_submissions'
+dir_list = list(os.listdir(submission_dir))
+
+for directory in dir_list:
+    file_list = list(os.listdir(os.path.join(submission_dir, directory)))
+    if len(file_list) != 0:
+        file_tup = (directory, file_list[0])
+        
+        
+# Using Chrome to access web
+driver = webdriver.Chrome()
+
+# Open the website
+driver.get('https://canvas.case.edu')
+
+# Password for Canvas
+with open('C:/Users/Will Koehrsen/Desktop/cp.txt', 'r') as f:
+    cp = f.read()
+    
+# Locate id and password
+id_box = driver.find_element_by_name('username')
+pass_box = driver.find_element_by_name('password')
+
+# Send information
+id_box.send_keys('wjk68')
+pass_box.send_keys(cp)
+
+# Click login
+login_button = driver.find_element_by_name('submit')
+login_button.click()
+
+
+# Find and click on list of courses
+courses_button = driver.find_element_by_id('global_nav_courses_link')
+courses_button.click()
+
+
+# Get the name of the folder
+folder = file_tup[0]
+    
+# Class to select depends on folder
+if folder == 'DSCI451':
+    class_select = driver.find_element_by_link_text('Applied Data Science Research (100/5047)')
+elif folder == 'DCSI453':
+    class_select = driver.find_element_by_link_text('Data Science: Statistical Learning, Modeling and Prediction (100/5046)')
+elif folder == 'EECS491':
+    class_select = driver.find_element_by_link_text('Artificial Intelligence: Probabilistic Graphical Models (100/10039)')
+elif folder == 'EECS531':
+    class_select = driver.find_element_by_link_text('Computer Vision (100/10040)')
+
+# Click on the specific class
+class_select.click()
+
+assignment_button = driver.find_element_by_link_text('Assignments')
+assignment_button.click()
+    
+# Locate the specific assignment
+file_name = file_tup[1].split('.')[0]
+ 
+specific_assigment = driver.find_element_by_link_text(file_name)
+specific_assigment.click()
+
+# Click on the button to submit an assignment
+submit_assignment_button = driver.find_element_by_link_text('Submit Assignment')
+submit_assignment_button.click()
+
+# Choose file button
+choose_file = driver.find_element_by_name('attachments[0][uploaded_data]')
+# Send the name of the file to the button
+choose_file.send_keys(os.path.join(submission_dir, folder, file_tup[1]))
+
+submit_assignment = driver.find_element_by_id('submit_file_button')
+submit_assignment.click()
+
