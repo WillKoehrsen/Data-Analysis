@@ -132,7 +132,7 @@ if __name__ == "__main__":
 		print('No files to submit')
 
 	else:
-		print('Assignment {} for {} found.'.format(file_tup[0], file_tup[1]))
+		print('Assignment "{}" for "{}" found.'.format(file_tup[1], file_tup[0]))
 		input('Press enter to proceed: ')
 		submit_assignment(file_tup)
 
