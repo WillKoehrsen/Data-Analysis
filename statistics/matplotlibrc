@@ -212,7 +212,7 @@ font.size           : 14.0
 ## text properties used by text.Text.  See
 ## http://matplotlib.org/api/artist_api.html#module-matplotlib.text for more
 ## information on text properties
-text.color          : 707074
+text.color          : black
 
 #### LaTeX customizations. See http://wiki.scipy.org/Cookbook/Matplotlib/UsingTex
 #text.usetex         : False  ## use latex for all text handling. The following fonts
