@@ -1,29 +1,3 @@
-<html>
-    <head>
-        <title>Для просмотра статьи разгадайте капчу</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body style = "background:white">
-        <script language ="javascript">
-            function reloadAsGet()
-            {
-                var loc = window.location;
-                window.location = loc.protocol + '//' + loc.host + loc.pathname + loc.search;
-            }
-        </script>
-        <div>
-            <table style = "width:100%;height:100%"><tr><td style = "vertical-align:middle;text-align:center">
-            <h2 style = "color:gray;font-family:sans-serif;padding:18px">для просмотра статьи разгадайте капчу</h2>
-            <p></p>
-            <form action = "" method = "POST">
-                <p><img id="captcha" src="/img/5bbf6cee9b4c5.jpg" /></p>
-                <input type ="hidden" name = "id" value = "5bbf6cee9b4c5">
-                <input type="text" maxlength="6" name="answer" style = "width:256px;font-size:18px;height:36px;margin-top:18px;text-align:center" autofocus /><br>
-                <a style = "color:gray;text-decoration:none" href="#" onclick="javascript:reloadAsGet()">[ показать другую картинку ]</a>
-                <p style = "margin-top:22px"><input type = "submit" value= "Продолжить"></p>
-            </form>
-            </td></tr></table>
-        </div>
-    </body>
-</html>
+version https://git-lfs.github.com/spec/v1
+oid sha256:d72c065bfc303bd28335df30958740807e26150a55503e4b07a7724eee2c5d65
+size 1531
