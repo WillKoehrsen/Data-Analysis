@@ -3,7 +3,7 @@
 Stocker can be run from an interative Python 3.6 session. I recommend 
 installing the [Anaconda Python 3.6 distribution](https://www.anaconda.com/download/)
 and using a Jupyter Notebook. 
- 
+
 Stocker is a work in progress. Let me know of any issues and feel 
 free to make your own contributions! 
 
@@ -34,6 +34,8 @@ distribution, try installing with conda:
 
 pytrends and fbprophet can only be installed with pip. If you run into 
 any other errors installing packages, check out [Stack Overflow](https://stackoverflow.com/)
+
+You may try `**conda install -c conda-forge fbprophet**` to install with conda.
 
 ## Getting Started
 
@@ -70,7 +72,7 @@ stock prices. Call any of the following on your stocker object, replacing
 ### Plot stock history
 
 `Stocker.plot_stock(start_date=None, end_date=None, stats=['Adj. Close'], plot_type='basic')`
-	
+​	
 Prints basic info for the specified stats and plots the history for the stats
 over the specified date range. The default stat is Adjusted Closing price and 
 default start and end dates are the beginning and ending dates
@@ -150,7 +152,7 @@ so try a few different values to see how they affect the model.
 ### Quantitaively compare different changepoint prior scales
 
 `Stocker.changepoint_prior_validation(self, start_date=None, end_date=None,
-				changepoint_priors = [0.001, 0.05, 0.1, 0.2])`
+​				changepoint_priors = [0.001, 0.05, 0.1, 0.2])`
 
 Quantifies the differences in performance on a validation set of the specified 
 cps values. A model is created with each changepoint prior, trained on the assigned
@@ -203,4 +205,4 @@ Makes a prediction for the specified number of days in the future
 using a prophet model trained on the assigned number of years of data. Printed output 
 is the days on which the stock is expected to increase and the days when it is expected to decrease.
 A graph also shows these results with confidence intervals for the prediction. 
-	
+​	
