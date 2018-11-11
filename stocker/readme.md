@@ -35,7 +35,7 @@ distribution, try installing with conda:
 pytrends and fbprophet can only be installed with pip. If you run into 
 any other errors installing packages, check out [Stack Overflow](https://stackoverflow.com/)
 
-You may try `**conda install -c conda-forge fbprophet**` to install with conda.
+You may try `conda install -c conda-forge fbprophet` to install with conda.
 
 ## Getting Started
 

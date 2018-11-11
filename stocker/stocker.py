@@ -70,7 +70,7 @@ class Stocker():
         self.starting_price = float(self.stock.loc[0, 'Adj. Open'])
         
         # The most recent price
-        self.most_recent_price = float(self.stock.loc[len(self.stock) - 1, 'y'])
+        self.most_recent_price = float(self.stock.loc[self.stock.index[-1], 'y'])
 
         # Whether or not to round dates
         self.round_dates = True
@@ -169,23 +169,23 @@ class Stocker():
 
             # If both are not in dataframe, round both
             if (not end_in) & (not start_in):
-                trim_df = df[(df['Date'] >= start_date.date()) & 
-                             (df['Date'] <= end_date.date())]
+                trim_df = df[(df['Date'] >= start_date) & 
+                             (df['Date'] <= end_date)]
             
             else:
                 # If both are in dataframe, round neither
                 if (end_in) & (start_in):
-                    trim_df = df[(df['Date'] >= start_date.date()) & 
-                                 (df['Date'] <= end_date.date())]
+                    trim_df = df[(df['Date'] >= start_date) & 
+                                 (df['Date'] <= end_date)]
                 else:
                     # If only start is missing, round start
                     if (not start_in):
-                        trim_df = df[(df['Date'] > start_date.date()) & 
-                                     (df['Date'] <= end_date.date())]
+                        trim_df = df[(df['Date'] > start_date) & 
+                                     (df['Date'] <= end_date)]
                     # If only end is imssing round end
                     elif (not end_in):
-                        trim_df = df[(df['Date'] >= start_date.date()) & 
-                                     (df['Date'] < end_date.date())]
+                        trim_df = df[(df['Date'] >= start_date) & 
+                                     (df['Date'] < end_date)]
 
         
         else:
@@ -210,8 +210,8 @@ class Stocker():
                     end_date = pd.to_datetime(input(prompt='Enter a new end date: ') )
 
             # Dates are not rounded
-            trim_df = df[(df['Date'] >= start_date.date()) & 
-                         (df['Date'] <= end_date.date())]
+            trim_df = df[(df['Date'] >= start_date) & 
+                         (df['Date'] <= end_date.date)]
 
         
             
@@ -246,7 +246,7 @@ class Stocker():
             
             print('Maximum {} = {:.2f} on {}.'.format(stat, stat_max, date_stat_max))
             print('Minimum {} = {:.2f} on {}.'.format(stat, stat_min, date_stat_min))
-            print('Current {} = {:.2f} on {}.\n'.format(stat, self.stock.loc[len(self.stock) - 1, stat], self.max_date.date()))
+            print('Current {} = {:.2f} on {}.\n'.format(stat, self.stock.loc[self.stock.index[-1], stat], self.max_date.date()))
             
             # Percentage y-axis
             if plot_type == 'pct':
@@ -281,7 +281,7 @@ class Stocker():
     def reset_plot():
         
         # Restore default parameters
-        matplotlib.rcParams.update(matplotlib.rcParamsDefault)
+        matplotlib.rcdefaults()
         
         # Adjust a few parameters to liking
         matplotlib.rcParams['figure.figsize'] = (8, 5)
@@ -455,7 +455,7 @@ class Stocker():
         if days > 0:
             # Print the predicted price
             print('Predicted Price on {} = ${:.2f}'.format(
-                future.loc[len(future) - 1, 'ds'].date(), future.loc[len(future) - 1, 'yhat']))
+                future.loc[future.index[-1], 'ds'].date(), future.loc[future.index[-1], 'yhat']))
 
             title = '%s Historical and Predicted Stock Price'  % self.symbol
         else:
@@ -548,8 +548,8 @@ class Stocker():
                 end_date.date()))
 
             # Final prediction vs actual value
-            print('\nPredicted price on {} = ${:.2f}.'.format(max(future['ds']).date(), future.loc[len(future) - 1, 'yhat']))
-            print('Actual price on    {} = ${:.2f}.\n'.format(max(test['ds']).date(), test.loc[len(test) - 1, 'y']))
+            print('\nPredicted price on {} = ${:.2f}.'.format(max(future['ds']).date(), future.loc[future.index[-1], 'yhat']))
+            print('Actual price on    {} = ${:.2f}.\n'.format(max(test['ds']).date(), test.loc[test.index[-1], 'y']))
 
             print('Average Absolute Error on Training Data = ${:.2f}.'.format(train_mean_error))
             print('Average Absolute Error on Testing  Data = ${:.2f}.\n'.format(test_mean_error))
@@ -629,7 +629,7 @@ class Stocker():
 
             # Display some friendly information about the perils of playing the stock market
             print('The total profit using the Prophet model = ${:.2f}.'.format(np.sum(prediction_profit)))
-            print('The Buy and Hold strategy profit =         ${:.2f}.'.format(float(test.loc[len(test) - 1, 'hold_profit'])))
+            print('The Buy and Hold strategy profit =         ${:.2f}.'.format(float(test.loc[test.index[-1], 'hold_profit'])))
             print('\nThanks for playing the stock market!\n')
             
            
@@ -638,11 +638,11 @@ class Stocker():
             self.reset_plot()
             
             # Final profit and final smart used for locating text
-            final_profit = test.loc[len(test) - 1, 'pred_profit']
-            final_smart = test.loc[len(test) - 1, 'hold_profit']
+            final_profit = test.loc[test.index[-1], 'pred_profit']
+            final_smart = test.loc[test.index[-1], 'hold_profit']
 
             # text location
-            last_date = test.loc[len(test) - 1, 'ds']
+            last_date = test.loc[test.index[-1], 'ds']
             text_location = (last_date - pd.DateOffset(months = 1)).date()
 
             plt.style.use('dark_background')
