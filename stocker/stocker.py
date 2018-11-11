@@ -88,8 +88,8 @@ class Stocker():
         self.changepoints = None
         
         print('{} Stocker Initialized. Data covers {} to {}.'.format(self.symbol,
-                                                                     self.min_date.date(),
-                                                                     self.max_date.date()))
+                                                                     self.min_date,
+                                                                     self.max_date))
     
     """
     Make sure start and end dates are in the range and can be
@@ -122,7 +122,7 @@ class Stocker():
             valid_end = True
             valid_start = True
             
-            if end_date.date() < start_date.date():
+            if end_date < start_date:
                 print('End Date must be later than start date.')
                 start_date = pd.to_datetime(input('Enter a new start date: '))
                 end_date= pd.to_datetime(input('Enter a new end date: '))
@@ -130,12 +130,12 @@ class Stocker():
                 valid_start = False
             
             else: 
-                if end_date.date() > self.max_date.date():
+                if end_date > self.max_date:
                     print('End Date exceeds data range')
                     end_date= pd.to_datetime(input('Enter a new end date: '))
                     valid_end = False
 
-                if start_date.date() < self.min_date.date():
+                if start_date < self.min_date:
                     print('Start Date is before date range')
                     start_date = pd.to_datetime(input('Enter a new start date: '))
                     valid_start = False
@@ -240,13 +240,13 @@ class Stocker():
             stat_avg = np.mean(stock_plot[stat])
             
             date_stat_min = stock_plot[stock_plot[stat] == stat_min]['Date']
-            date_stat_min = date_stat_min[date_stat_min.index[0]].date()
+            date_stat_min = date_stat_min[date_stat_min.index[0]]
             date_stat_max = stock_plot[stock_plot[stat] == stat_max]['Date']
-            date_stat_max = date_stat_max[date_stat_max.index[0]].date()
+            date_stat_max = date_stat_max[date_stat_max.index[0]]
             
             print('Maximum {} = {:.2f} on {}.'.format(stat, stat_max, date_stat_max))
             print('Minimum {} = {:.2f} on {}.'.format(stat, stat_min, date_stat_min))
-            print('Current {} = {:.2f} on {}.\n'.format(stat, self.stock.loc[self.stock.index[-1], stat], self.max_date.date()))
+            print('Current {} = {:.2f} on {}.\n'.format(stat, self.stock.loc[self.stock.index[-1], stat], self.max_date))
             
             # Percentage y-axis
             if plot_type == 'pct':
@@ -339,18 +339,18 @@ class Stocker():
         total_hold_profit = nshares * (end_price - start_price)
         
         print('{} Total buy and hold profit from {} to {} for {} shares = ${:.2f}'.format
-              (self.symbol, start_date.date(), end_date.date(), nshares, total_hold_profit))
+              (self.symbol, start_date, end_date, nshares, total_hold_profit))
         
         # Plot the total profits 
         plt.style.use('dark_background')
         
         # Location for number of profit
-        text_location = (end_date - pd.DateOffset(months = 1)).date()
+        text_location = (end_date - pd.DateOffset(months = 1))
         
         # Plot the profits over time
         plt.plot(profits['Date'], profits['hold_profit'], 'b', linewidth = 3)
         plt.ylabel('Profit ($)'); plt.xlabel('Date'); plt.title('Buy and Hold Profits for {} {} to {}'.format(
-                                                                self.symbol, start_date.date(), end_date.date()))
+                                                                self.symbol, start_date, end_date))
         
         # Display final value on graph
         plt.text(x = text_location, 
@@ -382,7 +382,7 @@ class Stocker():
     def changepoint_prior_analysis(self, changepoint_priors=[0.001, 0.05, 0.1, 0.2], colors=['b', 'r', 'grey', 'gold']):
     
         # Training and plotting with specified years of data
-        train = self.stock[(self.stock['Date'] > (max(self.stock['Date']) - pd.DateOffset(years=self.training_years)).date())]
+        train = self.stock[(self.stock['Date'] > (max(self.stock['Date']) - pd.DateOffset(years=self.training_years)))]
         
         # Iterate through all the changepoints and make models
         for i, prior in enumerate(changepoint_priors):
@@ -441,7 +441,7 @@ class Stocker():
         model = self.create_model()
         
         # Fit on the stock history for self.training_years number of years
-        stock_history = self.stock[self.stock['Date'] > (self.max_date - pd.DateOffset(years = self.training_years)).date()]
+        stock_history = self.stock[self.stock['Date'] > (self.max_date - pd.DateOffset(years = self.training_years))]
         
         if resample:
             stock_history = self.resample(stock_history)
@@ -455,7 +455,7 @@ class Stocker():
         if days > 0:
             # Print the predicted price
             print('Predicted Price on {} = ${:.2f}'.format(
-                future.loc[future.index[-1], 'ds'].date(), future.loc[future.index[-1], 'yhat']))
+                future.loc[future.index[-1], 'ds'], future.loc[future.index[-1], 'yhat']))
 
             title = '%s Historical and Predicted Stock Price'  % self.symbol
         else:
@@ -495,11 +495,11 @@ class Stocker():
         start_date, end_date = self.handle_dates(start_date, end_date)
         
         # Training data starts self.training_years years before start date and goes up to start date
-        train = self.stock[(self.stock['Date'] < start_date.date()) & 
-                           (self.stock['Date'] > (start_date - pd.DateOffset(years=self.training_years)).date())]
+        train = self.stock[(self.stock['Date'] < start_date) & 
+                           (self.stock['Date'] > (start_date - pd.DateOffset(years=self.training_years)))]
         
         # Testing data is specified in the range
-        test = self.stock[(self.stock['Date'] >= start_date.date()) & (self.stock['Date'] <= end_date.date())]
+        test = self.stock[(self.stock['Date'] >= start_date) & (self.stock['Date'] <= end_date)]
         
         # Create and train the model
         model = self.create_model()
@@ -517,9 +517,9 @@ class Stocker():
         # Calculate the differences between consecutive measurements
         test['pred_diff'] = test['yhat'].diff()
         test['real_diff'] = test['y'].diff()
-        
+
         # Correct is when we predicted the correct direction
-        test['correct'] = (np.sign(test['pred_diff']) == np.sign(test['real_diff'])) * 1
+        test['correct'] = (np.sign(test['pred_diff'][1:]) == np.sign(test['real_diff'][1:])) * 1
         
         # Accuracy when we predict increase and decrease
         increase_accuracy = 100 * np.mean(test[test['pred_diff'] > 0]['correct'])
@@ -544,12 +544,12 @@ class Stocker():
         if not nshares:
 
             # Date range of predictions
-            print('\nPrediction Range: {} to {}.'.format(start_date.date(),
-                end_date.date()))
+            print('\nPrediction Range: {} to {}.'.format(start_date,
+                end_date))
 
             # Final prediction vs actual value
-            print('\nPredicted price on {} = ${:.2f}.'.format(max(future['ds']).date(), future.loc[future.index[-1], 'yhat']))
-            print('Actual price on    {} = ${:.2f}.\n'.format(max(test['ds']).date(), test.loc[test.index[-1], 'y']))
+            print('\nPredicted price on {} = ${:.2f}.'.format(max(future['ds']), future.loc[future.index[-1], 'yhat']))
+            print('Actual price on    {} = ${:.2f}.\n'.format(max(test['ds']), test.loc[test.index[-1], 'y']))
 
             print('Average Absolute Error on Training Data = ${:.2f}.'.format(train_mean_error))
             print('Average Absolute Error on Testing  Data = ${:.2f}.\n'.format(test_mean_error))
@@ -579,7 +579,7 @@ class Stocker():
                            facecolor = 'gold', edgecolor = 'k', linewidth = 1.4, label = 'Confidence Interval')
 
             # Put a vertical line at the start of predictions
-            plt.vlines(x=min(test['ds']).date(), ymin=min(future['yhat_lower']), ymax=max(future['yhat_upper']), colors = 'r',
+            plt.vlines(x=min(test['ds']), ymin=min(future['yhat_lower']), ymax=max(future['yhat_upper']), colors = 'r',
                        linestyles='dashed', label = 'Prediction Start')
 
             # Plot formatting
@@ -587,7 +587,7 @@ class Stocker():
             plt.grid(linewidth=0.6, alpha = 0.6)
                        
             plt.title('{} Model Evaluation from {} to {}.'.format(self.symbol,
-                start_date.date(), end_date.date()));
+                start_date, end_date));
             plt.show();
 
         
@@ -622,7 +622,7 @@ class Stocker():
             
             # Display information
             print('You played the stock market in {} from {} to {} with {} shares.\n'.format(
-                self.symbol, start_date.date(), end_date.date(), nshares))
+                self.symbol, start_date, end_date, nshares))
             
             print('When the model predicted an increase, the price increased {:.2f}% of the time.'.format(increase_accuracy))
             print('When the model predicted a  decrease, the price decreased  {:.2f}% of the time.\n'.format(decrease_accuracy))
@@ -643,7 +643,7 @@ class Stocker():
 
             # text location
             last_date = test.loc[test.index[-1], 'ds']
-            text_location = (last_date - pd.DateOffset(months = 1)).date()
+            text_location = (last_date - pd.DateOffset(months = 1))
 
             plt.style.use('dark_background')
 
@@ -705,7 +705,7 @@ class Stocker():
         model = self.create_model()
         
         # Use past self.training_years years of data
-        train = self.stock[self.stock['Date'] > (self.max_date - pd.DateOffset(years = self.training_years)).date()]
+        train = self.stock[self.stock['Date'] > (self.max_date - pd.DateOffset(years = self.training_years))]
         model.fit(train)
         
         # Predictions of the training data (no future periods)
@@ -720,7 +720,7 @@ class Stocker():
         # Create dataframe of only changepoints
         change_indices = []
         for changepoint in (changepoints):
-            change_indices.append(train[train['ds'] == changepoint.date()].index[0])
+            change_indices.append(train[train['ds'] == changepoint].index[0])
         
         c_data = train.loc[change_indices, :]
         deltas = model.params['delta'][0]
@@ -768,7 +768,7 @@ class Stocker():
         # Show related queries, rising related queries
         # Graph changepoints, search frequency, stock price
         if search:
-            date_range = ['%s %s' % (str(min(train['Date']).date()), str(max(train['Date']).date()))]
+            date_range = ['%s %s' % (str(min(train['Date'])), str(max(train['Date'])))]
 
             # Get the Google Trends for specified terms and join to training dataframe
             trends, related_queries = self.retrieve_google_trends(search, date_range)
@@ -823,7 +823,7 @@ class Stocker():
     def predict_future(self, days=30):
         
         # Use past self.training_years years for training
-        train = self.stock[self.stock['Date'] > (max(self.stock['Date']) - pd.DateOffset(years=self.training_years)).date()]
+        train = self.stock[self.stock['Date'] > (max(self.stock['Date']) - pd.DateOffset(years=self.training_years))]
         
         model = self.create_model()
         
@@ -834,7 +834,7 @@ class Stocker():
         future = model.predict(future)
         
         # Only concerned with future dates
-        future = future[future['ds'] >= max(self.stock['Date']).date()]
+        future = future[future['ds'] >= max(self.stock['Date'])]
         
         # Remove the weekends
         future = self.remove_weekends(future)
@@ -907,19 +907,19 @@ class Stocker():
         start_date, end_date = self.handle_dates(start_date, end_date)
                                
         # Select self.training_years number of years
-        train = self.stock[(self.stock['Date'] > (start_date - pd.DateOffset(years=self.training_years)).date()) & 
-        (self.stock['Date'] < start_date.date())]
+        train = self.stock[(self.stock['Date'] > (start_date - pd.DateOffset(years=self.training_years))) & 
+        (self.stock['Date'] < start_date)]
         
         # Testing data is specified by range
-        test = self.stock[(self.stock['Date'] >= start_date.date()) & (self.stock['Date'] <= end_date.date())]
+        test = self.stock[(self.stock['Date'] >= start_date) & (self.stock['Date'] <= end_date)]
 
-        eval_days = (max(test['Date']).date() - min(test['Date']).date()).days
+        eval_days = (max(test['Date']) - min(test['Date'])).days
         
         results = pd.DataFrame(0, index = list(range(len(changepoint_priors))), 
             columns = ['cps', 'train_err', 'train_range', 'test_err', 'test_range'])
 
-        print('\nValidation Range {} to {}.\n'.format(min(test['Date']).date(),
-            max(test['Date']).date()))
+        print('\nValidation Range {} to {}.\n'.format(min(test['Date']),
+            max(test['Date'])))
             
         
         # Iterate through all the changepoints and make models
