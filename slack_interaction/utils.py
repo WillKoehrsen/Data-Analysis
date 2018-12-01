@@ -4,6 +4,32 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
+import matplotlib.pyplot as plt
+
+
+def plot_history(history):
+    """Plot Results of Keras training"""
+    plt.style.use('fivethirtyeight')
+    epochs = list(range(1, len(history['loss']) + 1))
+    plt.figure(figsize = (18, 6))
+    
+    # Losses
+    plt.subplot(1, 2, 1)
+    plt.plot(epochs, history['loss'], '-o', ms = 10, label = "Training Loss")
+    plt.plot(epochs, history['val_loss'], '-*',  ms = 10, label = "Validation Loss")
+    plt.legend(); 
+    plt.xlabel('Epoch'); plt.ylabel('Loss')
+    plt.title('Losses');
+    
+    # Accuracy
+    plt.subplot(1, 2, 2)
+    plt.plot(epochs, history['acc'], '-o', ms = 10, label = 'Training Acc')
+    plt.plot(epochs, history['val_acc'], '-*',  ms = 10, label = "Validation Acc")
+    plt.legend()
+    plt.xlabel('Epoch'); plt.ylabel('Acc')
+    plt.title('Accuracy');
+    
+    plt.suptitle('Training Curves', y= 1.05)
 
 
 def get_options(slack):
