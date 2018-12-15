@@ -1,4 +1,4 @@
-type,StaticPressure,StaticPressure,Power,Steam,Steam
+type,StaticPressure,StaticPressure,Energy,Steam,Steam
 sensor,1,2,3,4,5
 measured_at,,,,,
 2017-12-14 11:00:00,0.8067234306487707,1.5005695663762166,6035.214039747452,13.164376591911395,10.367289501953664
