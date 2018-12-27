@@ -2,6 +2,8 @@
 import pandas as pd
 import numpy as np
 
+from scipy import stats
+
 # Options for pandas
 pd.options.display.max_columns = 20
 
