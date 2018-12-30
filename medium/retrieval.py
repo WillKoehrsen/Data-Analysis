@@ -7,6 +7,8 @@ from itertools import chain
 from collections import Counter
 from timeit import default_timer as timer
 import pandas as pd
+from datetime import datetime
+import pytz
 
 
 def get_table_rows(fname='stats.html'):
@@ -137,6 +139,10 @@ def process_entry(entry, parallel=True, tz='America/Chicago'):
     entry_dict['tags'] = tags
     entry_dict['num_responses'] = num_responses
 
+    # Time since publication
+    entry_dict['days_since_publication'] = (datetime.now(tz=pytz.timezone(
+        tz)) - entry_dict['published_date']).total_seconds() / (3600 * 24)
+
     return entry_dict
 
 
@@ -172,13 +178,10 @@ def process_in_parallel(table_rows, processes=20):
 
     # Convert to dataframe
     df = pd.DataFrame(results)
-    df['unlisted'] = df['unlisted'].astype(str)
-
     # Add extra columns with more data
     df['claps_per_word'] = df['claps'] / df['word_count']
     df['edit_days'] = (df['published_date'] - df['started_date']
                        ).dt.total_seconds() / (60 * 60 * 24)
-
     # 5 most common tags (might want to include more tags)
     n = 5
     all_tags = list(chain(*df['tags'].tolist()))
