@@ -8,6 +8,7 @@ from collections import Counter, defaultdict
 from timeit import default_timer as timer
 import pandas as pd
 import numpy as np
+import statsmodels.api as sm
 
 
 from scipy import stats
@@ -97,10 +98,10 @@ def make_hist(df, x, category=None):
 
     layout = go.Layout(
         yaxis=dict(title="Count"),
-        xaxis=dict(title=x.title()),
-        title=f"{x.title()} Distribution by {category.title()}"
+        xaxis=dict(title=x.replace('_', ' ').title()),
+        title=f"{x.replace('_', ' ').title()} Distribution by {category.replace('_', ' ').title()}"
         if category
-        else f"{x.title()} Distribution",
+        else f"{x.replace('_', ' ').title()} Distribution",
     )
 
     figure = go.Figure(data=data, layout=layout)
@@ -128,7 +129,8 @@ def make_cum_plot(df, y, category=None):
                     mode="lines+markers",
                     text=group["title"],
                     name=name,
-                    marker=dict(size=8, symbol=i + 302),
+                    marker=dict(size=10, opacity=0.8,
+                                symbol=i + 2),
                 )
             )
     else:
@@ -141,8 +143,8 @@ def make_cum_plot(df, y, category=None):
                     name=y[0].title(),
                     mode="lines+markers",
                     text=df["title"],
-                    marker=dict(size=8, color='blue'),
-                ),
+                    marker=dict(size=10, color='blue', opacity=0.6, line=dict(color='black'),
+                                )),
                 go.Scatter(
                     x=df["published_date"],
                     y=df[y[1]].cumsum(),
@@ -150,8 +152,8 @@ def make_cum_plot(df, y, category=None):
                     name=y[1].title(),
                     mode="lines+markers",
                     text=df["title"],
-                    marker=dict(size=8, color='red'),
-                ),
+                    marker=dict(size=10, color='red', opacity=0.6, line=dict(color='black'),
+                                )),
             ]
         else:
             data = [
@@ -160,7 +162,8 @@ def make_cum_plot(df, y, category=None):
                     y=df[y].cumsum(),
                     mode="lines+markers",
                     text=df["title"],
-                    marker=dict(size=10),
+                    marker=dict(size=12, color='blue', opacity=0.6, line=dict(color='black'),
+                                ),
                 )
             ]
     if len(y) == 2:
@@ -175,18 +178,18 @@ def make_cum_plot(df, y, category=None):
     else:
         layout = go.Layout(
             xaxis=dict(title="Published Date", type="date"),
-            yaxis=dict(title=y.title()),
+            yaxis=dict(title=y.replace('_', ' ').title()),
             font=dict(size=14),
-            title=f"Cumulative {y.title()} by {category.title()}"
+            title=f"Cumulative {y.replace('_', ' ').title()} by {category.replace('_', ' ').title()}"
             if category is not None
-            else f"Cumulative {y.title()}",
+            else f"Cumulative {y.replace('_', ' ').title()}",
         )
 
     figure = go.Figure(data=data, layout=layout)
     return figure
 
 
-def make_scatter_plot(df, x, y, fits=None, xlog=False, ylog=False, category=None, scale=None, sizeref=2):
+def make_scatter_plot(df, x, y, fits=None, xlog=False, ylog=False, category=None, scale=None, sizeref=2, annotations=None):
     """
     Make an interactive scatterplot, optionally segmented by `category`
 
@@ -199,11 +202,12 @@ def make_scatter_plot(df, x, y, fits=None, xlog=False, ylog=False, category=None
     :param category: string representing categorical column to segment by, this must be a categorical
     :param scale: string representing numerical column to size and color markers by, this must be numerical data
     :param sizeref: float or integer for setting the size of markers according to the scale, only used if scale is set
+    :param annotations: text to display on the plot (dictionary)
 
     :return figure: a plotly plot to show with iplot or plot
     """
     if category is not None:
-        title = f"{y.title()} vs {x.title()} by {category.title()}"
+        title = f"{y.replace('_', ' ').title()} vs {x.replace('_', ' ').title()} by {category.replace('_', ' ').title()}"
         data = []
         for i, (name, group) in enumerate(df.groupby(category)):
             data.append(go.Scatter(x=group[x],
@@ -215,43 +219,44 @@ def make_scatter_plot(df, x, y, fits=None, xlog=False, ylog=False, category=None
 
     else:
         if scale is not None:
-            title = f"{y.title()} vs {x.title()} by {scale.title()}"
+            title = f"{y.replace('_', ' ').title()} vs {x.replace('_', ' ').title()} Scaled by {scale.title()}"
             data = [go.Scatter(x=df[x],
                                y=df[y],
                                mode='markers',
-                               text=df['title'], marker=dict(size=df[scale], sizemode='area', sizeref=sizeref,
+                               text=df['title'], marker=dict(size=df[scale],
+                                                             line=dict(color='black', width=0.5), sizemode='area', sizeref=sizeref, opacity=0.8,
                                                              colorscale='Viridis', color=df[scale], showscale=True, sizemin=2))]
         else:
 
             df.sort_values(x, inplace=True)
-            title = f"{y.title()} vs {x.title()}"
+            title = f"{y.replace('_', ' ').title()} vs {x.replace('_', ' ').title()}"
             data = [go.Scatter(x=df[x],
                                y=df[y],
                                mode='markers',
                                text=df['title'], marker=dict(
-                                   size=10, color='blue'),
-                               name='observations')]
+                size=12, color='blue', opacity=0.8, line=dict(color='black')),
+                name='observations')]
             if fits is not None:
                 for fit in fits:
                     data.append(go.Scatter(x=df[x], y=df[fit],
-                                           mode='lines+markers', marker=dict(size=8),
+                                           mode='lines+markers', marker=dict(size=8, opacity=0.6),
                                            line=dict(dash='dash'), name=fit))
 
                 title += ' with Fit'
-    layout = go.Layout(
-        xaxis=dict(title=x.title() + (' (log scale)' if xlog else ''),
-                   type='log' if xlog else None),
-        yaxis=dict(title=y.title() + (' (log scale)' if ylog else ''),
-                   type='log' if ylog else None),
-        font=dict(size=14),
-        title=title,
-    )
+    layout = go.Layout(annotations=annotations,
+                       xaxis=dict(title=x.replace('_', ' ').title() + (' (log scale)' if xlog else ''),
+                                  type='log' if xlog else None),
+                       yaxis=dict(title=y.replace('_', ' ').title() + (' (log scale)' if ylog else ''),
+                                  type='log' if ylog else None),
+                       font=dict(size=14),
+                       title=title,
+                       )
 
     figure = go.Figure(data=data, layout=layout)
     return figure
 
 
-def make_fits(df, x, y, degree=6):
+def make_poly_fits(df, x, y, degree=6):
     """
     Generate fits and make interactive plot with fits
 
@@ -274,15 +279,52 @@ def make_fits(df, x, y, degree=6):
     for i in range(1, degree + 1):
         fit_name = f'fit degree = {i}'
         fit_list.append(fit_name)
-        z = np.polyfit(df[x], df[y], i)
+        z, res, *rest = np.polyfit(df[x], df[y], i, full=True)
         fit_params.append(z)
         df.loc[:, fit_name] = np.poly1d(z)(df[x])
-        rmse.append(np.sqrt(np.mean(np.square(df[fit_name] - df[x]))))
+        rmse.append(np.sqrt(res[0]))
 
     fit_stats = pd.DataFrame(
         {'fit': fit_list, 'rmse': rmse, 'params': fit_params})
     figure = make_scatter_plot(df, x=x, y=y, fits=fit_list)
     return fit_stats, figure
+
+
+def make_linear_regression(df, x, y, intercept_0):
+    """
+    Create a linear regression, either with the intercept set to 0 or
+    the intercept allowed to be fitted
+
+    :param df: dataframe with data
+    :param x: string for the name of the column with x data
+    :param y: string for the name of the column with y data
+    :param intercept_0: boolean indicating whether to set the intercept to 0
+    """
+
+    if intercept_0:
+        lin_reg = sm.OLS(df[y], df[x]).fit()
+        df['fit_values'] = lin_reg.fittedvalues
+        summary = lin_reg.summary()
+        slope = float(lin_reg.params)
+        equation = f"${y} = {slope:.2f} * {x.replace('_', ' ')}$"
+
+    else:
+        lin_reg = stats.linregress(df[x], df[y])
+        intercept, slope = lin_reg.intercept, lin_reg.slope
+        params = ['pvalue', 'rvalue', 'slope', 'intercept']
+        values = []
+        for p in params:
+            values.append(getattr(lin_reg, p))
+        summary = pd.DataFrame({'param': params, 'value': values})
+        df['fit_values'] = df[x] * slope + intercept
+        equation = f"${y} = {slope:.2f} * {x.replace('_', ' ')} + {intercept:.2f}$"
+
+    annotations = [dict(x=0.75 * df[x].max(), y=0.9 * df[y].max(), showarrow=False,
+                        text=equation,
+                        font=dict(size=32))]
+    figure = make_scatter_plot(
+        df, x=x, y=y, fits=['fit_values'], annotations=annotations)
+    return figure, summary
 
 
 def make_iplot(data, x, y, base_title, time=False, eq_pos=(0.75, 0.25)):
@@ -366,10 +408,10 @@ def make_iplot(data, x, y, base_title, time=False, eq_pos=(0.75, 0.25)):
             width=900,
             title=base_title,
             xaxis=dict(
-                title=x.title(), tickfont=dict(size=14), titlefont=dict(size=16)
+                title=x.replace('_', ' ').title(), tickfont=dict(size=14), titlefont=dict(size=16)
             ),
             yaxis=dict(
-                title=y.title(), tickfont=dict(size=14), titlefont=dict(size=16)
+                title=y.replace('_', ' ').title(), tickfont=dict(size=14), titlefont=dict(size=16)
             ),
             updatemenus=make_update_menu(
                 base_title, annotations["articles"], annotations["responses"]
@@ -423,10 +465,10 @@ def make_iplot(data, x, y, base_title, time=False, eq_pos=(0.75, 0.25)):
             width=900,
             title=base_title,
             xaxis=dict(
-                title=x.title(), tickfont=dict(size=14), titlefont=dict(size=16)
+                title=x.replace('_', ' ').title(), tickfont=dict(size=14), titlefont=dict(size=16)
             ),
             yaxis=dict(
-                title=y.title(), tickfont=dict(size=14), titlefont=dict(size=16)
+                title=y.replace('_', ' ').title(), tickfont=dict(size=14), titlefont=dict(size=16)
             ),
         )
 
