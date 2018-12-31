@@ -1,4 +1,3 @@
-# Data science imports
 from multiprocessing import Pool
 import requests
 import re
@@ -8,7 +7,6 @@ from collections import Counter
 from timeit import default_timer as timer
 import pandas as pd
 from datetime import datetime
-import pytz
 
 
 def get_table_rows(fname='stats.html'):
@@ -154,6 +152,9 @@ def process_in_parallel(table_rows, processes=20):
     Process all the stats in a table in parallel
 
     :note: make sure to set the correct time zone in `process_entry`
+    :note: running on Mac may first require setting
+    export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+    from the command line to enable parallel processing
 
     :param table_rows: BeautifulSoup table rows
 
@@ -209,5 +210,17 @@ def process_in_parallel(table_rows, processes=20):
 
 
 def get_data(fname='stats.html', processes=20):
+    """
+    Retrieve medium article statistics
+
+    :note: running on Mac may first require setting
+    export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+    from the command line to enable parallel processing
+
+    :param fname: file name (should be 'stats.html')
+    :param processes: integer number of processes
+
+    :return df: dataframe of article data
+    """
     t = get_table_rows(fname=fname)
     return process_in_parallel(t, processes=processes)
