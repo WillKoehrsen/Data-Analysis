@@ -14,63 +14,6 @@ import cufflinks
 cufflinks.go_offline()
 
 
-def make_update_menu(base_title, article_annotations=None, response_annotations=None):
-    """
-    Make an updatemenu for interative plot
-
-    :param base_title: string for title of plot
-
-    :return updatemenus: a updatemenus object for adding to a layout
-    """
-    updatemenus = list(
-        [
-            dict(
-                buttons=list(
-                    [
-                        dict(
-                            label="both",
-                            method="update",
-                            args=[
-                                dict(visible=[True, True]),
-                                dict(
-                                    title=base_title,
-                                    annotations=[
-                                        article_annotations,
-                                        response_annotations,
-                                    ],
-                                ),
-                            ],
-                        ),
-                        dict(
-                            label="articles",
-                            method="update",
-                            args=[
-                                dict(visible=[True, False]),
-                                dict(
-                                    title="Article " + base_title,
-                                    annotations=[article_annotations],
-                                ),
-                            ],
-                        ),
-                        dict(
-                            label="responses",
-                            method="update",
-                            args=[
-                                dict(visible=[False, True]),
-                                dict(
-                                    title="Response " + base_title,
-                                    annotations=[response_annotations],
-                                ),
-                            ],
-                        ),
-                    ]
-                )
-            )
-        ]
-    )
-    return updatemenus
-
-
 def make_hist(df, x, category=None):
     """
     Make an interactive histogram, optionally segmented by `category`
@@ -162,8 +105,8 @@ def make_cum_plot(df, y, category=None, ranges=False):
     if len(y) == 2:
         layout = go.Layout(
             xaxis=dict(title="Published Date", type="date"),
-            yaxis=dict(title=y[0].title(), color='blue'),
-            yaxis2=dict(title=y[1].title(), color='red',
+            yaxis=dict(title=y[0].replace('_', ' ').title(), color='blue'),
+            yaxis2=dict(title=y[1].replace('_', ' ').title(), color='red',
                         overlaying='y', side='right'),
             font=dict(size=14),
             title=f"Cumulative {y[0].title()} and {y[1].title()}",
@@ -368,7 +311,7 @@ def make_linear_regression(df, x, y, intercept_0):
             df['fit_values'] = lin_reg.fittedvalues
             summary = lin_reg.summary()
             slope = float(lin_reg.params)
-            equation = f"${y} = {slope:.2f} * {x.replace('_', ' ')}$"
+            equation = f"${y.replace('_', ' ')} = {slope:.2f} * {x.replace('_', ' ')}$"
 
         else:
             lin_reg = stats.linregress(df[x], df[y])
@@ -379,7 +322,7 @@ def make_linear_regression(df, x, y, intercept_0):
                 values.append(getattr(lin_reg, p))
             summary = pd.DataFrame({'param': params, 'value': values})
             df['fit_values'] = df[x] * slope + intercept
-            equation = f"${y} = {slope:.2f} * {x.replace('_', ' ')} + {intercept:.2f}$"
+            equation = f"${y.replace('_', ' ')} = {slope:.2f} * {x.replace('_', ' ')} + {intercept:.2f}$"
 
         annotations = [dict(x=0.75 * df[x].max(), y=0.9 * df[y].max(), showarrow=False,
                             text=equation,
