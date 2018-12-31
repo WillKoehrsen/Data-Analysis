@@ -17,7 +17,7 @@ which are located in `data/`
 
 ## Basic usage
 
-### For your own data
+### Use your own Medium statistics
 1. Go to the stats page https://medium.com/me/stats
 2. Scroll all the way down to the bottom so all the articles are loaded
 3. Right click, and hit 'save as'
@@ -25,9 +25,9 @@ which are located in `data/`
 
 ![](images/stats-saving-medium.gif)
 
-If you don't do this, you can go to the next step and use the provided data
+If you don't do this, you can still go to the next step and use the provided data!
 
-## Getting Data
+## Retrieving Statistics
 
 * Open up a Jupyter Notebook or Python terminal in the `medium/` directory
 and run
