@@ -7,6 +7,7 @@ from itertools import chain
 from collections import Counter, defaultdict
 from timeit import default_timer as timer
 import pandas as pd
+import numpy as np
 
 
 from scipy import stats
@@ -111,7 +112,7 @@ def make_cum_plot(df, y, category=None):
     Make an interactive cumulative plot, optionally segmented by `category`
 
     :param df: dataframe of data, must have a `published_date` column
-    :param y: string of column to use for plotting
+    :param y: string of column to use for plotting or list of two strings for double y axis
     :param category: string representing column to segment by
 
     :return figure: a plotly plot to show with iplot or plot
@@ -132,40 +133,72 @@ def make_cum_plot(df, y, category=None):
             )
     else:
         df.sort_values("published_date", inplace=True)
-        data = [
-            go.Scatter(
-                x=df["published_date"],
-                y=df[y].cumsum(),
-                mode="lines+markers",
-                text=df["title"],
-                marker=dict(size=10),
-            )
-        ]
-
-    layout = go.Layout(
-        xaxis=dict(title="Published Date", type="date"),
-        yaxis=dict(title=y.title()),
-        font=dict(size=14),
-        title=f"Cumulative {y.title()} by {category.title()}"
-        if category is not None
-        else f"Cumulative {y.title()}",
-    )
+        if len(y) == 2:
+            data = [
+                go.Scatter(
+                    x=df["published_date"],
+                    y=df[y[0]].cumsum(),
+                    name=y[0].title(),
+                    mode="lines+markers",
+                    text=df["title"],
+                    marker=dict(size=8, color='blue'),
+                ),
+                go.Scatter(
+                    x=df["published_date"],
+                    y=df[y[1]].cumsum(),
+                    yaxis='y2',
+                    name=y[1].title(),
+                    mode="lines+markers",
+                    text=df["title"],
+                    marker=dict(size=8, color='red'),
+                ),
+            ]
+        else:
+            data = [
+                go.Scatter(
+                    x=df["published_date"],
+                    y=df[y].cumsum(),
+                    mode="lines+markers",
+                    text=df["title"],
+                    marker=dict(size=10),
+                )
+            ]
+    if len(y) == 2:
+        layout = go.Layout(
+            xaxis=dict(title="Published Date", type="date"),
+            yaxis=dict(title=y[0].title(), color='blue'),
+            yaxis2=dict(title=y[1].title(), color='red',
+                        overlaying='y', side='right'),
+            font=dict(size=14),
+            title=f"Cumulative {y[0].title()} and {y[1].title()}",
+        )
+    else:
+        layout = go.Layout(
+            xaxis=dict(title="Published Date", type="date"),
+            yaxis=dict(title=y.title()),
+            font=dict(size=14),
+            title=f"Cumulative {y.title()} by {category.title()}"
+            if category is not None
+            else f"Cumulative {y.title()}",
+        )
 
     figure = go.Figure(data=data, layout=layout)
     return figure
 
 
-def make_scatter_plot(df, x, y, xlog=False, ylog=False, category=None, scale=None):
+def make_scatter_plot(df, x, y, fits=None, xlog=False, ylog=False, category=None, scale=None, sizeref=2):
     """
     Make an interactive scatterplot, optionally segmented by `category`
 
     :param df: dataframe of data
     :param x: string of column to use for xaxis
     :param y: string of column to use for yaxis
+    :param fits: list of strings of fits
     :param xlog: boolean for making a log xaxis
     :param ylog boolean for making a log yaxis
     :param category: string representing categorical column to segment by, this must be a categorical
     :param scale: string representing numerical column to size and color markers by, this must be numerical data
+    :param sizeref: float or integer for setting the size of markers according to the scale, only used if scale is set
 
     :return figure: a plotly plot to show with iplot or plot
     """
@@ -186,15 +219,25 @@ def make_scatter_plot(df, x, y, xlog=False, ylog=False, category=None, scale=Non
             data = [go.Scatter(x=df[x],
                                y=df[y],
                                mode='markers',
-                               text=df['title'], marker=dict(size=df[scale], sizemode='area',
+                               text=df['title'], marker=dict(size=df[scale], sizemode='area', sizeref=sizeref,
                                                              colorscale='Viridis', color=df[scale], showscale=True, sizemin=2))]
         else:
+
+            df.sort_values(x, inplace=True)
             title = f"{y.title()} vs {x.title()}"
             data = [go.Scatter(x=df[x],
                                y=df[y],
                                mode='markers',
-                               text=df['title'], marker=dict(size=10))]
+                               text=df['title'], marker=dict(
+                                   size=10, color='blue'),
+                               name='observations')]
+            if fits is not None:
+                for fit in fits:
+                    data.append(go.Scatter(x=df[x], y=df[fit],
+                                           mode='lines+markers', marker=dict(size=8),
+                                           line=dict(dash='dash'), name=fit))
 
+                title += ' with Fit'
     layout = go.Layout(
         xaxis=dict(title=x.title() + (' (log scale)' if xlog else ''),
                    type='log' if xlog else None),
@@ -206,6 +249,40 @@ def make_scatter_plot(df, x, y, xlog=False, ylog=False, category=None, scale=Non
 
     figure = go.Figure(data=data, layout=layout)
     return figure
+
+
+def make_fits(df, x, y, degree=6):
+    """
+    Generate fits and make interactive plot with fits
+
+    :param df: dataframe with data
+    :param x: string representing x data column
+    :param y: string representing y data column
+    :param degree: integer degree of fits to go up to
+
+    :return fit_stats: dataframe with information about fits
+    :return figure: interactive plotly figure that can be shown with iplot or plot
+    """
+
+    # Don't want to alter original data frame
+    df = df.copy()
+    fit_list = []
+    rmse = []
+    fit_params = []
+
+    # Make each fit
+    for i in range(1, degree + 1):
+        fit_name = f'fit degree = {i}'
+        fit_list.append(fit_name)
+        z = np.polyfit(df[x], df[y], i)
+        fit_params.append(z)
+        df.loc[:, fit_name] = np.poly1d(z)(df[x])
+        rmse.append(np.sqrt(np.mean(np.square(df[fit_name] - df[x]))))
+
+    fit_stats = pd.DataFrame(
+        {'fit': fit_list, 'rmse': rmse, 'params': fit_params})
+    figure = make_scatter_plot(df, x=x, y=y, fits=fit_list)
+    return fit_stats, figure
 
 
 def make_iplot(data, x, y, base_title, time=False, eq_pos=(0.75, 0.25)):
