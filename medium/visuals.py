@@ -229,40 +229,6 @@ def make_scatter_plot(df, x, y, fits=None, xlog=False, ylog=False, category=None
     return figure
 
 
-def make_poly_fits(df, x, y, degree=6):
-    """
-    Generate fits and make interactive plot with fits
-
-    :param df: dataframe with data
-    :param x: string representing x data column
-    :param y: string representing y data column
-    :param degree: integer degree of fits to go up to
-
-    :return fit_stats: dataframe with information about fits
-    :return figure: interactive plotly figure that can be shown with iplot or plot
-    """
-
-    # Don't want to alter original data frame
-    df = df.copy()
-    fit_list = []
-    rmse = []
-    fit_params = []
-
-    # Make each fit
-    for i in range(1, degree + 1):
-        fit_name = f'fit degree = {i}'
-        fit_list.append(fit_name)
-        z, res, *rest = np.polyfit(df[x], df[y], i, full=True)
-        fit_params.append(z)
-        df.loc[:, fit_name] = np.poly1d(z)(df[x])
-        rmse.append(np.sqrt(res[0]))
-
-    fit_stats = pd.DataFrame(
-        {'fit': fit_list, 'rmse': rmse, 'params': fit_params})
-    figure = make_scatter_plot(df, x=x, y=y, fits=fit_list)
-    return figure, fit_stats
-
-
 def make_linear_regression(df, x, y, intercept_0):
     """
     Create a linear regression, either with the intercept set to 0 or
@@ -328,6 +294,40 @@ def make_linear_regression(df, x, y, intercept_0):
         figure = make_scatter_plot(
             df, x=x, y=y, fits=['fit_values'], annotations=annotations)
     return figure, summary
+
+
+def make_poly_fits(df, x, y, degree=6):
+    """
+    Generate fits and make interactive plot with fits
+
+    :param df: dataframe with data
+    :param x: string representing x data column
+    :param y: string representing y data column
+    :param degree: integer degree of fits to go up to
+
+    :return fit_stats: dataframe with information about fits
+    :return figure: interactive plotly figure that can be shown with iplot or plot
+    """
+
+    # Don't want to alter original data frame
+    df = df.copy()
+    fit_list = []
+    rmse = []
+    fit_params = []
+
+    # Make each fit
+    for i in range(1, degree + 1):
+        fit_name = f'fit degree = {i}'
+        fit_list.append(fit_name)
+        z, res, *rest = np.polyfit(df[x], df[y], i, full=True)
+        fit_params.append(z)
+        df.loc[:, fit_name] = np.poly1d(z)(df[x])
+        rmse.append(np.sqrt(res[0]))
+
+    fit_stats = pd.DataFrame(
+        {'fit': fit_list, 'rmse': rmse, 'params': fit_params})
+    figure = make_scatter_plot(df, x=x, y=y, fits=fit_list)
+    return figure, fit_stats
 
 
 def make_extrapolation(df, y, years, degree=4):
