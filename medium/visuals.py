@@ -1,24 +1,16 @@
 # Data science imports
-from multiprocessing import Pool
-import requests
-import re
-from bs4 import BeautifulSoup
-from itertools import chain
-from collections import Counter, defaultdict
-from timeit import default_timer as timer
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
 
 from scipy import stats
 
 # Interactive plotting
-import plotly.plotly as py
 import plotly.graph_objs as go
-from plotly.offline import iplot
 import cufflinks
-
 cufflinks.go_offline()
 
 
@@ -108,13 +100,14 @@ def make_hist(df, x, category=None):
     return figure
 
 
-def make_cum_plot(df, y, category=None):
+def make_cum_plot(df, y, category=None, ranges=False):
     """
     Make an interactive cumulative plot, optionally segmented by `category`
 
     :param df: dataframe of data, must have a `published_date` column
     :param y: string of column to use for plotting or list of two strings for double y axis
     :param category: string representing column to segment by
+    :param ranges: boolean for whether to add range slider and range selector
 
     :return figure: a plotly plot to show with iplot or plot
     """
@@ -185,11 +178,29 @@ def make_cum_plot(df, y, category=None):
             else f"Cumulative {y.replace('_', ' ').title()}",
         )
 
+    # Add a rangeselector and rangeslider for a data xaxis
+    if ranges:
+        rangeselector = dict(
+            buttons=list(
+                [
+                    dict(count=1, label="1m", step="month", stepmode="backward"),
+                    dict(count=6, label="6m", step="month", stepmode="backward"),
+                    dict(count=1, label="1y", step="year", stepmode="backward"),
+                    dict(step="all"),
+                ]
+            )
+        )
+        rangeslider = dict(visible=True)
+        layout["xaxis"]["rangeselector"] = rangeselector
+        layout["xaxis"]["rangeslider"] = rangeslider
+        layout['width'] = 1000
+        layout['height'] = 600
+
     figure = go.Figure(data=data, layout=layout)
     return figure
 
 
-def make_scatter_plot(df, x, y, fits=None, xlog=False, ylog=False, category=None, scale=None, sizeref=2, annotations=None):
+def make_scatter_plot(df, x, y, fits=None, xlog=False, ylog=False, category=None, scale=None, sizeref=2, annotations=None, ranges=False, title_override=None):
     """
     Make an interactive scatterplot, optionally segmented by `category`
 
@@ -203,6 +214,8 @@ def make_scatter_plot(df, x, y, fits=None, xlog=False, ylog=False, category=None
     :param scale: string representing numerical column to size and color markers by, this must be numerical data
     :param sizeref: float or integer for setting the size of markers according to the scale, only used if scale is set
     :param annotations: text to display on the plot (dictionary)
+    :param ranges: boolean for whether to add a range slider and selector
+    :param title_override: String to override the title
 
     :return figure: a plotly plot to show with iplot or plot
     """
@@ -238,8 +251,9 @@ def make_scatter_plot(df, x, y, fits=None, xlog=False, ylog=False, category=None
                 name='observations')]
             if fits is not None:
                 for fit in fits:
-                    data.append(go.Scatter(x=df[x], y=df[fit],
-                                           mode='lines+markers', marker=dict(size=8, opacity=0.6),
+                    data.append(go.Scatter(x=df[x], y=df[fit], text=df['title'],
+                                           mode='lines+markers', marker=dict
+                                           (size=8, opacity=0.6),
                                            line=dict(dash='dash'), name=fit))
 
                 title += ' with Fit'
@@ -249,8 +263,26 @@ def make_scatter_plot(df, x, y, fits=None, xlog=False, ylog=False, category=None
                        yaxis=dict(title=y.replace('_', ' ').title() + (' (log scale)' if ylog else ''),
                                   type='log' if ylog else None),
                        font=dict(size=14),
-                       title=title,
+                       title=title if title_override is None else title_override,
                        )
+
+    # Add a rangeselector and rangeslider for a data xaxis
+    if ranges:
+        rangeselector = dict(
+            buttons=list(
+                [
+                    dict(count=1, label="1m", step="month", stepmode="backward"),
+                    dict(count=6, label="6m", step="month", stepmode="backward"),
+                    dict(count=1, label="1y", step="year", stepmode="backward"),
+                    dict(step="all"),
+                ]
+            )
+        )
+        rangeslider = dict(visible=True)
+        layout["xaxis"]["rangeselector"] = rangeselector
+        layout["xaxis"]["rangeslider"] = rangeslider
+        layout['width'] = 1000
+        layout['height'] = 600
 
     figure = go.Figure(data=data, layout=layout)
     return figure
@@ -287,7 +319,7 @@ def make_poly_fits(df, x, y, degree=6):
     fit_stats = pd.DataFrame(
         {'fit': fit_list, 'rmse': rmse, 'params': fit_params})
     figure = make_scatter_plot(df, x=x, y=y, fits=fit_list)
-    return fit_stats, figure
+    return figure, fit_stats
 
 
 def make_linear_regression(df, x, y, intercept_0):
@@ -296,204 +328,122 @@ def make_linear_regression(df, x, y, intercept_0):
     the intercept allowed to be fitted
 
     :param df: dataframe with data
-    :param x: string for the name of the column with x data
+    :param x: string or list of stringsfor the name of the column with x data
     :param y: string for the name of the column with y data
     :param intercept_0: boolean indicating whether to set the intercept to 0
     """
+    if isinstance(x, list):
+        lin_model = LinearRegression()
+        lin_model.fit(df[x], df[y])
 
-    if intercept_0:
-        lin_reg = sm.OLS(df[y], df[x]).fit()
-        df['fit_values'] = lin_reg.fittedvalues
-        summary = lin_reg.summary()
-        slope = float(lin_reg.params)
-        equation = f"${y} = {slope:.2f} * {x.replace('_', ' ')}$"
+        slopes, intercept, = lin_model.coef_, lin_model.intercept_
+        df['predicted'] = lin_model.predict(df[x])
+        r2 = lin_model.score(df[x], df[y])
+        rmse = np.sqrt(mean_squared_error(
+            y_true=df[y], y_pred=df['predicted']))
+        equation = f'{y.replace("_", " ")} ='
 
+        names = ['r2', 'rmse', 'intercept']
+        values = [r2, rmse, intercept]
+        for i, (p, s) in enumerate(zip(x, slopes)):
+            if (i + 1) % 3 == 0:
+                equation += f'<br>{s:.2f} * {p.replace("_", " ")} +'
+            else:
+                equation += f' {s:.2f} * {p.replace("_", " ")} +'
+            names.append(p)
+            values.append(s)
+
+        equation += f' {intercept:.2f}'
+        annotations = [dict(x=0.4 * df.index.max(), y=0.9 * df[y].max(), showarrow=False,
+                            text=equation,
+                            font=dict(size=10))]
+
+        df['index'] = list(df.index)
+        figure = make_scatter_plot(df, x='index', y=y, fits=[
+                                   'predicted'], annotations=annotations)
+        summary = pd.DataFrame({'name': names, 'value': values})
     else:
-        lin_reg = stats.linregress(df[x], df[y])
-        intercept, slope = lin_reg.intercept, lin_reg.slope
-        params = ['pvalue', 'rvalue', 'slope', 'intercept']
-        values = []
-        for p in params:
-            values.append(getattr(lin_reg, p))
-        summary = pd.DataFrame({'param': params, 'value': values})
-        df['fit_values'] = df[x] * slope + intercept
-        equation = f"${y} = {slope:.2f} * {x.replace('_', ' ')} + {intercept:.2f}$"
+        if intercept_0:
+            lin_reg = sm.OLS(df[y], df[x]).fit()
+            df['fit_values'] = lin_reg.fittedvalues
+            summary = lin_reg.summary()
+            slope = float(lin_reg.params)
+            equation = f"${y} = {slope:.2f} * {x.replace('_', ' ')}$"
 
-    annotations = [dict(x=0.75 * df[x].max(), y=0.9 * df[y].max(), showarrow=False,
-                        text=equation,
-                        font=dict(size=32))]
-    figure = make_scatter_plot(
-        df, x=x, y=y, fits=['fit_values'], annotations=annotations)
+        else:
+            lin_reg = stats.linregress(df[x], df[y])
+            intercept, slope = lin_reg.intercept, lin_reg.slope
+            params = ['pvalue', 'rvalue', 'slope', 'intercept']
+            values = []
+            for p in params:
+                values.append(getattr(lin_reg, p))
+            summary = pd.DataFrame({'param': params, 'value': values})
+            df['fit_values'] = df[x] * slope + intercept
+            equation = f"${y} = {slope:.2f} * {x.replace('_', ' ')} + {intercept:.2f}$"
+
+        annotations = [dict(x=0.75 * df[x].max(), y=0.9 * df[y].max(), showarrow=False,
+                            text=equation,
+                            font=dict(size=32))]
+        figure = make_scatter_plot(
+            df, x=x, y=y, fits=['fit_values'], annotations=annotations)
     return figure, summary
 
 
-def make_iplot(data, x, y, base_title, time=False, eq_pos=(0.75, 0.25)):
+def make_extrapolation(df, y, years, degree=4):
     """
-    Make an interactive plot. Adds a dropdown to separate articles from responses
-    if there are responses in the data. If there is only articles (or only responses)
-    adds a linear regression line.
+    Extrapolate `y` into the future `years` with `degree`  polynomial fit
 
-    :param data: dataframe of entry data
-    :param x: string for xaxis of plot
-    :param y: sring for yaxis of plot
-    :param base_title: string for title of plot
-    :param time: boolean for whether the xaxis is a plot
-    :param eq_pos: position of equation for linear regression
+    :param df: dataframe of data
+    :param y: string of column to extrapolate
+    :param years: number of years to extrapolate into the future
+    :param degree: integer degree of polynomial fit
 
-    :return figure: an interactive plotly object for display
-
+    :return figure: plotly figure for display using iplot or plot
+    :return future_df: extrapolated numbers into the future
     """
 
-    # Extract the relevant data
-    responses = data[data["response"] == "response"].copy()
-    articles = data[data["response"] == "article"].copy()
+    df = df.copy()
+    x = 'days_since_start'
+    df['days_since_start'] = (
+        (df['published_date'] - df['published_date'].min()).
+        dt.total_seconds() / (3600 * 24)).astype(int)
 
-    if not responses.empty:
-        # Create scatterplot data, articles must be first for menu selection
-        plot_data = [
-            go.Scatter(
-                x=articles[x],
-                y=articles[y],
-                mode="markers",
-                name="articles",
-                text=articles["title"],
-                marker=dict(color="blue", size=12),
-            ),
-            go.Scatter(
-                x=responses[x],
-                y=responses[y],
-                mode="markers",
-                name="responses",
-                marker=dict(color="green", size=12),
-            ),
-        ]
+    cumy = f'cum_{y}'
+    df[cumy] = df.sort_values(x)[y].cumsum()
 
-        if not time:
-            annotations = {}
-            for df, name in zip([articles, responses], ["articles", "responses"]):
+    figure, summary = make_poly_fits(df, x, cumy, degree=degree)
 
-                regression = stats.linregress(x=df[x], y=df[y])
-                slope = regression.slope
-                intercept = regression.intercept
-                rvalue = regression.rvalue
+    min_date = df['published_date'].min()
+    max_date = df['published_date'].max()
 
-                xi = np.array(range(int(df[x].min()), int(df[x].max())))
+    date_range = pd.date_range(start=min_date,
+                               end=max_date + pd.Timedelta(days=int(years * 365)))
 
-                line = xi * slope + intercept
-                trace = go.Scatter(
-                    x=xi,
-                    y=line,
-                    mode="lines",
-                    marker=dict(color="blue" if name ==
-                                "articles" else "green"),
-                    line=dict(width=4, dash="longdash"),
-                    name=f"{name} linear fit",
-                )
+    future_df = pd.DataFrame({'date': date_range})
 
-                annotations[name] = dict(
-                    x=max(xi) * eq_pos[0],
-                    y=df[y].max() * eq_pos[1],
-                    showarrow=False,
-                    text=f"$R^2 = {rvalue:.2f}; Y = {slope:.2f}X + {intercept:.2f}$",
-                    font=dict(size=16, color="blue" if name ==
-                              "articles" else "green"),
-                )
+    future_df[x] = (
+        (future_df['date'] - future_df['date'].min()).
+        dt.total_seconds() / (3600 * 24)).astype(int)
 
-                plot_data.append(trace)
+    newcumy = f'cumulative_{y}'
 
-        # Make a layout with update menus
-        layout = go.Layout(
-            annotations=list(annotations.values()),
-            height=600,
-            width=900,
-            title=base_title,
-            xaxis=dict(
-                title=x.replace('_', ' ').title(), tickfont=dict(size=14), titlefont=dict(size=16)
-            ),
-            yaxis=dict(
-                title=y.replace('_', ' ').title(), tickfont=dict(size=14), titlefont=dict(size=16)
-            ),
-            updatemenus=make_update_menu(
-                base_title, annotations["articles"], annotations["responses"]
-            ),
-        )
+    future_df = future_df.merge(df[[x, cumy]], on=x, how='left').\
+        rename(columns={cumy: newcumy})
 
-    # If there are only articles
-    else:
-        plot_data = [
-            go.Scatter(
-                x=data[x],
-                y=data[y],
-                mode="markers",
-                name="observations",
-                text=data["title"],
-                marker=dict(color="blue", size=12),
-            )
-        ]
+    z = np.poly1d(summary.iloc[-1]['params'])
+    pred_name = f'predicted_{y}'
+    future_df[pred_name] = z(future_df[x])
+    future_df['title'] = ''
 
-        regression = stats.linregress(x=data[x], y=data[y])
-        slope = regression.slope
-        intercept = regression.intercept
-        rvalue = regression.rvalue
+    last_date = future_df.loc[future_df['date'].idxmax()]
+    prediction_text = (
+        f"On {last_date['date'].date()} the {y} will be {float(last_date[pred_name]):,.0f}.")
+    annotations = [dict(x=future_df['date'].quantile(0.4),
+                        y=0.8 * future_df[pred_name].max(), text=prediction_text, showarrow=False,
+                        font=dict(size=16))]
 
-        xi = np.array(range(int(data[x].min()), int(data[x].max())))
-        line = xi * slope + intercept
-        trace = go.Scatter(
-            x=xi,
-            y=line,
-            mode="lines",
-            marker=dict(color="red"),
-            line=dict(width=4, dash="longdash"),
-            name="linear fit",
-        )
+    title_override = f'{y.replace("_", " ").title()} with Extrapolation {years} Years into the Future'
 
-        annotations = [
-            dict(
-                x=max(xi) * eq_pos[0],
-                y=data[y].max() * eq_pos[1],
-                showarrow=False,
-                text=f"$R^2 = {rvalue:.2f}; Y = {slope:.2f}X + {intercept:.2f}$",
-                font=dict(size=16),
-            )
-        ]
-
-        plot_data.append(trace)
-
-        layout = go.Layout(
-            annotations=annotations,
-            height=600,
-            width=900,
-            title=base_title,
-            xaxis=dict(
-                title=x.replace('_', ' ').title(), tickfont=dict(size=14), titlefont=dict(size=16)
-            ),
-            yaxis=dict(
-                title=y.replace('_', ' ').title(), tickfont=dict(size=14), titlefont=dict(size=16)
-            ),
-        )
-
-    # Add a rangeselector and rangeslider for a data xaxis
-    if time:
-        rangeselector = dict(
-            buttons=list(
-                [
-                    dict(count=1, label="1m", step="month", stepmode="backward"),
-                    dict(count=6, label="6m", step="month", stepmode="backward"),
-                    dict(count=1, label="YTD", step="year", stepmode="todate"),
-                    dict(count=1, label="1y", step="year", stepmode="backward"),
-                    dict(step="all"),
-                ]
-            )
-        )
-        rangeslider = dict(visible=True)
-        layout["xaxis"]["rangeselector"] = rangeselector
-        layout["xaxis"]["rangeslider"] = rangeslider
-
-        figure = go.Figure(data=plot_data, layout=layout)
-
-        return figure
-
-    # Return the figure
-    figure = go.Figure(data=plot_data, layout=layout)
-
-    return figure
+    figure = make_scatter_plot(future_df, 'date', newcumy, fits=[
+                               pred_name], annotations=annotations, ranges=True, title_override=title_override)
+    return figure, future_df

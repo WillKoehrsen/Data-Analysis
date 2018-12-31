@@ -89,6 +89,8 @@ def process_entry(entry, parallel=True, tz='America/Chicago'):
     except:
         title = 'response'
 
+    title_word_count = len(re.findall(r"[\w']+|[.,!?;]", title))
+
     # Main text entries
     entry_text = [p.text for p in entry_soup.find_all(
         ['h1', 'h2', 'h3', 'p', 'blockquote'])]
@@ -133,6 +135,7 @@ def process_entry(entry, parallel=True, tz='America/Chicago'):
 
     # Store in dictionary
     entry_dict['title'] = title
+    entry_dict['title_word_count'] = title_word_count
     entry_dict['text'] = entry_text
     entry_dict['word_count'] = word_count
     entry_dict['claps'] = clap_number
