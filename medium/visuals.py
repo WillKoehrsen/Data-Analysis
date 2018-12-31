@@ -1,4 +1,3 @@
-# Data science imports
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
@@ -8,7 +7,6 @@ from sklearn.metrics import mean_squared_error
 
 from scipy import stats
 
-# Interactive plotting
 import plotly.graph_objs as go
 import cufflinks
 cufflinks.go_offline()
