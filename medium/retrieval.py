@@ -29,7 +29,7 @@ def get_table_rows(fname='stats.html'):
 
 def convert_timestamp(ts: int, tz: str):
     """Convert a unix timestamp to a date timestamp"""
-    return pd.to_datetime(ts, origin='unix', unit='ms').tz_localize('UTC').tz_convert(tz)
+    return pd.to_datetime(ts, origin='unix', unit='ms').tz_localize('UTC').tz_convert(tz).tz_localize(None)
 
 
 def process_entry(entry, parallel=True, tz='America/Chicago'):
@@ -143,8 +143,8 @@ def process_entry(entry, parallel=True, tz='America/Chicago'):
     entry_dict['num_responses'] = num_responses
 
     # Time since publication
-    entry_dict['days_since_publication'] = (datetime.now(tz=pytz.timezone(
-        tz)) - entry_dict['published_date']).total_seconds() / (3600 * 24)
+    entry_dict['days_since_publication'] = (
+        datetime.now() - entry_dict['published_date']).total_seconds() / (3600 * 24)
 
     return entry_dict
 
@@ -181,10 +181,18 @@ def process_in_parallel(table_rows, processes=20):
 
     # Convert to dataframe
     df = pd.DataFrame(results)
+    # Rename ratio
+    df.rename(columns={'ratio': 'read_ratio'}, inplace=True)
     # Add extra columns with more data
     df['claps_per_word'] = df['claps'] / df['word_count']
-    df['edit_days'] = (df['published_date'] - df['started_date']
-                       ).dt.total_seconds() / (60 * 60 * 24)
+    df['editing_days'] = ((df['published_date'] - df['started_date']
+                           ).dt.total_seconds() / (60 * 60 * 24)).astype(int)
+
+    # Rounding
+    df['published_date'] = df['published_date'].dt.round('min')
+    df['started_date'] = df['started_date'].dt.round('min')
+    df['read_ratio'] = df['read_ratio'].round(2)
+
     # 5 most common tags (might want to include more tags)
     n = 5
     all_tags = list(chain(*df['tags'].tolist()))
@@ -198,3 +206,8 @@ def process_in_parallel(table_rows, processes=20):
 
     df.sort_values('published_date', inplace=True)
     return df
+
+
+def get_data(fname='stats.html', processes=20):
+    t = get_table_rows(fname=fname)
+    return process_in_parallel(t, processes=processes)
