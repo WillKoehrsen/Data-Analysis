@@ -1,6 +1,6 @@
 # Tools for analyzing Medium article statistics
 
-Here is a suite of tools for retrieving, analyzing, and visualizing
+The Medium stats Python toolkit is a suite of tools for retrieving, analyzing, predicting, and visualizing
 your Medium article stats. You can also run on my Medium statistics
 which are located in `data/`
 
@@ -11,7 +11,7 @@ which are located in `data/`
 * For complete usage refer to `Medium Stats Analysis`
 * Data retrieval code lives in `retrieval.py`
 * Visualization and analysis code is in `visuals.py`
-* See also the Medium article ["Medium Analysis in Python"]()
+* See also the Medium article ["Medium Analysis in Python"](https://medium.com/@williamkoehrsen/analyzing-medium-story-stats-with-python-24c6491a8ff0)
 * Contributions are welcome and appreciated
 * For help contact wjk68@case.edu or twitter.com/@koehrsen_will
 
