@@ -76,7 +76,7 @@ def process_entry(entry, parallel=True, tz='America/Chicago'):
     # Get the link
     link = entry.find_all(text='View story',
                                attrs={'class': 'sortableTable-link'})[0].get('href')
-
+    entry_dict['link'] = link
     # Retrieve the article and create a soup
     entry = requests.get(link).content
     entry_soup = BeautifulSoup(entry, features='lxml')
