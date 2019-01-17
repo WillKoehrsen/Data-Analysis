@@ -1,1 +1,4 @@
+*.pyc
+*__pycache__
 *DS_Store
+medium/data/*_files
