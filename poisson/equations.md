@@ -1,4 +1,6 @@
-{\displaystyle P(k{\text{ events in interval}})=e^{-\lambda }{\frac {\lambda ^{k}}{k!}}}
+P(k{\text{ events in time period}})=e^{-\frac{\text{events}}{\text{time}}*\text{time period}} *  \frac{(\frac{\text{events}}{\text{time}}*{\text{time period}})^{k}}{k!}
+
+P(k{\text{ events in interval}})=e^{-\lambda }{\frac {\lambda ^{k}}{k!}}
 
 \frac{1 \text{ meteor}}{15 \text{ minutes}} * 60 \text{ minutes} = 4 \text{ meteors expected} = \lambda
 
