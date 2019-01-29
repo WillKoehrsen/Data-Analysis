@@ -18,7 +18,8 @@ def get_table_rows(fname='stats.html'):
     :return table_rows: list of BeautifulSoup objects to be passed to `process_in_parallel`
     """
 
-    soup = BeautifulSoup(open(f'data/{fname}', 'r'), features='lxml')
+    soup = BeautifulSoup(
+        open(f'data/{fname}', 'r', encoding='utf8'), features='lxml')
     table_rows = soup.find_all(
         attrs={'class': "sortableTable-row js-statsTableRow"})
     print(f'Found {len(table_rows)} entries in table.')
