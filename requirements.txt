@@ -1,6 +1,7 @@
 beautifulsoup4==4.6.3
 bokeh==1.0.2
 colorlover==0.2.1
+cmocean==2.0.0
 cufflinks==0.14.6
 dask==1.0.0
 featuretools==0.4.1
