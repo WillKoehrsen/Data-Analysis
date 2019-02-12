@@ -4,3 +4,5 @@
 medium/data/*_files
 *.zip
 *.ipynb_checkpoints
+*time_features/data
+*time_features/raw_data
