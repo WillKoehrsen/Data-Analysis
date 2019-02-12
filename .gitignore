@@ -1,5 +1,5 @@
 *.pyc
-*__pycache__
+*__pycache__*
 *DS_Store
 medium/data/*_files
 *.zip
