@@ -42,7 +42,8 @@ def create_time_features(
         df["local"] = fld
 
     # Basic attributes
-    attr = ["year", "month", "week", "day", "dayofweek", "dayofyear"]
+    attr = ["second", "minute", "hour", "year", "month",
+            "week", "day", "dayofweek", "dayofyear"]
 
     if include_additional:
         # Additional attributes to extract
@@ -56,9 +57,6 @@ def create_time_features(
             "days_in_month",
         ]
 
-    # Time attributes
-    attr = attr + ["hour", "minute", "second"]
-
     # iterate through each attribute and add it to the dataframe
     for n in attr:
         df[prefix + n] = getattr(fld.dt, n)
@@ -70,20 +68,20 @@ def create_time_features(
         + df[prefix + "second"] / 60 / 60
     ) / 24
 
-    # Add fractional time of week converting to hours
+    # Add fractional time of week
     df[prefix + "fracweek"] = (
-        (df[prefix + "dayofweek"] * 24) + (df[prefix + "fracday"] * 24)
-    ) / (7 * 24)
+        df[prefix + "dayofweek"] + df[prefix + "fracday"]
+    ) / 7
 
-    # Add fractional time of month converting to hours
+    # Add fractional time of month
     df[prefix + "fracmonth"] = (
-        (df[prefix + "day"] - 1) * 24 + df[prefix + "fracday"] * 24
+        (df[prefix + "day"] - 1) + df[prefix + "fracday"]
     ) / (
-        fld.dt.days_in_month * 24
+        fld.dt.days_in_month
     )  # Use fld days_in_month in case this is not
     # one of the attributes specified
 
-    # Calculate days in year
+    # Calculate days in year (accounting for leap year rules)
     days_in_year = np.where(
         (df[prefix + "year"] % 4 == 0)
         & ((df[prefix + "year"] % 100 != 0) | (df[prefix + "year"] % 400 == 0)),
@@ -91,17 +89,17 @@ def create_time_features(
         365,
     )
 
-    # Add fractional time of year converting to hours
+    # Add fractional time of year
     df[prefix + "fracyear"] = (
-        (df[prefix + "dayofyear"] - 1) * 24 + df[prefix + "fracday"] * 24
-    ) / (days_in_year * 24)
+        (df[prefix + "dayofyear"] - 1) + df[prefix + "fracday"]
+    ) / days_in_year
 
     if cyc_encode:
         df = pd.concat([df, cyclical_encoding(
-            df[prefix + 'hour'], 23)], axis=1)
+            df[prefix + 'hour'], 24)], axis=1)
         df = pd.concat([df, cyclical_encoding(
             df[prefix + 'dayofweek'], 6)], axis=1)
-        df = pd.concat([df, cyclical_encoding(df[prefix + 'day'], 30)], axis=1)
+        df = pd.concat([df, cyclical_encoding(df[prefix + 'day'], 31)], axis=1)
         df = pd.concat([df, cyclical_encoding(
             df[prefix + 'month'], 12)], axis=1)
         df = pd.concat([df] + [cyclical_encoding(df[c], 1)
@@ -186,6 +184,7 @@ def data_reading(filename):
     data = data.set_index('timestamp').sort_index()
     return data, freq, len(data)
 
+
 def data_testing(filename, model):
     building_id = filename.split('_')[-1].split('.csv')[0]
     data, freq, dpoints = data_reading(filename)
@@ -195,20 +194,25 @@ def data_testing(filename, model):
     results['building_id'] = building_id
     return results
 
+
 def test_time_features(data, model):
-    
+
     data = pd.concat([data, create_time_features(data.index, cyc_encode=True)], axis=1)
-    
+
     scores = []
     methods = []
- 
-    y = data.pop('energy')
-    
-    normal_features = ['timestamp_' + t for t in ['hour', 'dayofweek', 'month', 'dayofyear', 'year']]
-    normal_cyc_features = ['sin_' + t for t in normal_features if t not in ['timestamp_dayofyear', 'timestamp_year']] + ['cos_' + t for t in normal_features if t not in ['timestamp_dayofyear', 'timestamp_year']]
 
-    frac_features = ['timestamp_' + t for t in ['fracday', 'fracweek', 'fracmonth', 'fracyear']]
-    frac_cyc_features = ['sin_' + t for t in frac_features] + ['cos_' + t for t in frac_features]
+    y = data.pop('energy')
+
+    normal_features = ['timestamp_' + t for t in ['hour',
+                                                  'dayofweek', 'month', 'dayofyear', 'year']]
+    normal_cyc_features = ['sin_' + t for t in normal_features if t not in ['timestamp_dayofyear', 'timestamp_year']
+                           ] + ['cos_' + t for t in normal_features if t not in ['timestamp_dayofyear', 'timestamp_year']]
+
+    frac_features = ['timestamp_' +
+                     t for t in ['fracday', 'fracweek', 'fracmonth', 'fracyear']]
+    frac_cyc_features = ['sin_' + t for t in frac_features] + \
+        ['cos_' + t for t in frac_features]
 
     data_normal = data[normal_features].copy()
     data_normal_cyc = data[normal_cyc_features].copy()
@@ -218,14 +222,15 @@ def test_time_features(data, model):
     results = {}
     dataset_names = ['normal', 'normal_cyc', 'frac', 'frac_cyc']
 
-    for dataset, name in zip([data_normal, 
-                                            data_normal_cyc, 
-                                            data_frac, 
-                                            data_frac_cyc], 
-                                           dataset_names):
-        
-        to_drop = dataset.columns[(dataset.nunique() == 1) | (dataset.nunique() == len(dataset))]
-        
+    for dataset, name in zip([data_normal,
+                              data_normal_cyc,
+                              data_frac,
+                              data_frac_cyc],
+                             dataset_names):
+
+        to_drop = dataset.columns[(dataset.nunique() == 1)
+                                  | (dataset.nunique() == len(dataset))]
+
         dataset = dataset.drop(columns=to_drop)
         dataset['energy'] = y.copy()
         try:
@@ -234,6 +239,6 @@ def test_time_features(data, model):
             methods.append(name)
         except Exception as e:
             print(e, name)
-    
+
     results = pd.DataFrame(dict(score=scores, method=methods))
     return results
