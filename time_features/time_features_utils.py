@@ -176,3 +176,64 @@ def monthly_validation(data, model, track=False):
 
 def mape(y_true, y_pred):
     return 100 * np.mean(np.abs((y_pred - y_true) / y_true))
+
+
+def data_reading(filename):
+    data = pd.read_csv(filename, parse_dates=['timestamp'])
+    data = data.dropna(subset=['energy'])
+    freq_counts = data['timestamp'].diff(1).value_counts()
+    freq = round(freq_counts.idxmax().total_seconds() / 60)
+    data = data.set_index('timestamp').sort_index()
+    return data, freq, len(data)
+
+def data_testing(filename, model):
+    building_id = filename.split('_')[-1].split('.csv')[0]
+    data, freq, dpoints = data_reading(filename)
+    results = test_time_features(data, model)
+    results['freq'] = freq
+    results['dpoints'] = dpoints
+    results['building_id'] = building_id
+    return results
+
+def test_time_features(data, model):
+    
+    data = pd.concat([data, create_time_features(data.index, cyc_encode=True)], axis=1)
+    
+    scores = []
+    methods = []
+ 
+    y = data.pop('energy')
+    
+    normal_features = ['timestamp_' + t for t in ['hour', 'dayofweek', 'month', 'dayofyear', 'year']]
+    normal_cyc_features = ['sin_' + t for t in normal_features if t not in ['timestamp_dayofyear', 'timestamp_year']] + ['cos_' + t for t in normal_features if t not in ['timestamp_dayofyear', 'timestamp_year']]
+
+    frac_features = ['timestamp_' + t for t in ['fracday', 'fracweek', 'fracmonth', 'fracyear']]
+    frac_cyc_features = ['sin_' + t for t in frac_features] + ['cos_' + t for t in frac_features]
+
+    data_normal = data[normal_features].copy()
+    data_normal_cyc = data[normal_cyc_features].copy()
+    data_frac = data[frac_features].copy()
+    data_frac_cyc = data[frac_cyc_features].copy()
+
+    results = {}
+    dataset_names = ['normal', 'normal_cyc', 'frac', 'frac_cyc']
+
+    for dataset, name in zip([data_normal, 
+                                            data_normal_cyc, 
+                                            data_frac, 
+                                            data_frac_cyc], 
+                                           dataset_names):
+        
+        to_drop = dataset.columns[(dataset.nunique() == 1) | (dataset.nunique() == len(dataset))]
+        
+        dataset = dataset.drop(columns=to_drop)
+        dataset['energy'] = y.copy()
+        try:
+            data_results = monthly_validation(dataset, model)
+            scores.append(data_results['score'])
+            methods.append(name)
+        except Exception as e:
+            print(e, name)
+    
+    results = pd.DataFrame(dict(score=scores, method=methods))
+    return results
