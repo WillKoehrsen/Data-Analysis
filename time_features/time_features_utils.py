@@ -84,7 +84,7 @@ def create_time_features(
     # Calculate days in year (accounting for leap year rules)
     days_in_year = np.where(
         (df[prefix + "year"] % 4 == 0)
-        & ((df[prefix + "year"] % 100 != 0) | (df[prefix + "year"] % 400 == 0)),
+        & ( ( df[prefix + "year"] % 100 != 0) | (df[prefix + "year"] % 400 == 0)),
         366,
         365,
     )
