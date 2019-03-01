@@ -46,7 +46,8 @@ Show graphs and stats here`)
     Jupyter.notebook.insert_cell_at_index('markdown', 5)
       .set_text(`# Conclusions and Next Steps
 Summarize findings here`)
-    setTimeout(Jupyter.notebook.execute_all_cells(), 5000)
+    // Run all cells
+    Jupyter.notebook.execute_all_cells()
   }
   // Prompts user to enter name for notebook
   var promptName = function () {
@@ -59,7 +60,7 @@ Summarize findings here`)
   function load_ipython_extension () {
     // Add default cells for new notebook
     if (Jupyter.notebook.get_cells().length === 1) {
-      setUp()
+      setTimeout(setUp, 500)
     } else {
       promptName()
     }
