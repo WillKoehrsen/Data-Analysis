@@ -1,0 +1,10 @@
+Type: Jupyter Notebook Extension
+Compatibility: 3.x, 4.x, 5.x, 6.x
+Name: Setup
+Main: main.js
+Link: README.md
+Description: |
+  Sets up the Jupyter Notebook with a template of markdown, adds a cell with
+  user-defined imports, and prompts for a notebook name.
+Parameters:
+- none
