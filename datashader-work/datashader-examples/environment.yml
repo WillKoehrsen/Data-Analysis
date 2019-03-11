@@ -1,0 +1,57 @@
+name: ds
+channels:
+ - bokeh
+ - conda-forge
+ - ioam
+
+dependencies:
+ - attrs
+ - beautifulsoup4
+ - bokeh
+ - cartopy
+ - colorcet
+ - conda-forge::graphviz
+ - conda-forge::pytest
+ - conda-forge::pytest-benchmark
+ - conda-forge::python-graphviz
+ - dask>=0.15.4
+ - datashader
+ - dill
+ - distributed
+ - fastparquet
+ - flake8
+ - geoviews
+ - ioam::holoviews>=1.8.3
+ - ipython
+ - iris
+ - jupyter
+ - jupyter_dashboards
+ - krb5
+ - matplotlib
+ - nbconvert
+ - nbformat
+ - networkx>=2.0
+ - numba
+ - numpy
+ - pandas
+ - param>=1.5.1
+ - paramnb
+ - pyproj
+ - pytables
+ - python-snappy
+ - python=3.6
+ - rasterio
+ - requests
+ - scikit-image
+ - scipy
+ - shapely
+ - snappy
+ - statsmodels
+ - tblib
+ - xarray
+ - yaml
+ - pip:
+   - cachey
+   - streamz==0.2.0
+   - webargs
+
