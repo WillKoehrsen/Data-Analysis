@@ -1,0 +1,10 @@
+---
+
+data:
+
+  - url: 'http://assets.holoviews.org/geoviews-sample-data.zip'
+    title: 'GeoViews sample data'
+    files:
+      - ensemble.nc
+      - ensembles.nc
+      - pre-industrial.nc
