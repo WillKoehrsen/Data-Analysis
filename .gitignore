@@ -6,3 +6,7 @@ medium/data/*_files
 *.ipynb_checkpoints
 *time_features/data
 *time_features/data_raw
+
+*pyviz-examples*
+*geoview-examples*
+*datashader-examples*
