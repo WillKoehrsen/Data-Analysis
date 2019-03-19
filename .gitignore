@@ -10,3 +10,5 @@ medium/data/*_files
 *pyviz-examples*
 *geoview-examples*
 *datashader-examples*
+
+*.vscode*
