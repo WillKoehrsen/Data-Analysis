@@ -29,7 +29,7 @@ matplotlib==2.2.2
 nbconvert==5.4.0
 nbformat==4.4.0
 nose==1.3.7
-notebook-5.7.8
+notebook==5.7.8
 numexpr==2.6.8
 numpy==1.15.4
 packaging==18.0
