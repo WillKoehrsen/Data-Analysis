@@ -1,0 +1,24 @@
+name: filetimes
+dependencies:
+- bokeh
+- matplotlib
+- jupyter
+- bcolz=1.1.2=np112py35_0
+- bokeh::datashader=0.4.0=py35_0
+- conda-forge::feather-format=0.3.1=py35_1
+- dask=0.14.3=py35_0
+- numba::numba=0.33.0=np112py35_0
+- numexpr=2.6.2=np112py35_0
+- numpy=1.12.1=py35_0
+- pandas=0.19.2=np112py35_1
+- pytest
+- python=3.5.2=0
+- conda-forge::python-snappy=0.5.1=py35_0
+- snappy=1.1.4=1
+- conda-forge::fastparquet=0.0.6=py35_1
+- bccp::cachey==0.1.1
+- bloscpack==0.10.0
+- blosc==1.9.2
+- pytables==3.4.2
+- pip:
+  - castra==0.1.7

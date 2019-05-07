@@ -1,0 +1,75 @@
+---
+
+data:
+
+  - url: http://s3.amazonaws.com/datashader-data/austin_dem.zip
+    title: 'Austin, TX Elevation Data'
+    files:
+      - austin_dem.tif
+
+  - url: http://s3.amazonaws.com/datashader-data/nyc_crime.zip
+    title: 'NYC Crime Data'
+    files:
+      - nyc_crime.csv
+
+  - url: http://s3.amazonaws.com/datashader-data/nyc_taxi.zip
+    title: 'NYC Taxi Data'
+    files:
+      - nyc_taxi.csv
+
+  - url: http://s3.amazonaws.com/datashader-data/calvert_uk_research2017.snappy.parq.zip
+    title: 'Graph for Edge Bundling (Calvert UK Research 2017)'
+    files:
+      - calvert_uk_research2017_nodes.snappy.parq
+      - calvert_uk_research2017_edges.snappy.parq
+
+  - url: http://s3.amazonaws.com/datashader-data/calvert_uk_research2017_nodes.zip
+    title: 'Institutions for Edge Bundling (Calvert UK Research 2017)'
+    files:
+      - calvert_uk_research2017_nodes.csv
+
+  - url: http://s3.amazonaws.com/datashader-data/census.snappy.parq.zip
+    title: 'Census Synthetic People'
+    files:
+      - census.snappy.parq
+
+  - url: http://s3.amazonaws.com/datashader-data/opensky.parq
+    title: 'OpenSky flights, Sept 5-13 2016'
+    files:
+      - opensky.parq
+
+  - url: http://s3.amazonaws.com/datashader-data/mobile_landsat8.zip
+    title: 'Mobile, AL Landsat8 Data'
+    files:
+      - MERCATOR_LC80210392016114LGN00_B1.TIF
+      - MERCATOR_LC80210392016114LGN00_B2.TIF
+      - MERCATOR_LC80210392016114LGN00_B3.TIF
+      - MERCATOR_LC80210392016114LGN00_B4.TIF
+      - MERCATOR_LC80210392016114LGN00_B5.TIF
+      - MERCATOR_LC80210392016114LGN00_B6.TIF
+      - MERCATOR_LC80210392016114LGN00_B7.TIF
+      - MERCATOR_LC80210392016114LGN00_B8.TIF
+      - MERCATOR_LC80210392016114LGN00_B9.TIF
+      - MERCATOR_LC80210392016114LGN00_B10.TIF
+      - MERCATOR_LC80210392016114LGN00_B11.TIF
+      - MERCATOR_LC80210392016114LGN00_BQA.TIF
+
+  - url: http://s3.amazonaws.com/datashader-data/maccdc2012_graph.zip
+    title: 'National CyberWatch Mid-Atlantic Collegiate Cyber Defense Competition'
+    files:
+      - maccdc2012_nodes.parq
+      - maccdc2012_edges.parq
+      - maccdc2012_full_nodes.parq
+      - maccdc2012_full_edges.parq
+
+# Original url: https://www2.census.gov/geo/tiger/GENZ2015/shp/cb_2015_us_cd114_5m.zip
+  - url: http://s3.amazonaws.com/datashader-data/cb_2015_us_cd114_5m.zip
+    title: '2015 Congressional districts'
+    files:
+      - cb_2015_us_cd114_5m.shp
+
+  - url: http://s3.amazonaws.com/datashader-data/Chesapeake_and_Delaware_Bays.zip
+    title: 'Depth data for the Chesapeake and Delaware Bay region of the USA'
+    files:
+      - Chesapeake_and_Delaware_Bays.3dm
+

@@ -1,0 +1,14 @@
+---
+
+data:
+
+  - url: http://s3.amazonaws.com/datashader-data/calvert_uk_research2017.snappy.parq.zip
+    title: 'Graph for Edge Bundling (Calvert UK Research 2017)'
+    files:
+      - calvert_uk_research2017_nodes.snappy.parq
+      - calvert_uk_research2017_edges.snappy.parq
+
+  - url: http://s3.amazonaws.com/datashader-data/calvert_uk_research2017_nodes.zip
+    title: 'Institutions for Edge Bundling (Calvert UK Research 2017)'
+    files:
+      - calvert_uk_research2017_nodes.csv

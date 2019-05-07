@@ -8,3 +8,9 @@ medium/data/*_files
 *time_features/data_raw
 datashader-work/datashader-examples/*
 datashader-work/pyviz-examples/*
+
+*pyviz-examples*
+*geoview-examples*
+*datashader-examples*
+
+*.vscode*

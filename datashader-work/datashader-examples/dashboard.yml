@@ -1,0 +1,149 @@
+sources:
+  osm-1b:
+    description: 1-billion-point OpenStreetMap GPS dataset
+    driver: parquet
+    args:
+      urlpath: '{{ CATALOG_DIR }}/data/osm-1billion.snappy.parq'
+      columns: ['x','y']
+    metadata:
+      fields:
+        counts:
+          label: GPS coordinates
+      plot:
+        xlim: !!python/tuple [-8240227, -8231284]
+        ylim: !!python/tuple [ 4974203,  4979238]
+        kind: points
+      plots:
+        counts:
+          label: 1 billion OpenStreetMap GPS locations
+          x: x
+          y: y
+          
+  nyc_taxi:
+    description: Large version of nyc taxi dataset
+    driver: parquet
+    args:
+      urlpath: '{{ CATALOG_DIR }}/data/nyc_taxi_wide.parq'
+      columns: ['dropoff_x','dropoff_y','pickup_x','pickup_y',
+                'dropoff_hour','pickup_hour','passenger_count']
+    metadata:
+      fields:
+        counts:
+          label: Ride counts
+        passenger_count:
+          label: Passenger Count
+        dropoff_hour:
+          label: Drop-off Hour
+        pickup_hour:
+          label: Pick-up Hour
+      plot:
+        xlim: !!python/tuple [-8240227.037, -8231283.905]
+        ylim: !!python/tuple [4974203.152, 4979238.441]
+        kind: points
+        hover_cols: ['dropoff_hour', 'pickup_hour', 'passenger_count']
+      plots:
+        dropoff:
+          label: NYC Taxi Dropoffs
+          x: dropoff_x
+          y: dropoff_y
+        pickup:
+          label: NYC Taxi Pickups
+          x: pickup_x
+          y: pickup_y
+          
+  nyc_taxi_50k:
+    description: Small version of nyc taxi dataset
+    driver: parquet
+    args:
+      urlpath: '{{ CATALOG_DIR }}/data/nyc_taxi_50k.parq'
+      columns: ['dropoff_x','dropoff_y','pickup_x','pickup_y',
+                'dropoff_hour','pickup_hour','passenger_count']
+    metadata:
+      fields:
+        counts:
+          label: Ride counts
+        passenger_count:
+          label: Passenger Count
+        dropoff_hour:
+          label: Drop-off Hour
+        pickup_hour:
+          label: Pick-up Hour
+      plot:
+        xlim: !!python/tuple [-8240227.037, -8231283.905]
+        ylim: !!python/tuple [4974203.152, 4979238.441]
+        kind: points
+        hover_cols: ['dropoff_hour', 'pickup_hour', 'passenger_count']
+      plots:
+        dropoff:
+          label: NYC Taxi Dropoffs
+          x: dropoff_x
+          y: dropoff_y
+        pickup:
+          label: NYC Taxi Pickups
+          x: pickup_x
+          y: pickup_y
+          
+  census:
+    description: US Census Synthetic Data
+    driver: parquet
+    args:
+      urlpath: '{{ CATALOG_DIR }}/data/census.snappy.parq'
+    metadata:
+      fields:
+        counts:
+          label: Counts
+        race:
+          label: Race
+# this doesn't work, but I think something like it might. 
+#           labels:
+#             w: White
+#             b: Black
+#             a: Asian
+#             h: Hispanic
+#             o: Other
+      plot:
+        x: easting
+        y: northing
+        xlim: !!python/tuple [-13914936, -7235767]
+        ylim: !!python/tuple [2632019, 6446276]
+        kind: points  
+      plots:
+        people:
+          label: US Census Synthetic people
+        race:
+          label: US Census Synthetic race
+          c: race
+          cmap:
+            w: blue
+            b: green
+            a: red
+            h: orange
+            o: saddlebrown
+  
+  opensky:
+    description: OpenSky Flight Paths
+    driver: netcdf
+    args:
+      urlpath: '{{ CATALOG_DIR }}/data/opensky.h5'
+      chunks: {}
+    metadata:
+      fields:
+        counts:
+          label: Counts
+        ascending:
+          label: Ascending vs. Descending
+          cat_colors:
+            True: blue
+            False: red
+          cat_names:
+            True: Ascending
+            False: Descending
+      plot:
+        xlim: !!python/tuple [-2000000, 2500000]
+        ylim: !!python/tuple [4100000, 7800000]
+        kind: points
+        x: longitude
+        y: latitude
+      plots:
+        flight_paths:
+          label: OpenSky Flight Paths
