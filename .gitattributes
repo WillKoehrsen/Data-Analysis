@@ -2,3 +2,11 @@
 *.RData filter=lfs diff=lfs merge=lfs -text
 *.pdf filter=lfs diff=lfs merge=lfs -text
 *.gif filter=lfs diff=lfs merge=lfs -text
+think_complexity/gtfs/trips.txt filter=lfs diff=lfs merge=lfs -text
+think_complexity/gtfs/agency.txt filter=lfs diff=lfs merge=lfs -text
+think_complexity/gtfs/calendar.txt filter=lfs diff=lfs merge=lfs -text
+think_complexity/gtfs/calendar_dates.txt filter=lfs diff=lfs merge=lfs -text
+think_complexity/gtfs/routes.txt filter=lfs diff=lfs merge=lfs -text
+think_complexity/gtfs/shapes.txt filter=lfs diff=lfs merge=lfs -text
+think_complexity/gtfs/stop_times.txt filter=lfs diff=lfs merge=lfs -text
+think_complexity/gtfs/stops.txt filter=lfs diff=lfs merge=lfs -text
