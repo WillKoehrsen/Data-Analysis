@@ -6,6 +6,7 @@ import numpy as np
 import fbprophet
 import pytrends
 from pytrends.request import TrendReq
+import requests
 
 # matplotlib pyplot for plotting
 import matplotlib.pyplot as plt
@@ -57,6 +58,50 @@ class Stocker():
         self.min_date = min(stock['Date'])
         self.max_date = max(stock['Date'])
         
+        orig_len = len(self.stock)
+        
+        # add data from tiingo
+        next_date= self.max_date + pd.to_timedelta(1, unit='d')
+        next_date_str = next_date.strftime(format='%Y-%m-%d')
+        
+        # add your tiingo api_key here
+        # tg_api_key = "9ffa8e54e58dbb1dcfb134b1c4e994dcef59f211"
+        tg_url = "https://api.tiingo.com/tiingo/daily/" + ticker + "/prices?startDate=" + next_date_str + "&token=" + tg_api_key
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        tg_resp = requests.get(tg_url, headers=headers)
+        tg_json = tg_resp.json()
+        tg_df = pd.DataFrame(tg_json)
+        
+        add_len = len(tg_df)
+        
+        # Rename
+        tg_df_st = tg_df.rename(columns={"adjClose": "Adj. Close",
+                        "adjHigh": "Adj. High",
+                        "adjLow": "Adj. Low",
+                        "adjOpen": "Adj. Open",
+                        "adjVolume": "Adj. Volume",
+                        "close": "Close",
+                        "date": "Date",
+                        "divCash": "Ex-Dividend",
+                        "high": "High",
+                        "low": "Low",
+                        "open": "Open",
+                        "splitFactor": "Split Ratio",
+                        "volume": "Volume"})
+        for i, row in tg_df_st.iterrows():
+            tg_df_st.at[i, 'Date'] = pd.Timestamp(tg_df_st.at[i, 'Date'][0:10])
+            # tg_df_st.at[i, 'Adj. Close'] = tg_df_st.at[i, 'Close']
+            # tg_df_st.at[i, 'Adj. Open'] = tg_df_st.at[i, 'Open']
+            tg_df_st.at[i, 'Daily Change'] = tg_df_st.at[i, 'Close'] - tg_df_st.at[i, 'Open'] 
+            tg_df_st.at[i, 'ds'] = tg_df_st.at[i, 'Date']
+            tg_df_st.at[i, 'y'] = tg_df_st.at[i, 'Close']  
+        
+        self.orig_stock = stock.copy()
+        self.stock = self.stock.append(tg_df_st, ignore_index=True)
+        self.max_date = max(self.stock['Date'])
+        
         # Find max and min prices and dates on which they occurred
         self.max_price = np.max(self.stock['y'])
         self.min_price = np.min(self.stock['y'])
@@ -87,9 +132,9 @@ class Stocker():
         self.yearly_seasonality = True
         self.changepoints = None
         
-        print('{} Stocker Initialized. Data covers {} to {}.'.format(self.symbol,
+        print('{} Stocker Initialized. Data covers {} to {}. Original length is {}. Added length is {}.'.format(self.symbol,
                                                                      self.min_date,
-                                                                     self.max_date))
+                                                                     self.max_date, orig_len, add_len))
     
     """
     Make sure start and end dates are in the range and can be
