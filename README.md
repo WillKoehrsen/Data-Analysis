@@ -1,5 +1,5 @@
-# Data-Analysis
-Data Science Projects Using Python and a little R. 
+# Data-Analysis { Awsome Project}
+Data Science Projects Using Python Programming and  R programming . 
 
 This repository is a place to share my code and notebooks for numerous data science projects.
 
