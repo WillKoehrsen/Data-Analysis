@@ -10,10 +10,16 @@ def data_for_fitting(*, building_id, date):
         previous_bday = pd.to_datetime(date) - BDay(1)
 
         # If a holiday, this will return None
-        lease_start = (db().execute(building_daily_stats.select().where(
-            building_daily_stats.c.building_id == building_id).where(
-                building_daily_stats.c.date == previous_bday)).fetchone().
-                       lease_obligations_start_at)
+        lease_start = (
+            db()
+            .execute(
+                building_daily_stats.select()
+                .where(building_daily_stats.c.building_id == building_id)
+                .where(building_daily_stats.c.date == previous_bday)
+            )
+            .fetchone()
+            .lease_obligations_start_at
+        )
 
         date = previous_bday
 
@@ -21,4 +27,5 @@ def data_for_fitting(*, building_id, date):
     return load_sensor_values(
         building_id=building_id,
         start_time=lease_start,
-        end_time=lease_start + timedelta(hours=8))
+        end_time=lease_start + timedelta(hours=8),
+    )

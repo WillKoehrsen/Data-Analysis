@@ -5,14 +5,20 @@ from tqdm import tqdm_notebook
 
 
 def cyclical_encoding(series, period):
-    features = pd.concat([np.sin((2 * np.pi * series / period)),
-                          np.cos((2 * np.pi * series / period))], axis=1)
-    features.columns = [f'sin_{series.name}', f'cos_{series.name}']
+    features = pd.concat(
+        [np.sin((2 * np.pi * series / period)), np.cos((2 * np.pi * series / period))],
+        axis=1,
+    )
+    features.columns = [f"sin_{series.name}", f"cos_{series.name}"]
     return features
 
 
 def create_time_features(
-    fld, keep_frac_only=False, include_additional=False, cyc_encode=False, timezone=None,
+    fld,
+    keep_frac_only=False,
+    include_additional=False,
+    cyc_encode=False,
+    timezone=None,
 ):
     """
     Create features out of a series of datetimes.
@@ -42,8 +48,17 @@ def create_time_features(
         df["local"] = fld
 
     # Basic attributes
-    attr = ["second", "minute", "hour", "year", "month",
-            "week", "day", "dayofweek", "dayofyear"]
+    attr = [
+        "second",
+        "minute",
+        "hour",
+        "year",
+        "month",
+        "week",
+        "day",
+        "dayofweek",
+        "dayofyear",
+    ]
 
     if include_additional:
         # Additional attributes to extract
@@ -69,14 +84,10 @@ def create_time_features(
     ) / 24
 
     # Add fractional time of week
-    df[prefix + "fracweek"] = (
-        df[prefix + "dayofweek"] + df[prefix + "fracday"]
-    ) / 7
+    df[prefix + "fracweek"] = (df[prefix + "dayofweek"] + df[prefix + "fracday"]) / 7
 
     # Add fractional time of month
-    df[prefix + "fracmonth"] = (
-        (df[prefix + "day"] - 1) + df[prefix + "fracday"]
-    ) / (
+    df[prefix + "fracmonth"] = ((df[prefix + "day"] - 1) + df[prefix + "fracday"]) / (
         fld.dt.days_in_month
     )  # Use fld days_in_month in case this is not
     # one of the attributes specified
@@ -84,7 +95,7 @@ def create_time_features(
     # Calculate days in year (accounting for leap year rules)
     days_in_year = np.where(
         (df[prefix + "year"] % 4 == 0)
-        & ( ( df[prefix + "year"] % 100 != 0) | (df[prefix + "year"] % 400 == 0)),
+        & ((df[prefix + "year"] % 100 != 0) | (df[prefix + "year"] % 400 == 0)),
         366,
         365,
     )
@@ -95,15 +106,13 @@ def create_time_features(
     ) / days_in_year
 
     if cyc_encode:
-        df = pd.concat([df, cyclical_encoding(
-            df[prefix + 'hour'], 24)], axis=1)
-        df = pd.concat([df, cyclical_encoding(
-            df[prefix + 'dayofweek'], 6)], axis=1)
-        df = pd.concat([df, cyclical_encoding(df[prefix + 'day'], 31)], axis=1)
-        df = pd.concat([df, cyclical_encoding(
-            df[prefix + 'month'], 12)], axis=1)
-        df = pd.concat([df] + [cyclical_encoding(df[c], 1)
-                               for c in df if 'frac' in c], axis=1)
+        df = pd.concat([df, cyclical_encoding(df[prefix + "hour"], 24)], axis=1)
+        df = pd.concat([df, cyclical_encoding(df[prefix + "dayofweek"], 6)], axis=1)
+        df = pd.concat([df, cyclical_encoding(df[prefix + "day"], 31)], axis=1)
+        df = pd.concat([df, cyclical_encoding(df[prefix + "month"], 12)], axis=1)
+        df = pd.concat(
+            [df] + [cyclical_encoding(df[c], 1) for c in df if "frac" in c], axis=1
+        )
 
     if keep_frac_only:
         df = df.drop(
@@ -133,7 +142,7 @@ def monthly_validation(data, model, track=False):
     train_stops = np.unique(data.index[data.index.is_month_end].date)
 
     X = data.copy()
-    y = X.pop('energy')
+    y = X.pop("energy")
     weighted_score = 0
     total_possible = 0
     train_points = []
@@ -153,7 +162,8 @@ def monthly_validation(data, model, track=False):
 
         if track:
             print(
-                f'Accuracy: {score:.2f}% testing from {test_start} to {test_end} ({n_days} days).')
+                f"Accuracy: {score:.2f}% testing from {test_start} to {test_end} ({n_days} days)."
+            )
         weighted_score += score * len(X_test)
         total_possible += 100 * len(X_test)
         train_points.append(len(X_train))
@@ -163,12 +173,14 @@ def monthly_validation(data, model, track=False):
     model.fit(X, y)
 
     importance_df = None
-    if hasattr(model, 'feature_importances_'):
+    if hasattr(model, "feature_importances_"):
         importance_df = pd.DataFrame(
-            dict(features=X.columns, importance=model.feature_importances_))
+            dict(features=X.columns, importance=model.feature_importances_)
+        )
     final_score = weighted_score / total_possible
     results_df = pd.DataFrame(
-        dict(train_points=train_points, test_points=test_points, score=scores))
+        dict(train_points=train_points, test_points=test_points, score=scores)
+    )
     return dict(results=results_df, importances=importance_df, score=final_score)
 
 
@@ -177,21 +189,21 @@ def mape(y_true, y_pred):
 
 
 def data_reading(filename):
-    data = pd.read_csv(filename, parse_dates=['timestamp'])
-    data = data.dropna(subset=['energy'])
-    freq_counts = data['timestamp'].diff(1).value_counts()
+    data = pd.read_csv(filename, parse_dates=["timestamp"])
+    data = data.dropna(subset=["energy"])
+    freq_counts = data["timestamp"].diff(1).value_counts()
     freq = round(freq_counts.idxmax().total_seconds() / 60)
-    data = data.set_index('timestamp').sort_index()
+    data = data.set_index("timestamp").sort_index()
     return data, freq, len(data)
 
 
 def data_testing(filename, model):
-    building_id = filename.split('_')[-1].split('.csv')[0]
+    building_id = filename.split("_")[-1].split(".csv")[0]
     data, freq, dpoints = data_reading(filename)
     results = test_time_features(data, model)
-    results['freq'] = freq
-    results['dpoints'] = dpoints
-    results['building_id'] = building_id
+    results["freq"] = freq
+    results["dpoints"] = dpoints
+    results["building_id"] = building_id
     return results
 
 
@@ -202,17 +214,27 @@ def test_time_features(data, model):
     scores = []
     methods = []
 
-    y = data.pop('energy')
+    y = data.pop("energy")
 
-    normal_features = ['timestamp_' + t for t in ['hour',
-                                                  'dayofweek', 'month', 'dayofyear', 'year']]
-    normal_cyc_features = ['sin_' + t for t in normal_features if t not in ['timestamp_dayofyear', 'timestamp_year']
-                           ] + ['cos_' + t for t in normal_features if t not in ['timestamp_dayofyear', 'timestamp_year']]
+    normal_features = [
+        "timestamp_" + t for t in ["hour", "dayofweek", "month", "dayofyear", "year"]
+    ]
+    normal_cyc_features = [
+        "sin_" + t
+        for t in normal_features
+        if t not in ["timestamp_dayofyear", "timestamp_year"]
+    ] + [
+        "cos_" + t
+        for t in normal_features
+        if t not in ["timestamp_dayofyear", "timestamp_year"]
+    ]
 
-    frac_features = ['timestamp_' +
-                     t for t in ['fracday', 'fracweek', 'fracmonth', 'fracyear']]
-    frac_cyc_features = ['sin_' + t for t in frac_features] + \
-        ['cos_' + t for t in frac_features]
+    frac_features = [
+        "timestamp_" + t for t in ["fracday", "fracweek", "fracmonth", "fracyear"]
+    ]
+    frac_cyc_features = ["sin_" + t for t in frac_features] + [
+        "cos_" + t for t in frac_features
+    ]
 
     data_normal = data[normal_features].copy()
     data_normal_cyc = data[normal_cyc_features].copy()
@@ -220,22 +242,21 @@ def test_time_features(data, model):
     data_frac_cyc = data[frac_cyc_features].copy()
 
     results = {}
-    dataset_names = ['normal', 'normal_cyc', 'frac', 'frac_cyc']
+    dataset_names = ["normal", "normal_cyc", "frac", "frac_cyc"]
 
-    for dataset, name in zip([data_normal,
-                              data_normal_cyc,
-                              data_frac,
-                              data_frac_cyc],
-                             dataset_names):
+    for dataset, name in zip(
+        [data_normal, data_normal_cyc, data_frac, data_frac_cyc], dataset_names
+    ):
 
-        to_drop = dataset.columns[(dataset.nunique() == 1)
-                                  | (dataset.nunique() == len(dataset))]
+        to_drop = dataset.columns[
+            (dataset.nunique() == 1) | (dataset.nunique() == len(dataset))
+        ]
 
         dataset = dataset.drop(columns=to_drop)
-        dataset['energy'] = y.copy()
+        dataset["energy"] = y.copy()
         try:
             data_results = monthly_validation(dataset, model)
-            scores.append(data_results['score'])
+            scores.append(data_results["score"])
             methods.append(name)
         except Exception as e:
             print(e, name)
