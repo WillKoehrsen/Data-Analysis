@@ -1,3 +1,4 @@
+black==20.8b1
 beautifulsoup4==4.6.3
 bokeh==1.0.2
 colorlover==0.2.1
@@ -5,6 +6,7 @@ cmocean==2.0.0
 cufflinks==0.14.6
 dask==1.0.0
 featuretools==0.4.1
+flake8==3.8.4
 graphviz==0.10.1
 h5py==2.8.0
 ipdb==0.11
