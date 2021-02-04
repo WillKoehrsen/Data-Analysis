@@ -341,7 +341,7 @@ class Stocker:
 
         # Find all of the weekends
         for i, date in enumerate(dataframe["ds"]):
-            if (date.weekday()) == 5 | (date.weekday() == 6):
+            if (date.weekday()) == 5 or (date.weekday() == 6):
                 weekends.append(i)
 
         # Drop the weekends
