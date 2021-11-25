@@ -4,7 +4,7 @@ bokeh==1.0.2
 colorlover==0.2.1
 cmocean==2.0.0
 cufflinks==0.14.6
-dask==1.0.0
+dask>=2021.10.0
 featuretools==0.4.1
 flake8==3.8.4
 graphviz==0.10.1
@@ -25,7 +25,7 @@ jupyter-highlight-selected-word==0.2.0
 jupyter-latex-envs==1.4.6
 jupyter-nbextensions-configurator==0.4.0
 jupyter-repo2docker==0.7.0
-jupyterlab==0.35.4
+jupyterlab>=1.2.21
 jupyterlab-server==0.2.0
 matplotlib==2.2.2
 nbconvert==5.4.0
@@ -35,7 +35,7 @@ numpy==1.15.4
 packaging==18.0
 pandas==0.23.4
 pandocfilters==1.4.2
-Pillow==5.3.0
+pillow>=8.3.2
 psycopg2==2.7.6.1
 psycopg2-binary==2.7.6.1
 pyarrow==0.11.1
