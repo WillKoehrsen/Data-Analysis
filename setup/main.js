@@ -30,7 +30,7 @@ if 'autoreload' not in ipython.extension_manager.loaded:
 %autoreload 2
 
 # Visualizations
-import plotly.plotly as py
+import chart_studio.plotly as py
 import plotly.graph_objs as go
 from plotly.offline import iplot, init_notebook_mode
 init_notebook_mode(connected=True)
