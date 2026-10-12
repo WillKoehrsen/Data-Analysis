@@ -1,0 +1,105 @@
+================================================================================
+ AGENTE DE CORRELACIONES Y RELACIONES ENTRE ETFs   (Windows)
+================================================================================
+
+QUE ES
+------
+Un agente que busca correlaciones y cualquier tipo de relacion entre los ETFs mas
+significativos (SPY, QQQ, IWM, EFA, EEM, TLT, IEF, TIP, SGOV, LQD, HYG, UUP, GLD,
+USO, DBC, XLK, XLF, XLE, XLU, XLP, SOXX) en las ventanas:
+
+    * Historico completo (max)
+    * YTD  (ano en curso)
+    * 3M   (ultimos 3 meses)
+    * 1M   (ultimo mes)
+    (+ 6M, 1Y, 3Y, 5Y opcionales)
+
+Y ademas busca otras relaciones: lead-lag (quien anticipa a quien), causalidad de
+Granger, cointegracion, betas frente a factores, PCA (factores latentes),
+agrupamiento (clustering), informacion mutua (dependencia no lineal), correlacion
+en regimenes de estres y volatilidad.
+
+
+INSTALACION (solo la primera vez)
+---------------------------------
+1. Necesitas Python 3.10 o superior: https://www.python.org/downloads/
+   >>> Marca la casilla "Add Python to PATH" durante la instalacion <<<
+2. Doble clic en:   INSTALAR_WINDOWS.bat
+   (crea un entorno virtual e instala las dependencias; tarda unos minutos)
+
+
+USO
+---
+  EJECUTAR_DEMO.bat        Prueba con datos sinteticos. NO necesita internet.
+                           Genera un informe completo de ejemplo.
+
+  EJECUTAR_ANALISIS.bat    Analisis con datos reales (descarga de Yahoo Finance).
+                           Necesita internet. Genera el informe en reports\
+
+  EJECUTAR_DASHBOARD.bat   Dashboard interactivo en http://localhost:8501
+                           (para elegir ETFs, ventanas y umbrales con el raton)
+
+  TESTS.bat                Ejecuta los tests automaticos (sin internet).
+
+
+DONDE ESTA EL INFORME
+---------------------
+Cada ejecucion crea una carpeta con fecha dentro de  reports\ , por ejemplo:
+
+    reports\etf_correlations_demo_20261012_073707\
+        report.html      <<< ABRE ESTE CON EL NAVEGADOR (lleva todo incluido)
+        report.md        informe en Markdown
+        summary.json     resumen de hallazgos
+        images\          graficos (heatmaps, correlacion movil, PCA, red...)
+        data\            todas las tablas en CSV (Excel / Power BI)
+
+Ya se incluye un informe de ejemplo (modo demo) dentro de reports\.
+
+
+PERSONALIZAR
+------------
+Opcion A - editar los .bat: en EJECUTAR_ANALISIS.bat cambia
+              set TICKERS=SPY,TLT,GLD,UUP,USO
+              set WINDOWS=max,ytd,3m,1m,1y
+
+Opcion B - linea de comandos (con el entorno virtual activado):
+              python -m etf_agent analyze --tickers SPY,TLT,GLD,UUP,EFA,EEM
+              python -m etf_agent analyze --windows max,ytd,3m,1m,6m,1y,3y,5y
+              python -m etf_agent list          (muestra ETFs y ventanas)
+              python -m pytest tests/ -q        (tests)
+
+Opcion C - desde Python / Jupyter (ver notebooks\Guia_agente_correlaciones_ETFs.ipynb):
+              from etf_agent import fetch_prices, correlation_matrices, build_report
+              prices = fetch_prices()
+              result = build_report(prices, windows=["max","ytd","3m","1m"])
+
+
+ANADIR OTROS ETFs
+-----------------
+En el DASHBOARD: barra lateral -> cuadro de texto bajo la lista de ETFs -> escribe el
+simbolo (VWO, AGG, VIXY, SMH...) -> boton "Anadir ETF".
+
+En EJECUTAR_ANALISIS.bat: editalo con el bloc de notas y pon
+    set TICKERS=SPY,TLT,GLD,UUP,VWO,AGG
+    set WINDOWS=max,ytd,3m,1m
+(si dejas TICKERS vacio se usan los 22 ETFs por defecto).
+
+Por linea de comandos:
+    python -m etf_agent analyze --tickers SPY,TLT,VWO --windows max,ytd,3m,1m
+
+Si un simbolo no existe en Yahoo, el agente avisa y lo excluye (no se rompe).
+
+NOTA: DRAM (memoria) no se incluye por defecto porque su historial es muy corto y
+recortaria el estudio. Si lo anades, el agente te avisa de cuantas sesiones se
+descartan por ese motivo.
+
+SOLUCION DE PROBLEMAS
+---------------------
+* "python no se reconoce como comando" -> reinstala Python marcando
+  "Add Python to PATH", o ejecuta desde "Anaconda Prompt".
+* Fallo al descargar datos -> comprueba tu conexion; el agente reintenta y hace
+  fallback a Stooq automaticamente. Si todo falla, usa EJECUTAR_DEMO.bat.
+* El dashboard no abre -> abre a mano http://localhost:8501 en el navegador.
+* Quieres empezar de cero -> borra la carpeta data\etf_cache (cache de precios).
+
+DOCUMENTACION COMPLETA: README.md (en esta misma carpeta)

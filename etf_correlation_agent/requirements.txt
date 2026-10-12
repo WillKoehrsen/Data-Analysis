@@ -1,0 +1,16 @@
+# Dependencias del agente de correlaciones entre ETFs
+# (independientes del requirements.txt global del repositorio, que es antiguo)
+pandas>=1.5
+numpy>=1.23
+matplotlib>=3.6
+seaborn>=0.12
+scipy>=1.9
+scikit-learn>=1.1
+statsmodels>=0.13
+yfinance>=0.2          # descarga de precios (Yahoo Finance)
+pandas-datareader>=0.10 # fallback de datos (Stooq)
+streamlit>=1.28        # dashboard interactivo
+plotly>=5.15           # gráficos interactivos del dashboard
+networkx>=3.0          # red de correlaciones (opcional pero recomendado)
+tabulate>=0.9          # tablas Markdown
+pytest>=7.0            # tests
