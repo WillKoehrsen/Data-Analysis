@@ -1,0 +1,7 @@
+# Local databases and exports are generated on your laptop - never commit them
+*.duckdb
+*.duckdb.wal
+rolling_hurst.csv
+__pycache__/
+.venv/
+.ipynb_checkpoints/

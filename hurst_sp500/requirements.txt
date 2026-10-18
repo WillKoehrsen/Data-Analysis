@@ -1,0 +1,9 @@
+# Rolling Hurst / DuckDB S&P 500 notebook - use a FRESH virtualenv.
+# (The requirements.txt in the repo root pins 2019-era packages for the old
+# notebooks - do not reuse that environment for this project.)
+duckdb>=1.0
+pandas>=2.0
+numpy>=1.26
+matplotlib>=3.8
+jupyter>=1.0
+numba>=0.59    # optional but strongly recommended (100x faster rolling loop)
